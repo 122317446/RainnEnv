@@ -1,5 +1,5 @@
 from flask import*
-from service.AgentService import UserinputsService
+from service.agent_service import UserinputsService
 from model.Agent import Userinputs
 
 app = Flask(__name__)
