@@ -28,6 +28,14 @@ class AgentService:
             self.taskstage_dao.add_TaskStageDef(x)
 
         return task_id
+    
+    def delete_agent(self, agent_id):
+        stages = self.taskstage_dao.get_all_TaskStageDefs()
+        for stage in stages:
+            if stage.TaskDef_ID_FK == agent_id:
+                self.taskstage_dao.delete_TaskStageDef(stage.TaskStageDef_ID)
+
+        self.taskdef_dao.delete_TaskDef(agent_id)
 
     def list_agents(self):
         """Return all TaskDefs."""

@@ -2,31 +2,48 @@
 
 {% block content %}
 
-<h3> Add text </h3>
-    <form action="{{ url_for('add_data') }}" method="POST" class="row g-2 mb-3">
-        <div class="col-auto">
-            <input name="addtext" type="text" class="form-control" placeholder="Type here!">
-        </div>
-        
-        <div class="col-auto">
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </div>
-    </form>
+<p><u>Current agents in the database</u></p>
+<ol>
+    {% for agent in agents %}
+    <li class="p-1">
+        {{ agent.TaskDef_Name }}
+        <!-- Button to open modal -->
+        <button type="button" 
+                class="btn btn-sm btn-secondary ms-2" 
+                data-bs-toggle="modal" 
+                data-bs-target="#agentModal{{ agent.TaskDef_ID }}">
+            View Stages
+        </button>
 
-{% for x in data %} 
-
-<p> ID: <a href="{{url_for('retreive_specific_data', ID=x.ID)}}">{{x.ID}} </a>
-    ...  <form action="{{ url_for('update_data', ID=x.ID) }}" method="POST" class="d-flex align-items-center mb-2">
-        <span class="me-2"> Name: {{x.text}} </span>
-        <input name="changetext" type="text" class="form-control me-2" value="{{x.text}}">
-        <button class="btn btn-warning btn-sm me-2" type="submit">Update</button>
-        </form> 
-    
-        <form action="{{ url_for('delete_data', ID=x.ID)}}" method="POST" class="d-inline">
-            <button class="btn btn-danger btn-sm" type="submit" > Delete </button>
+        <!-- Modal -->
+        <div class="modal fade" id="agentModal{{ agent.TaskDef_ID }}" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content bg-light text-dark">
+              <div class="modal-header">
+                <h5 class="modal-title">{{ agent.TaskDef_Name }}'s Stages</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <ol>
+                  {% for stage in stages_by_agent[agent.TaskDef_ID] %}
+                    <li><b>{{ stage.TaskStageDef_Name }}</b> {{ stage.TaskStageDef_Description }}</li>
+                  {% else %}
+                    <li><i>No stages found for this agent.</i></li>
+                  {% endfor %}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form method="POST" action="{{ url_for('delete_agent', agent_id=agent.TaskDef_ID) }}" 
+              onsubmit="return confirm('Are you sure you want to delete this agent and its stages?');" 
+              style="display:inline;">
+          <button type="submit" class="btn btn-danger btn-sm">
+            <i class="bi bi-trash"></i> Delete
+          </button>
         </form>
-</p>
-        
-{% endfor %}
+    </li>
+    {% endfor %}
+</ol>
 
-{% endblock %} 
+{% endblock %}
