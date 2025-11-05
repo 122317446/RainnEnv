@@ -23,7 +23,7 @@ def database_page():
     
     return render_template('database_view.html', agents=agents, agent_stages=agent_stages)
 
-  
+#Create
 @app.route('/add_agent', methods=['GET', 'POST'])
 def add_agent():
     if request.method == 'POST':
@@ -53,23 +53,43 @@ def add_agent():
     return render_template('add_agent.html')
 
 
-@app.route('/get_data_by_id/<int:ID>')
-def retreive_specific_data(ID):
-    retreived = userinputservice.get_data_details(ID)
-    return render_template('indexid.html', retreived=retreived)
+#Update
+@app.route('/update_agent/<int:agent_id>', methods=['GET', 'POST'])
+def update_agent(agent_id):
+    agent = Agent_Service.get_agent_by_id(agent_id)
+    stage = Agent_Service.get_agent_stages_by_id(agent_id)
 
-@app.route('/update_data/<int:ID>', methods=['POST'])
-def update_data(ID):
-    retreived = userinputservice.get_data_details(ID)
+    if request.method == 'POST':
+        name = request.form.get('agent_name')
+        description = request.form.get('agent_description')
+        Agent_Service.update_agent_details(agent_id, name, description)
+        return redirect(url_for('get_all_agents_and_stages'))
 
-    retreived.text = request.form.get('changetext')
+    return render_template('update_agent.html', agent=agent, stages=[stage])
 
-    userinputservice.update_data(retreived)
+@app.route('/update_stage/<int:stage_id>', methods=['GET', 'POST'])
+def update_stage(stage_id):
+    stage = Agent_Service.taskstage_dao.get_TaskStageDef_by_id(stage_id)
 
-    print("The database has been updated!")
+    if request.method == 'POST':
+        stage_type = request.form.get('stage_type')
+        stage_desc = request.form.get('stage_desc')
 
-    return redirect(url_for("test1"))
+        updated_stage = TaskStageDef(
+            stage.TaskStageDef_ID,
+            stage.TaskDef_ID_FK,
+            stage_type,
+            stage_desc
+        )
+        Agent_Service.taskstage_dao.update_TaskStageDef(updated_stage)
 
+        return redirect(url_for('update_agent', agent_id=stage.TaskDef_ID_FK))
+
+    return render_template('update_stage.html', stage=stage)
+
+
+
+#Delete
 @app.route('/delete_agent/<int:agent_id>', methods=['POST'])
 def delete_agent(agent_id):
     Agent_Service.delete_agent(agent_id)

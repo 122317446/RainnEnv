@@ -37,10 +37,20 @@ class AgentService:
 
         self.taskdef_dao.delete_TaskDef(agent_id)
 
+    def update_agent_details(self, agent_id, name, description):
+        updated_agent = TaskDef(agent_id, name, description)
+
+        self.taskdef_dao.update_TaskDef(updated_agent)
+
+
+    def get_agent_by_id(self, agent_id):
+        return self.taskdef_dao.get_TaskDef_by_id(agent_id)
+    
+    def get_agent_stages_by_id(self, agent_id):
+        return self.taskstage_dao.get_TaskStageDef_by_id(agent_id)
+
     def list_agents(self):
-        """Return all TaskDefs."""
         return self.taskdef_dao.get_all_TaskDefs()
 
     def list_stages(self):
-        """Return all TaskStageDefs."""
         return self.taskstage_dao.get_all_TaskStageDefs()
