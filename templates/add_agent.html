@@ -1,3 +1,19 @@
+<!-- ==========================================
+File: add_agent.html
+Created in iteration: 1
+Author: Karl Concha
+
+#ChatGPT (OpenAI, 2025) – Assisted in HTML form layout design, 
+Bootstrap 5 integration, and JavaScript stage-adding logic structure. 
+Conversation Topic: "Rainn Iteration 1 – Flask form for agent + stage creation"
+Date: November 2025
+
+References:
+- Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.0/getting-started/introduction/
+- Flask Jinja2 Templating Guide: https://flask.palletsprojects.com/
+- UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements
+========================================== -->
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -54,6 +70,7 @@
 </div>
 
 <script>
+/* #ChatGPT – Assisted in basic DOM manipulation logic for dynamically adding new stage inputs */
 function addStage() {
   const container = document.getElementById("stages-section");
   const div = document.createElement("div");

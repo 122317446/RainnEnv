@@ -1,8 +1,30 @@
+<!-- ==========================================
+File: database_view.html
+Created in iteration: 1
+Author: Karl Concha
+
+#ChatGPT (OpenAI, 2025) – Assisted in applying Bootstrap table classes 
+and integrating Jinja2 templating for displaying agent and stage data. 
+Conversation Topic: "Rainn Iteration 1 – Database table view using Flask and Bootstrap"
+Date: November 2025
+
+References:
+- W3Schools HTML Tables: https://www.w3schools.com/html/html_tables.asp
+- Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.3/content/tables/
+- Flask Jinja2 Templating Guide: https://flask.palletsprojects.com/
+- UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements
+
+Notes:
+This template displays a combined database view for TaskDef and TaskStageDef data. 
+It was created in Iteration 1 to verify successful CRUD integration and rendering 
+of database records in a tabular format.
+========================================== -->
+
 {% extends 'base.html' %}
 
 {% block content %}
 
-<!-- This is W3 SCHOOLS CODE ADAPTED: https://www.w3schools.com/html/html_tables.asp-->
+<!-- Adapted from W3Schools HTML Table examples -->
 <table class="table table-striped table-bordered table-hover align-middle">
   <thead class="table-dark">
     <tr>

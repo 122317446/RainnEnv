@@ -1,34 +1,56 @@
+<!-- ==========================================
+File: base.html
+Created in iteration: 1
+Author: Karl Concha
+
+#ChatGPT (OpenAI, 2025) – Assisted in Bootstrap layout structuring 
+and sidebar navigation consistency for Rainn’s Flask templates. 
+Conversation Topic: "Rainn Iteration 1 – Base HTML template with static sidebar and footer"
+Date: November 2025
+
+References:
+- Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.3/getting-started/introduction/
+- Flask Jinja2 Templating Guide: https://flask.palletsprojects.com/
+- UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements
+
+Notes:
+This base template defines the static navigation sidebar and layout structure 
+used across all Rainn web pages. It was created during Iteration 1 and reused 
+by all subsequent HTML templates through Jinja inheritance.
+========================================== -->
+
 <!-- Adding a base.html to make navigation bar and footer design static for the whole website-->
 <!DOCTYPE html>
 <html lang="en">
     
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Weclome to Rainn!</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
-        <!-- Bootstrap JS (needed for modal pop ups) -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- User CSS (applied later)-->
-        <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
-        <!-- Linking files through Flask instead of HTML -->
-    </head>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Welcome to Rainn!</title>
 
-    <body>
-    <div class="d-flex" style="height:100vh">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #7F6A93; width: 200px; height: 100vh;">
+    <!-- Bootstrap JS (needed for modal pop ups) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- User CSS (applied later) -->
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+</head>
+
+<body>
+<div class="d-flex" style="height:100vh">
+
+  <!-- Sidebar Navigation -->
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #7F6A93; width: 200px; height: 100vh;">
     <a href="{{ url_for('get_all_agents_and_stages') }}">
       <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}"
           alt="Rainn Logo"
           class="img-fluid me-2"
           style="height:auto; width:auto;">
     </a>
-
-
 
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
@@ -58,6 +80,7 @@
         </a>
       </li>
     </ul>
+
     <hr>
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,30 +94,23 @@
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="#">Sign out</a></li>
       </ul>
-      </div>
     </div>
-    
-    <div class="flex-grow-1 p-4 m-0"> 
-    
-    
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="flex-grow-1 p-4 m-0"> 
     {% block content %}
-    
-        
-    
     {% endblock %}
-    
-    </div>
+  </div>
+</div>
 
-    </div>
+</body>
 
-    </body>
-
-    <!-- Footer
-    
-    <footer class="py-5 bg-dark" style="width: 100%; margin: 0;">
-        <div style="text-align: center;">
-            <p class="m-0 text-white">Copyright &copy; Rainn 2025</p>
-        </div>
-    </footer>
-    -->
+<!-- Footer (currently disabled)
+<footer class="py-5 bg-dark" style="width: 100%; margin: 0;">
+  <div style="text-align: center;">
+    <p class="m-0 text-white">Copyright &copy; Rainn 2025</p>
+  </div>
+</footer>
+-->
 </html>
