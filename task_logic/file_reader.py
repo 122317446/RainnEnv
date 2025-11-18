@@ -4,15 +4,13 @@ from PyPDF2 import PdfReader
 class FileReader:
 
     @staticmethod
-    def read(file_path):
+    def read_file(file_path):
         if file_path.endswith(".pdf"):
             return FileReader.read_pdf(file_path)
         elif file_path.endswith(".txt"):
             return FileReader.read_txt(file_path)
         elif file_path.endswith(".csv"):
             return FileReader.read_csv(file_path)
-        elif file_path.endswith(".docx"):
-            return FileReader.read_docx(file_path)
         else:
             return "[Unsupported file type]"
 

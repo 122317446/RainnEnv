@@ -45,7 +45,7 @@ by all subsequent HTML templates through Jinja inheritance.
 
   <!-- Sidebar Navigation -->
   <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #7F6A93; width: 200px; height: 100vh;">
-    <a href="{{ url_for('get_all_agents_and_stages') }}">
+    <a href="{{ url_for('home_page') }}">
       <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}"
           alt="Rainn Logo"
           class="img-fluid me-2"
@@ -55,7 +55,7 @@ by all subsequent HTML templates through Jinja inheritance.
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
-        <a href="{{url_for('add_agent')}}" class="nav-link active" aria-current="page">
+        <a href="{{url_for('agent_builder_page')}}" class="nav-link active" aria-current="page">
           Create Agent
         </a>
       </li>

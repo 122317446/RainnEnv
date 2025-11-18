@@ -1,137 +1,255 @@
 # ==========================================
 # File: app.py
-# Created in iteration: 1
+# Updated in iteration: 2
 # Author: Karl Concha
 #
-# #ChatGPT (OpenAI, 2025) – Assisted in structuring Flask routes, 
-# HTML template rendering, and ensuring consistency between DAO calls 
-# and service-layer integration under FYP Bible guidelines.
-# Conversation Topic: "Rainn Iteration 1 – Flask routing and CRUD integration"
+# #ChatGPT (OpenAI, 2025) – Assisted in restructuring Flask routing to
+# adopt a cleaner modular architecture using dedicated DAO + service layers,
+# as recommended in the supervisor feedback. The updated routing separates 
+# TaskDef management, TaskStageDef management, and AgentPipeline execution 
+# into self-contained services.
+# Conversation Topic: "Rainn Iteration 2 – Modular Flask routing + pipeline runner"
 # Date: November 2025
 #
 # References:
-# - Flask Documentation – "Application Setup and Routing" (https://flask.palletsprojects.com/)
-# - SQLite Documentation – "Python SQLite3 Module" (https://docs.python.org/3/library/sqlite3.html)
-# - UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements.
+# - Flask Routing – https://flask.palletsprojects.com/
+# - SQLite3 Module – https://docs.python.org/3/library/sqlite3.html
+# - UCC FYP Bible – Modular design, routing documentation, ChatGPT tagging
 # ==========================================
 
-from flask import *
-from service.agent_service import *
+from flask import Flask, render_template, request, redirect, url_for
 
+# Updated service imports (Option B: clean + readable)
+from service.task_def_service import TaskDefService
+from service.task_stage_def_service import TaskStageService
+from service.agent_pipeline_service import AgentPipelineService
+from service.agent_process import AgentProcessing
+
+# Initialize Flask app
 app = Flask(__name__)
-Agent_Service = AgentService()
 
-# ------------------------------------------
-# Root route
-# ------------------------------------------
+# Service-layer instances
+taskdef_service = TaskDefService()
+stage_service = TaskStageService()
+pipeline_service = AgentPipelineService()
+agent_runner = AgentProcessing()
+
+
+# ==========================================
+# HOME / INDEX
+# ==========================================
 @app.route("/")
-def get_all_agents_and_stages():
-    """ Displays all agents and their related stages. 
-    ChatGPT helped define dictionary grouping for stages_by_agent. """
-    agents = Agent_Service.list_agents()
-    agent_stages = Agent_Service.list_stages()
+def home_page():
+    """
+    Displays all TaskDefs (agents) and their stages.
+    Supervisor advised grouping stages by TaskDef_ID for clarity.
+    """
 
+    taskdefs = taskdef_service.list_taskdefs()
+    stages = stage_service.list_all_stages()
+
+    # Group stages by TaskDef_ID_FK
     stages_by_agent = {}
-    for x in agent_stages:
-        stages_by_agent.setdefault(x.TaskDef_ID_FK, []).append(x)
+    for s in stages:
+        stages_by_agent.setdefault(s.TaskDef_ID_FK, []).append(s)
 
     return render_template(
-        'index.html',
-        agents=agents,
-        stages_by_agent=stages_by_agent,
-        agent_stages=agent_stages
+        "index.html",
+        taskdefs=taskdefs,
+        stages_by_agent=stages_by_agent
     )
 
-# ------------------------------------------
-# Database view route
-# ------------------------------------------
+
+# ==========================================
+# DATABASE VIEW (for debugging)
+# ==========================================
 @app.route("/DbView")
 def database_page():
-    """ Displays database view of all agents and stages. """
-    agents = Agent_Service.list_agents()
-    agent_stages = Agent_Service.list_stages()
-    return render_template('database_view.html', agents=agents, agent_stages=agent_stages)
+    """
+    Displays TaskDefs, TaskStages, and AgentPipelines for debugging.
+    """
+    return render_template(
+        "database_view.html",
+        taskdefs=taskdef_service.list_taskdefs(),
+        taskstages=stage_service.list_all_stages(),
+        pipelines=pipeline_service.list_pipelines()
+    )
 
-# ------------------------------------------
-# Create agent route
-# ------------------------------------------
-@app.route('/add_agent', methods=['GET', 'POST'])
+
+# ==========================================
+# CREATE A TASKDEF (Agent Type)
+# ==========================================
+@app.route("/add_agent", methods=["GET", "POST"])
 def add_agent():
-    """ Adds a new agent and its stages via form submission. 
-    ChatGPT assisted in form data parsing and stage iteration logic. """
-    if request.method == 'POST':
-        name = request.form.get('agent_name')
-        description = request.form.get('agent_description')
+    """
+    Adds a new TaskDef and associated TaskStageDef entries.
+    Logic split from DAO and moved into TaskDefService / TaskStageService.
+    """
 
-        # Create the base agent first
-        new_task = TaskDef(None, name, description)
-        Agent_Service.taskdef_dao.add_TaskDef(new_task)
+    if request.method == "POST":
+        name = request.form.get("agent_name")
+        desc = request.form.get("agent_description")
 
-        # Get the inserted agent's ID
-        agents = Agent_Service.list_agents()
-        task_id = agents[-1].TaskDef_ID
+        # Create TaskDef
+        new_id = taskdef_service.create_taskdef(name, desc)
 
         # Retrieve user-entered stages
-        stage_names = request.form.getlist('stage_name[]')
-        stage_descs = request.form.getlist('stage_desc[]')
+        stage_names = request.form.getlist("stage_name[]")
+        stage_descs = request.form.getlist("stage_desc[]")
 
-        # Add each stage
         for s_name, s_desc in zip(stage_names, stage_descs):
-            new_stage = TaskStageDef(None, task_id, s_name, s_desc)
-            Agent_Service.taskstage_dao.add_TaskStageDef(new_stage)
+            stage_service.create_stage(new_id, s_name, s_desc)
 
-        return redirect(url_for('get_all_agents_and_stages'))
+        return redirect(url_for("home_page"))
 
-    return render_template('add_agent.html')
+    return render_template("add_agent.html")
 
-# ------------------------------------------
-# Update agent route
-# ------------------------------------------
-@app.route('/update_agent/<int:agent_id>', methods=['GET', 'POST'])
-def update_agent(agent_id):
-    """ Updates an existing agent details and its stages. """
-    agent = Agent_Service.get_agent_by_id(agent_id)
-    stage = Agent_Service.get_agent_stages_by_id(agent_id)
 
-    if request.method == 'POST':
-        name = request.form.get('agent_name')
-        description = request.form.get('agent_description')
-        Agent_Service.update_agent_details(agent_id, name, description)
-        return redirect(url_for('get_all_agents_and_stages'))
+# ==========================================
+# UPDATE TASKDEF (Agent)
+# ==========================================
+@app.route("/update_agent/<int:taskdef_id>", methods=["GET", "POST"])
+def update_agent(taskdef_id):
+    """ Updates a TaskDef entry. """
 
-    return render_template('update_agent.html', agent=agent, stages=[stage])
+    agent = taskdef_service.get_taskdef_by_id(taskdef_id)
+    agent_stages = stage_service.get_stages_for_task(taskdef_id)
 
-# ------------------------------------------
-# Update stage route
-# ------------------------------------------
-@app.route('/update_stage/<int:stage_id>', methods=['GET', 'POST'])
+    if request.method == "POST":
+        name = request.form.get("agent_name")
+        desc = request.form.get("agent_description")
+        taskdef_service.update_taskdef(taskdef_id, name, desc)
+        return redirect(url_for("home_page"))
+
+    return render_template("update_agent.html", agent=agent, stages=agent_stages)
+
+
+# ==========================================
+# UPDATE A STAGE
+# ==========================================
+@app.route("/update_stage/<int:stage_id>", methods=["GET", "POST"])
 def update_stage(stage_id):
-    """ Updates a single stage within an agent. """
-    stage = Agent_Service.taskstage_dao.get_TaskStageDef_by_id(stage_id)
+    """ Updates a single TaskStageDef entry. """
 
-    if request.method == 'POST':
-        stage_type = request.form.get('stage_type')
-        stage_desc = request.form.get('stage_desc')
+    stage = stage_service.taskstage_dao.get_TaskStageDef_by_id(stage_id)
 
-        updated_stage = TaskStageDef(
-            stage.TaskStageDef_ID,
-            stage.TaskDef_ID_FK,
-            stage_type,
-            stage_desc
+    if request.method == "POST":
+        updated = stage_service.taskstage_dao.update_TaskStageDef(
+            stage.__class__(
+                stage.TaskStageDef_ID,
+                stage.TaskDef_ID_FK,
+                request.form.get("stage_type"),
+                request.form.get("stage_desc")
+            )
         )
-        Agent_Service.taskstage_dao.update_TaskStageDef(updated_stage)
-        return redirect(url_for('update_agent', agent_id=stage.TaskDef_ID_FK))
+        return redirect(url_for("update_agent", taskdef_id=stage.TaskDef_ID_FK))
 
-    return render_template('update_stage.html', stage=stage)
+    return render_template("update_stage.html", stage=stage)
 
-# ------------------------------------------
-# Delete agent route
-# ------------------------------------------
-@app.route('/delete_agent/<int:agent_id>', methods=['POST'])
-def delete_agent(agent_id):
-    """ Deletes an agent and all associated stages. """
-    Agent_Service.delete_agent(agent_id)
-    return redirect(url_for('get_all_agents_and_stages'))
+
+# ==========================================
+# DELETE AN AGENT + STAGES
+# ==========================================
+@app.route("/delete_agent/<int:taskdef_id>", methods=["POST"])
+def delete_agent(taskdef_id):
+    """ Deletes a TaskDef and all associated TaskStages. """
+    stage_service.delete_stages_for_task(taskdef_id)
+    taskdef_service.delete_taskdef(taskdef_id)
+    return redirect(url_for("home_page"))
+
+
+# ==========================================
+# ITERATION 2 — AGENT BUILDER (UI)
+# ==========================================
+@app.route("/agent_builder", methods=["GET", "POST"])
+def agent_builder_page():
+    """
+    Step 1 — User selects a TaskDef (operation) and names their agent.
+    Step 2 — This creates an AgentPipeline entry mapped to that TaskDef.
+    """
+
+    # Load operations (TaskDefs)
+    taskdefs = taskdef_service.list_taskdefs()
+
+    # Detect selected TaskDef
+    selected_taskdef = (
+        request.args.get("operation_selected") or
+        request.form.get("operation_selected")
+    )
+
+    # Load stages for preview
+    stages = None
+    if selected_taskdef:
+        selected_taskdef = int(selected_taskdef)
+        stages = stage_service.get_stages_for_task(selected_taskdef)
+
+    agent_saved = False
+    saved_pipeline_id = None
+
+    if request.method == "POST":
+
+        agent_name = request.form.get("agent_name")
+        directory = request.form.get("directory_path")
+        task_id = selected_taskdef
+
+        new_pipeline = pipeline_service.create_pipeline(
+            user_id=1,
+            agent_name=agent_name,
+            taskdef_id=task_id,
+            directory_path=directory
+        )
+
+        agent_saved = True
+        saved_pipeline_id = new_pipeline.Input_ID
+
+    return render_template(
+        "agent_builder.html",
+        taskdefs=taskdefs,
+        stages=stages,
+        selected_taskdef=selected_taskdef,
+        agent_saved=agent_saved,
+        saved_pipeline_id=saved_pipeline_id
+    )
+
+
+# ==========================================
+# ITERATION 2 — AGENT RUNNER (FILE PATH)
+# ==========================================
+@app.route("/agent_runner/<int:pipeline_id>", methods=["GET", "POST"])
+def agent_runner_page(pipeline_id):
+    """
+    Runs the agent pipeline using a modular task execution system.
+    Supervisor requirement: user-provided file path must be configurable.
+    """
+
+    pipeline = pipeline_service.get_pipeline(pipeline_id)
+    if not pipeline:
+        return "Pipeline not found.", 404
+
+    # Load TaskDef (operation type)
+    taskdef = taskdef_service.get_taskdef_by_id(pipeline.Operation_Selected)
+
+    if request.method == "POST":
+
+        file_path = request.form.get("file_path")
+
+        output = agent_runner.run(
+            taskdef_id=pipeline.Operation_Selected,
+            file_path=file_path
+        )
+
+        return render_template(
+            "agent_result.html",
+            pipeline=pipeline,
+            taskdef=taskdef,
+            output=output
+        )
+
+    return render_template(
+        "agent_run.html",
+        pipeline=pipeline,
+        taskdef=taskdef
+    )
 
 
 if __name__ == "__main__":

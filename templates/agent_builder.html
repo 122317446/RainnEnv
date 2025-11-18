@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    
+    <h2>Build Your Agent</h2>
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Agent Name</label>
+            <input type="text" class="form-control" name="agent_name" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Select Operation</label>
+            <select name="operation_selected" class="form-select" required>
+                <option value="">-- Choose Task --</option>
+                {% for t in taskdefs %}
+                    <option value="{{ t.TaskDef_ID }}"
+                        {% if selected_taskdef == t.TaskDef_ID %}selected{% endif %}>
+                        {{ t.TaskDef_Name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if stages %}
+        <div class="mt-3">
+            <h5>Stages for this Operation:</h5>
+            <ul>
+                {% for s in stages %}
+                    <li>{{ s.TaskStageDef_Type }} – {{ s.TaskStageDef_Description }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="mb-3 mt-3">
+            <label class="form-label fw-bold">Directory Path (Optional)</label>
+            <input type="text" name="directory_path" class="form-control">
+        </div>
+
+        <button type="submit" name="save_agent" class="btn btn-success">Save Agent</button>
+
+        {% if agent_saved %}
+            <div class="alert alert-success mt-3">
+                Agent saved successfully! ID: {{ saved_pipeline_id }}
+            </div>
+        {% endif %}
+
+    </form>
+
+</div>
+
+{% endblock %}

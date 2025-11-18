@@ -1,4 +1,4 @@
-from service.file_reader import FileReader   # adjust filename if needed
+from task_logic.file_reader import FileReader   # adjust filename if needed
 import os
 
 # List of test files

@@ -72,23 +72,24 @@ class TaskStageDefDAO:
             for row in rows
         ]
 
-    def get_TaskStageDef_by_id(self, TaskStageDef_ID):
-        """ Retrieves a TaskStageDef record by its ID. """
-
+    def get_TaskStageDef_by_id(self, taskdef_id):
         self.cursor.execute(
-            "SELECT * FROM TaskStageDef WHERE TaskStageDef_ID = ?",
-            (TaskStageDef_ID,)
+            "SELECT * FROM TaskStageDef WHERE TaskDef_ID_FK = ?",
+            (taskdef_id,)
         )
-        row = self.cursor.fetchone()
-        if row:
-            return TaskStageDef(
-                row["TaskStageDef_ID"],
-                row["TaskDef_ID_FK"],
-                row["TaskStageDef_Type"],
-                row["TaskStageDef_Description"]
+        rows = self.cursor.fetchall()
+
+        #A list must be returned in order for Jinja and Flask to process the stages correctly (a loop is implemented)
+        return [
+            TaskStageDef(
+                r["TaskStageDef_ID"],
+                r["TaskDef_ID_FK"],
+                r["TaskStageDef_Type"],
+                r["TaskStageDef_Description"]
             )
-        else:
-            return None
+            for r in rows
+        ]
+
 
     def update_TaskStageDef(self, stage_def):
         """ Updates an existing TaskStageDef record."""

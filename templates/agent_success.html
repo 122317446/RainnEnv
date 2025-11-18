@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Agent Output</h2>
+    <p class="text-muted">Task: {{ taskdef.TaskDef_Name }}</p>
+
+    <div class="mt-3 p-3 bg-light border rounded">
+        <pre style="white-space: pre-wrap;">{{ output }}</pre>
+    </div>
+
+    <a href="/" class="btn btn-secondary mt-3">Back to Home</a>
+</div>
+
+{% endblock %}

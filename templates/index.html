@@ -23,7 +23,7 @@ and provides options to edit, delete, or view stage details via Bootstrap modals
 
 {% block content %}
 
-<p class="fw-bold mb-3"><u>Current agents in the database</u></p>
+<p class="fw-bold mb-3"><u>Current tasks available in the database</u></p>
 
 <ol class="list-group list-group-numbered">
   {% for agent in agents %}
@@ -67,29 +67,5 @@ and provides options to edit, delete, or view stage details via Bootstrap modals
         </button>
       </form>
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="agentModal{{ agent.TaskDef_ID }}" tabindex="-1">
-      <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content bg-light text-dark">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ agent.TaskDef_Name }}'s Stages</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <ol>
-              {% for stage in stages_by_agent[agent.TaskDef_ID] %}
-                <li><b>{{ stage.TaskStageDef_Type }}</b>: {{ stage.TaskStageDef_Description }}</li>
-              {% else %}
-                <li><i>No stages found for this agent.</i></li>
-              {% endfor %}
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-  </li>
-  {% endfor %}
-</ol>
 
 {% endblock %}
