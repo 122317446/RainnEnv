@@ -17,19 +17,16 @@ class AgentPipelineService:
     def __init__(self):
         self.dao = AgentPipelineDAO()
 
-    def create_pipeline(self, user_id, agent_name, taskdef_id, directory_path=None):
-        """ Creates a new agent pipeline record. """
-
+    def create_pipeline(self, user_id, agent_name, taskdef_id):
         new_pipeline = AgentPipeline(
-            Input_ID=None,
+            Pipeline_ID=None,
             User_ID=user_id,
             Agent_Name=agent_name,
-            Text_Input=None,
-            File_Text=None,
             Operation_Selected=taskdef_id,
-            Directory_Path=directory_path,
             Created_At=None
         )
+        return self.dao.add_AgentPipeline(new_pipeline)
+
 
         return self.dao.add_AgentPipeline(new_pipeline)
 

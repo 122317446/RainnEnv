@@ -29,53 +29,37 @@ class AgentPipelineDAO:
     # ---------------------------------------------------
     # CREATE
     # ---------------------------------------------------
-    def add_AgentPipeline(self, agent_pipeline):
-        """ Inserts a new AgentPipeline record into the database. """
-
-        self.cursor.execute(
-            '''
-            INSERT INTO AgentPipeline
-            (User_ID, Agent_Name, Text_Input, File_Text, Operation_Selected, Directory_Path)
-            VALUES (?, ?, ?, ?, ?, ?)
-            ''',
-            (
-                agent_pipeline.User_ID,
-                agent_pipeline.Agent_Name,
-                agent_pipeline.Text_Input,
-                agent_pipeline.File_Text,
-                agent_pipeline.Operation_Selected,
-                agent_pipeline.Directory_Path
-            )
-        )
+    def add_AgentPipeline(self, pipeline):
+        self.cursor.execute("""
+            INSERT INTO AgentPipeline (User_ID, Agent_Name, Operation_Selected)
+            VALUES (?, ?, ?)
+        """, (pipeline.User_ID, pipeline.Agent_Name, pipeline.Operation_Selected))
 
         self.conn.commit()
-        agent_pipeline.Input_ID = self.cursor.lastrowid
-        return agent_pipeline
+        pipeline.Pipeline_ID = self.cursor.lastrowid
+        return pipeline
+
 
     # ---------------------------------------------------
     # READ BY ID
     # ---------------------------------------------------
     def get_AgentPipeline_by_id(self, pipeline_id):
-        """ Retrieves a single pipeline entry by its ID. """
-
         self.cursor.execute(
-            "SELECT * FROM AgentPipeline WHERE Input_ID = ?", (pipeline_id,)
+            "SELECT * FROM AgentPipeline WHERE Pipeline_ID = ?",
+            (pipeline_id,)
         )
         row = self.cursor.fetchone()
-
         if not row:
             return None
 
         return AgentPipeline(
-            row["Input_ID"],
+            row["Pipeline_ID"],
             row["User_ID"],
             row["Agent_Name"],
-            row["Text_Input"],
-            row["File_Text"],
             row["Operation_Selected"],
-            row["Directory_Path"],
             row["Created_At"]
         )
+
 
     # ---------------------------------------------------
     # READ ALL
@@ -90,13 +74,10 @@ class AgentPipelineDAO:
 
         return [
             AgentPipeline(
-                r["Input_ID"],
+                r["Pipeline_ID"],
                 r["User_ID"],
                 r["Agent_Name"],
-                r["Text_Input"],
-                r["File_Text"],
                 r["Operation_Selected"],
-                r["Directory_Path"],
                 r["Created_At"]
             )
             for r in rows
@@ -114,19 +95,13 @@ class AgentPipelineDAO:
             SET 
                 User_ID = ?,
                 Agent_Name = ?,
-                Text_Input = ?,
-                File_Text = ?,
-                Operation_Selected = ?,
-                Directory_Path = ?
+                Created_At = ?
             WHERE Input_ID = ?
             ''',
             (
                 agent_pipeline.User_ID,
                 agent_pipeline.Agent_Name,
-                agent_pipeline.Text_Input,
-                agent_pipeline.File_Text,
                 agent_pipeline.Operation_Selected,
-                agent_pipeline.Directory_Path,
                 agent_pipeline.Input_ID
             )
         )
@@ -139,7 +114,7 @@ class AgentPipelineDAO:
     def delete_AgentPipeline(self, pipeline_id):
         """ Deletes an AgentPipeline entry by its ID. """
         self.cursor.execute(
-            "DELETE FROM AgentPipeline WHERE Input_ID = ?", 
+            "DELETE FROM AgentPipeline WHERE Pipeline_ID = ?", 
             (pipeline_id,)
         )
         self.conn.commit()

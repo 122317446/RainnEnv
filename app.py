@@ -189,18 +189,16 @@ def agent_builder_page():
     if request.method == "POST":
 
         agent_name = request.form.get("agent_name")
-        directory = request.form.get("directory_path")
         task_id = selected_taskdef
 
         new_pipeline = pipeline_service.create_pipeline(
             user_id=1,
             agent_name=agent_name,
             taskdef_id=task_id,
-            directory_path=directory
         )
 
         agent_saved = True
-        saved_pipeline_id = new_pipeline.Input_ID
+        saved_pipeline_id = new_pipeline.Pipeline_ID
 
     return render_template(
         "agent_builder.html",

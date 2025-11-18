@@ -47,24 +47,20 @@
     <h4>Agent Pipelines (Saved Pipelines)</h4>
     <table class="table table-dark table-hover">
         <tr>
-            <th>Input ID</th>
+            <th>Pipeline ID</th>
             <th>User ID</th>
             <th>Agent Name</th>
             <th>Instructions</th>
-            <th>File Text (Preview)</th>
             <th>Operation</th>
-            <th>Directory Path</th>
             <th>Created At</th>
         </tr>
         {% for p in pipelines %}
         <tr>
-            <td>{{ p.Input_ID }}</td>
+            <td>{{ p.Pipeline_ID }}</td>
             <td>{{ p.User_ID }}</td>
             <td>{{ p.Agent_Name }}</td>
-            <td>{{ p.Text_Input }}</td>
-            <td>{{ p.File_Text }}</td>
+            <td> PLACEHOLDER </td>
             <td>{{ p.Operation_Selected }}</td>
-            <td>{{ p.Directory_Path }}</td>
             <td>{{ p.Created_At }}</td>
         </tr>
         {% endfor %}

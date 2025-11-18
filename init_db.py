@@ -51,16 +51,14 @@ def init_db():
     # --------------------------------------
     cursor.execute("""
         CREATE TABLE AgentPipeline (
-            Input_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            Pipeline_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             User_ID INTEGER,
             Agent_Name TEXT,
-            Text_Input TEXT,
-            File_Text TEXT,
             Operation_Selected INTEGER,
-            Directory_Path TEXT,
             Created_At DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (Operation_Selected) REFERENCES TaskDef(TaskDef_ID)
         );
+
     """)
 
     # --------------------------------------
