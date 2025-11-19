@@ -24,6 +24,7 @@ from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
 from service.agent_pipeline_service import AgentPipelineService
 from service.agent_process import AgentProcessing
+import tempfile, os 
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -211,7 +212,7 @@ def agent_builder_page():
 
 
 # ==========================================
-# ITERATION 2 — AGENT RUNNER (FILE PATH)
+# ITERATION 2 — PIPELINE RUNNER 
 # ==========================================
 @app.route("/agent_runner/<int:pipeline_id>", methods=["GET", "POST"])
 def agent_runner_page(pipeline_id):
@@ -227,16 +228,32 @@ def agent_runner_page(pipeline_id):
     # Load workflow stages
     stages = stage_service.get_stages_for_task(taskdef.TaskDef_ID)
 
-    # Demo output (input file only)
     file_text = None
 
     if request.method == "POST":
-        path = request.form.get("file_path")
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                file_text = f.read()[:500]  # just preview
-        except:
-            file_text = "Cannot read file (demo only)."
+        uploaded_file = request.files.get("uploaded_file")
+
+        if not uploaded_file:
+            file_text = "No file uploaded"
+        else:
+            # Get extension from the real filename
+            import os
+            ext = os.path.splitext(uploaded_file.filename)[1]  # e.g. ".pdf"
+
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=True, suffix=ext) as tmp:
+                tmp.write(uploaded_file.read())
+                tmp.flush()
+
+                # Now the filename has the correct extension (e.g. tmpabc123.pdf)
+                try:
+                    file_text = agent_runner.run_task(
+                        taskdef.TaskDef_ID,
+                        tmp.name
+                    )
+                except Exception as e:
+                    file_text = f"Error processing file: {e}"
+
 
     return render_template(
         "pipeline_viewer.html",
@@ -245,6 +262,7 @@ def agent_runner_page(pipeline_id):
         stages=stages,
         file_text=file_text
     )
+
 
 @app.route("/delete_pipeline/<int:pipeline_id>", methods=["POST"])
 def delete_pipeline(pipeline_id):
