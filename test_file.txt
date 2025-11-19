@@ -11,5 +11,4 @@ This is a test file
 10
 
 ' ' 
-What is 9 + 10 = 21
-Hahaha
+The quick brown fox jumped over the lazy dog

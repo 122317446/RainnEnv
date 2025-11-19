@@ -44,6 +44,7 @@ def init_db():
             Process_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             User_ID INTEGER,
             Agent_Name TEXT,
+            AI_Model TEXT,
             Operation_Selected INTEGER,
             Created_At DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (Operation_Selected) REFERENCES TaskDef(TaskDef_ID)

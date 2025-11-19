@@ -60,7 +60,7 @@ def home_page():
 
 
 # ==========================================
-# DATABASE VIEW (Debugging)
+# DATABASE VIEW (Debugging) + Agent Process List
 # ==========================================
 @app.route("/DbView")
 def database_page():
@@ -74,6 +74,15 @@ def database_page():
         processes=process_service.list_processes()
     )
 
+@app.route("/test_agent")
+def test_agent_page():
+    """
+    Shows the Agent Processes available in a page
+    """
+    return render_template(
+        "agent_test_list.html",
+        processes=process_service.list_processes()
+    )
 
 # ==========================================
 # CREATE TASKDEF (Agent Template)
@@ -174,11 +183,13 @@ def agent_builder_page():
 
     if request.method == "POST":
         agent_name = request.form.get("agent_name")
+        ai_model = request.form.get("ai_model")
 
         new_process = process_service.create_process(
             user_id=1,
             agent_name=agent_name,
-            taskdef_id=selected_taskdef
+            taskdef_id=selected_taskdef,
+            ai_model=ai_model
         )
 
         agent_created = True
