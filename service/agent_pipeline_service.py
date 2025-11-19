@@ -28,8 +28,6 @@ class AgentPipelineService:
         return self.dao.add_AgentPipeline(new_pipeline)
 
 
-        return self.dao.add_AgentPipeline(new_pipeline)
-
     def get_pipeline(self, pipeline_id):
         """ Retrieves a pipeline by ID. """
         return self.dao.get_AgentPipeline_by_id(pipeline_id)

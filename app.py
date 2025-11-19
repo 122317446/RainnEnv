@@ -215,39 +215,68 @@ def agent_builder_page():
 # ==========================================
 @app.route("/agent_runner/<int:pipeline_id>", methods=["GET", "POST"])
 def agent_runner_page(pipeline_id):
-    """
-    Runs the agent pipeline using a modular task execution system.
-    Supervisor requirement: user-provided file path must be configurable.
-    """
+
+    # Load Pipeline
+    pipeline = pipeline_service.get_pipeline(pipeline_id)
+    if not pipeline:
+        return "Pipeline not found.", 404
+
+    # Load TaskDef
+    taskdef = taskdef_service.get_taskdef_by_id(pipeline.Operation_Selected)
+
+    # Load workflow stages
+    stages = stage_service.get_stages_for_task(taskdef.TaskDef_ID)
+
+    # Demo output (input file only)
+    file_text = None
+
+    if request.method == "POST":
+        path = request.form.get("file_path")
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                file_text = f.read()[:500]  # just preview
+        except:
+            file_text = "Cannot read file (demo only)."
+
+    return render_template(
+        "pipeline_viewer.html",
+        pipeline=pipeline,
+        taskdef=taskdef,
+        stages=stages,
+        file_text=file_text
+    )
+
+@app.route("/delete_pipeline/<int:pipeline_id>", methods=["POST"])
+def delete_pipeline(pipeline_id):
+    pipeline_service.delete_pipeline(pipeline_id)
+    return redirect(url_for("database_page"))
+
+@app.route("/update_pipeline/<int:pipeline_id>", methods=["GET", "POST"])
+def update_pipeline(pipeline_id):
 
     pipeline = pipeline_service.get_pipeline(pipeline_id)
     if not pipeline:
         return "Pipeline not found.", 404
 
-    # Load TaskDef (operation type)
-    taskdef = taskdef_service.get_taskdef_by_id(pipeline.Operation_Selected)
+    all_taskdefs = taskdef_service.list_taskdefs()
 
     if request.method == "POST":
+        new_name = request.form.get("agent_name")
+        new_op = request.form.get("operation_selected")
 
-        file_path = request.form.get("file_path")
+        pipeline.Agent_Name = new_name
+        pipeline.Operation_Selected = int(new_op)
 
-        output = agent_runner.run(
-            taskdef_id=pipeline.Operation_Selected,
-            file_path=file_path
-        )
+        pipeline_service.update_pipeline(pipeline)
 
-        return render_template(
-            "agent_result.html",
-            pipeline=pipeline,
-            taskdef=taskdef,
-            output=output
-        )
+        return redirect(url_for("database_page"))
 
     return render_template(
-        "agent_run.html",
+        "pipeline_update.html",
         pipeline=pipeline,
-        taskdef=taskdef
+        taskdefs=all_taskdefs
     )
+
 
 
 if __name__ == "__main__":

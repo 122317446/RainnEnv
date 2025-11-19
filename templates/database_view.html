@@ -44,28 +44,64 @@
     </table>
 
 
-    <h4>Agent Pipelines (Saved Pipelines)</h4>
-    <table class="table table-dark table-hover">
-        <tr>
-            <th>Pipeline ID</th>
-            <th>User ID</th>
-            <th>Agent Name</th>
-            <th>Instructions</th>
-            <th>Operation</th>
-            <th>Created At</th>
-        </tr>
+<div class="container mt-4">
+
+    <h2>Database Overview</h2>
+    <p class="text-muted">
+        View all stored Task Definitions, Pipeline Definitions, and Stages.
+    </p>
+
+    <hr>
+
+    <h4 class="mt-4">Agent Pipelines</h4>
+
+    <table class="table table-bordered mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Agent Name</th>
+                <th>TaskDef</th>
+                <th>Created</th>
+                <th style="width: 200px;">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
         {% for p in pipelines %}
         <tr>
             <td>{{ p.Pipeline_ID }}</td>
-            <td>{{ p.User_ID }}</td>
             <td>{{ p.Agent_Name }}</td>
-            <td> PLACEHOLDER </td>
             <td>{{ p.Operation_Selected }}</td>
             <td>{{ p.Created_At }}</td>
+            <td>
+
+                <a href="{{ url_for('agent_runner_page', pipeline_id=p.Pipeline_ID) }}"
+                   class="btn btn-primary btn-sm">
+                   View
+                </a>
+
+                <a href="{{ url_for('update_pipeline', pipeline_id=p.Pipeline_ID) }}"
+                   class="btn btn-warning btn-sm">
+                   Edit
+                </a>
+
+                <form method="POST"
+                      action="{{ url_for('delete_pipeline', pipeline_id=p.Pipeline_ID) }}"
+                      style="display:inline;">
+                    <button type="submit"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('Delete this pipeline?');">
+                        Delete
+                    </button>
+                </form>
+
+            </td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 
 </div>
 
 {% endblock %}
+

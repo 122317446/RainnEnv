@@ -82,13 +82,42 @@ def init_db():
     # --------------------------------------
     # Seed TaskStageDefs (simple, static)
     # --------------------------------------
+    # --------------------------------------
+    # SEED TaskStageDefs (Instructional Workflows)
+    # --------------------------------------
     cursor.executemany("""
         INSERT INTO TaskStageDef (TaskDef_ID_FK, TaskStageDef_Type, TaskStageDef_Description)
         VALUES (?, ?, ?)
     """, [
-        (summarise_id, "summarise", "Extract and summarise text."),
-        (sentiment_id, "sentiment", "Run sentiment analysis on text.")
+
+        # --------------------------------------
+        # TASKDEF ID 1 — Summarise Workflow
+        # --------------------------------------
+
+        # Stage 1: Input files
+        (summarise_id, "input", "Receive and prepare files for summarisation."),
+
+        # Stage 2: Extract key information
+        (summarise_id, "extract", "Read the files and extract key information."),
+
+        # Stage 3: Display summary
+        (summarise_id, "output", "Display extracted information as a text summary."),
+
+
+        # --------------------------------------
+        # TASKDEF ID 2 — Sentiment Analysis Workflow
+        # --------------------------------------
+
+        # Stage 1: Input text or files
+        (sentiment_id, "input", "Receive the user’s text or document to analyse sentiment."),
+
+        # Stage 2: Analyse emotional tone
+        (sentiment_id, "sentiment_extract", "Identify key sentences and analyse emotional tone."),
+
+        # Stage 3: Display sentiment result
+        (sentiment_id, "sentiment_output", "Display the detected sentiment with a brief explanation.")
     ])
+
 
     conn.commit()
     conn.close()

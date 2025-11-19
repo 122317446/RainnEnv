@@ -95,14 +95,14 @@ class AgentPipelineDAO:
             SET 
                 User_ID = ?,
                 Agent_Name = ?,
-                Created_At = ?
-            WHERE Input_ID = ?
+                Operation_Selected = ?
+            WHERE Pipeline_ID = ?
             ''',
             (
                 agent_pipeline.User_ID,
                 agent_pipeline.Agent_Name,
                 agent_pipeline.Operation_Selected,
-                agent_pipeline.Input_ID
+                agent_pipeline.Pipeline_ID
             )
         )
 
