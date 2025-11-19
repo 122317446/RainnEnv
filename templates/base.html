@@ -44,7 +44,8 @@ by all subsequent HTML templates through Jinja inheritance.
 <div class="d-flex" style="height:100vh">
 
   <!-- Sidebar Navigation -->
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #7F6A93; width: 200px; height: 100vh;">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #7F6A93; width: 200px; height: 100vh;
+      position: fixed; top: 0; left: 0;">
     <a href="{{ url_for('home_page') }}">
       <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}"
           alt="Rainn Logo"
@@ -98,7 +99,7 @@ by all subsequent HTML templates through Jinja inheritance.
   </div>
 
   <!-- Main Content Area -->
-  <div class="flex-grow-1 p-4 m-0"> 
+  <div class="container-fluid" style="margin-left: 200px;"> 
     {% block content %}
     {% endblock %}
   </div>

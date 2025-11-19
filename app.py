@@ -266,7 +266,7 @@ def update_process(process_id):
         process.Operation_Selected = int(request.form.get("operation_selected"))
 
         process_service.update_process(process)
-        return redirect(url_for("database_page"))
+        return redirect(url_for("test_agent_page"))
 
     return render_template(
         "process_update.html",

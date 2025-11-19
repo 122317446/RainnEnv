@@ -19,10 +19,21 @@ It displays a list of all TaskDef records and their related TaskStageDef data,
 and provides options to edit, delete, or view stage details via Bootstrap modals.
 ========================================== -->
 
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
 
-<p class="fw-bold mb-3"><u>Welcome to Rainn!</u></p>
+<div class="d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
+    
+    <h1 class="display-3 fw-bold">RAINN</h1>
+
+    <p class="lead mt-3">
+        Build AI agent workflows with local-first and local use!
+    </p>
+
+    <a href="{{ url_for('agent_builder_page') }}" class="btn btn-primary btn-lg mt-4">
+        Get Started
+    </a>
+
+</div>
 
 {% endblock %}
