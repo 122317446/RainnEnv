@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Update Agent Process</h2>
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label">Agent Name</label>
+            <input type="text"
+                   name="agent_name"
+                   class="form-control"
+                   value="{{ process.Agent_Name }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Update Operation</label>
+            <select class="form-select" name="operation_selected">
+                {% for td in taskdefs %}
+                <option value="{{ td.TaskDef_ID }}"
+                        {% if td.TaskDef_ID == process.Operation_Selected %} selected {% endif %}>
+                    {{ td.TaskDef_Name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn btn-success mt-2">Save Changes</button>
+    </form>
+
+</div>
+{% endblock %}

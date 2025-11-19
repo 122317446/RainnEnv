@@ -7,41 +7,48 @@
 
     <form method="POST">
 
+        <!-- Agent Name -->
         <div class="mb-3">
             <label class="form-label fw-bold">Agent Name</label>
             <input type="text" class="form-control" name="agent_name" required>
         </div>
 
+        <!-- Select Operation -->
         <div class="mb-3">
             <label class="form-label fw-bold">Select Operation</label>
             <select name="operation_selected" class="form-select" required>
                 <option value="">-- Choose Task --</option>
                 {% for t in taskdefs %}
                     <option value="{{ t.TaskDef_ID }}"
-                        {% if selected_taskdef == t.TaskDef_ID %}selected{% endif %}>
+                        {% if selected_taskdef == t.TaskDef_ID %} selected {% endif %}>
                         {{ t.TaskDef_Name }}
                     </option>
                 {% endfor %}
             </select>
         </div>
 
+        <!-- Stages Preview -->
         {% if stages %}
         <div class="mt-3">
             <h5>Stages for this Operation:</h5>
             <ul>
                 {% for s in stages %}
-                    <li>{{ s.TaskStageDef_Type }} – {{ s.TaskStageDef_Description }}</li>
+                    <li><strong>{{ s.TaskStageDef_Type }}</strong> – {{ s.TaskStageDef_Description }}</li>
                 {% endfor %}
             </ul>
         </div>
         {% endif %}
 
+        <!-- Submit -->
+        <button type="submit" name="save_agent" class="btn btn-success">
+            Save Agent Process
+        </button>
 
-        <button type="submit" name="save_agent" class="btn btn-success">Save Agent</button>
-
+        <!-- Success Message -->
         {% if agent_saved %}
             <div class="alert alert-success mt-3">
-                Agent saved successfully! ID: {{ saved_pipeline_id }}
+                Agent Process created successfully!  
+                <strong>Process ID:</strong> {{ saved_process_id }}
             </div>
         {% endif %}
 

@@ -4,7 +4,7 @@
 <div class="container mt-4">
 
     <h2>Database Overview</h2>
-    <p class="text-muted">Debug view of TaskDefs, TaskStages and Agent Pipelines.</p>
+    <p class="text-muted">Debug view of TaskDefs, TaskStages and Agent Processes.</p>
 
     <hr>
 
@@ -48,12 +48,12 @@
 
     <h2>Database Overview</h2>
     <p class="text-muted">
-        View all stored Task Definitions, Pipeline Definitions, and Stages.
+        View all stored Task Definitions, Process Definitions, and Stages.
     </p>
 
     <hr>
 
-    <h4 class="mt-4">Agent Pipelines</h4>
+    <h4 class="mt-4">Agent Processes</h4>
 
     <table class="table table-bordered mt-3">
         <thead class="table-light">
@@ -67,30 +67,30 @@
         </thead>
 
         <tbody>
-        {% for p in pipelines %}
+        {% for p in processes %}
         <tr>
-            <td>{{ p.Pipeline_ID }}</td>
+            <td>{{ p.Process_ID }}</td>
             <td>{{ p.Agent_Name }}</td>
             <td>{{ p.Operation_Selected }}</td>
             <td>{{ p.Created_At }}</td>
             <td>
 
-                <a href="{{ url_for('agent_runner_page', pipeline_id=p.Pipeline_ID) }}"
+                <a href="{{ url_for('agent_runner_page', process_id=p.Process_ID) }}"
                    class="btn btn-primary btn-sm">
                    View
                 </a>
 
-                <a href="{{ url_for('update_pipeline', pipeline_id=p.Pipeline_ID) }}"
+                <a href="{{ url_for('update_process', process_id=p.Process_ID) }}"
                    class="btn btn-warning btn-sm">
                    Edit
                 </a>
 
                 <form method="POST"
-                      action="{{ url_for('delete_pipeline', pipeline_id=p.Pipeline_ID) }}"
+                      action="{{ url_for('delete_process', process_id=p.Process_ID) }}"
                       style="display:inline;">
                     <button type="submit"
                             class="btn btn-danger btn-sm"
-                            onclick="return confirm('Delete this pipeline?');">
+                            onclick="return confirm('Delete this process?');">
                         Delete
                     </button>
                 </form>

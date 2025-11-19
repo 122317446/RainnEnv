@@ -3,10 +3,8 @@
 # Updated in iteration: 2
 # Author: Karl Concha
 #
-# #ChatGPT (OpenAI, 2025) – Assisted in creating a clean, modular database
-# schema matching the new TaskDef, TaskStageDef and AgentPipeline structure.
-# Conversation Topic: "Rainn Iteration 2 – Reinitialising schema"
-# Date: November 2025
+# #ChatGPT (OpenAI, 2025) – Assisted in updating schema
+# to replace AgentPipeline → AgentProcess for consistency.
 # ==========================================
 
 import sqlite3
@@ -15,16 +13,12 @@ def init_db():
     conn = sqlite3.connect("rainn.db")
     cursor = conn.cursor()
 
-    # --------------------------------------
-    # DROP existing tables for clean reset
-    # --------------------------------------
+    # DROP OLD TABLES
     cursor.execute("DROP TABLE IF EXISTS TaskStageDef")
     cursor.execute("DROP TABLE IF EXISTS TaskDef")
-    cursor.execute("DROP TABLE IF EXISTS AgentPipeline")
+    cursor.execute("DROP TABLE IF EXISTS AgentProcess")
 
-    # --------------------------------------
-    # TaskDef (operation types)
-    # --------------------------------------
+    # TaskDef Table
     cursor.execute("""
         CREATE TABLE TaskDef (
             TaskDef_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,9 +27,7 @@ def init_db():
         );
     """)
 
-    # --------------------------------------
-    # TaskStageDef (pipeline stages)
-    # --------------------------------------
+    # TaskStageDef Table
     cursor.execute("""
         CREATE TABLE TaskStageDef (
             TaskStageDef_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,82 +38,54 @@ def init_db():
         );
     """)
 
-    # --------------------------------------
-    # AgentPipeline (user-created agents)
-    # --------------------------------------
+    # AgentProcess Table
     cursor.execute("""
-        CREATE TABLE AgentPipeline (
-            Pipeline_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE AgentProcess (
+            Process_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             User_ID INTEGER,
             Agent_Name TEXT,
             Operation_Selected INTEGER,
             Created_At DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (Operation_Selected) REFERENCES TaskDef(TaskDef_ID)
         );
-
     """)
 
-    # --------------------------------------
-    # Seed TaskDefs (ONLY 2 for Iteration 2)
-    # --------------------------------------
+    # Seed TaskDefs
     cursor.executemany("""
         INSERT INTO TaskDef (TaskDef_Name, TaskDef_Description)
         VALUES (?, ?)
     """, [
         ("summarise", "Summarise any document or text file."),
-        ("sentiment_analysis", "Detect sentiment from text (positive/neutral/negative).")
+        ("sentiment_analysis", "Detect sentiment from text.")
     ])
 
-    # Retrieve IDs
+    # Get IDs
     cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='summarise'")
     summarise_id = cursor.fetchone()[0]
 
     cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='sentiment_analysis'")
     sentiment_id = cursor.fetchone()[0]
 
-    # --------------------------------------
-    # Seed TaskStageDefs (simple, static)
-    # --------------------------------------
-    # --------------------------------------
-    # SEED TaskStageDefs (Instructional Workflows)
-    # --------------------------------------
+    # Seed Stages
     cursor.executemany("""
         INSERT INTO TaskStageDef (TaskDef_ID_FK, TaskStageDef_Type, TaskStageDef_Description)
         VALUES (?, ?, ?)
     """, [
+        # Summarise
+        (summarise_id, "input", "Receive files for summarisation."),
+        (summarise_id, "extract", "Extract key information."),
+        (summarise_id, "output", "Display summary."),
 
-        # --------------------------------------
-        # TASKDEF ID 1 — Summarise Workflow
-        # --------------------------------------
-
-        # Stage 1: Input files
-        (summarise_id, "input", "Receive and prepare files for summarisation."),
-
-        # Stage 2: Extract key information
-        (summarise_id, "extract", "Read the files and extract key information."),
-
-        # Stage 3: Display summary
-        (summarise_id, "output", "Display extracted information as a text summary."),
-
-
-        # --------------------------------------
-        # TASKDEF ID 2 — Sentiment Analysis Workflow
-        # --------------------------------------
-
-        # Stage 1: Input text or files
-        (sentiment_id, "input", "Receive the user’s text or document to analyse sentiment."),
-
-        # Stage 2: Analyse emotional tone
-        (sentiment_id, "sentiment_extract", "Identify key sentences and analyse emotional tone."),
-
-        # Stage 3: Display sentiment result
-        (sentiment_id, "sentiment_output", "Display the detected sentiment with a brief explanation.")
+        # Sentiment
+        (sentiment_id, "input", "Receive text for sentiment analysis."),
+        (sentiment_id, "sentiment_extract", "Analyse emotional tone."),
+        (sentiment_id, "sentiment_output", "Display sentiment result."),
     ])
-
 
     conn.commit()
     conn.close()
-    print("✔ Rainn database initialised successfully (Iteration 2 schema).")
+    print("✔ Rainn DB initialised (Iteration 2, AgentProcess schema).")
+
 
 if __name__ == "__main__":
     init_db()

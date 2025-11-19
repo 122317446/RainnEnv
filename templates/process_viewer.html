@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-3">Agent Process Viewer</h2>
+
+    <div class="card p-3 mb-4">
+        <h4>{{ process.Agent_Name }}</h4>
+        <p><strong>Operation Selected:</strong> {{ taskdef.TaskDef_Name }}</p>
+        <p><strong>Process ID:</strong> {{ process.Process_ID }}</p>
+        <p><strong>Created At:</strong> {{ process.Created_At }}</p>
+    </div>
+
+    <h4>Workflow Stages</h4>
+    <ul>
+        {% for stage in stages %}
+        <li><strong>{{ stage.TaskStageDef_Type }}</strong>: {{ stage.TaskStageDef_Description }}</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <h4>Run This Process</h4>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="uploaded_file" class="form-control mb-3">
+        <button class="btn btn-primary">Run Agent</button>
+    </form>
+
+    {% if file_text %}
+    <hr>
+    <h4>Output:</h4>
+    <pre>{{ file_text }}</pre>
+    {% endif %}
+
+</div>
+{% endblock %}
