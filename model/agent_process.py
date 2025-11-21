@@ -19,8 +19,3 @@ class AgentProcess:
         self.AI_Model = AI_Model
         self.Operation_Selected = Operation_Selected
         self.Created_At = Created_At
-
-
-
-
-""" NEED TO ADD SELF STR """

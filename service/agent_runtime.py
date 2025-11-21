@@ -1,13 +1,21 @@
 # ==========================================
 # File: agent_runtime.py
-# Handles execution of agent tasks based on 
-# TaskDef_ID. This is the runtime engine for 
-# Agent Processes.
+# Created in iteration: 2
+# Author: Karl Concha
 #
-# #ChatGPT (OpenAI, 2025) – Assisted in renaming 
-# and refactoring to align with agent workflow 
-# architecture and FYP guidelines.
+# ChatGPT (OpenAI, 2025) – Assisted in renaming and
+# refactoring the runtime routing structure to align
+# with the agent workflow design and FYP Bible
+# requirements on code clarity and maintainability.
+# Conversation Topic: "Iteration 2 – Agent runtime
+# routing and operation dispatch refinement."
+# Date of assistance: November 2025
+#
+# References:
+# - None (runtime logic developed manually; only
+#   ChatGPT assistance noted above)
 # ==========================================
+
 
 from task_logic.summarise import run_summarise
 from task_logic.sentiment import run_sentiment

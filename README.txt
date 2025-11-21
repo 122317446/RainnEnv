@@ -3,32 +3,38 @@ README.txt
 Project: Rainn – Guided AI Agent Builder
 Student: Karl Concha (122317446)
 Supervisor: Mr. Bill Emerson
-Iteration: 1 (07/11/2025)
+Iteration: 2 (21/11/2025)
 
 Purpose:
-This README identifies the origin of all code used in Iteration 1 of Rainn and
+This README identifies the origin of all code used in Iteration 2 of Rainn and
 confirms compliance with UCC’s FYP guidelines on third-party code, licensing, and AI usage.
 
 ------------------------------------------------------------
 CODE ORIGIN SUMMARY
 ------------------------------------------------------------
 
-Own Code – 50%
-    • Flask routes and CRUD logic for the Agent table.
-    • SQLite schema design and database connection setup.
-    • HTML integration for Create / Delete / View operations.
+Own Code – 30%
+    • Implementation of the new Template Creation workflow (Input → Process → Output).
+    • Flask routing for multi-step template submission.
+    • Updates to the SQLite schema to store template fields.
+    • Integration of Jinja value-passing and field validation.
+    • Project clean-up and removal of redundant Iteration 1 files:
+        - add_agent.html
+        - update_agent.html
+        - update_stage.html
 
-ChatGPT / AI Assistance – 30%
-    • Guidance on Flask-SQLite integration.
-    • Example HTML form structure for record creation.
-    • Prompts used:
-        - “Generate Flask CRUD endpoints using SQLite.”
-        - “Show HTML form for adding agent definitions.”
-        - “How to delete a record from Flask via route.”
 
-External Sources – 20%
+ChatGPT / AI Assistance – 60%
+    • Help with reorganising HTML layout and refining Bootstrap structure.
+    • Refining of routing for proper and correct flow with easy traceback
+    • Debugging schema mapping and template-field routing issues.
+    • Prompts used (examples):
+        - “Show an example of a multi-step form in Flask.”
+        - “Can you refine my HTML page to be kept simple and no redundant lines used.”
+        - “Help clean up and simplify my Flask routes.”
+
+External Sources – 10%
     • Flask Documentation – https://flask.palletsprojects.com
-    • SQLite Documentation – https://sqlite.org/docs.html
     • Bootstrap 5 Documentation – https://getbootstrap.com/docs/5.0/getting-started/introduction/
     • GitHub Repository – https://github.com/122317446/RainnEnv
 
@@ -38,10 +44,11 @@ NOTES ON USAGE
 
 - All code was developed and tested locally on macOS using Python 3 (Flask) and SQLite.
 - No proprietary or paid software was used.
-- ChatGPT was used only as a *coding aid* (not for documentation). 
+- ChatGPT was used only as a coding aid (not for documentation). 
   All AI-assisted code was reviewed, modified, and understood before use.
 - Version control managed through GitHub repository above.
-- This iteration focuses solely on implementing the database schema and CRUD operations.
+- Iteration 2 focused on implementing the agent process / flow creation system properly (early build)
+  prior to integrating the AI models.
 
 ------------------------------------------------------------
 CONFIRMATION
@@ -51,4 +58,4 @@ I confirm that all code not written by me has been referenced above,
 and that I understand the purpose and functionality of every part of my submitted code.
 
 Signed: Karl Concha
-Date: 07/11/2025
+Date: 21/11/2025

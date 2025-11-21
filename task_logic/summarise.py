@@ -1,3 +1,20 @@
+# ==========================================
+# File: summarise.py
+# Created in iteration: 2
+# Author: Karl Concha
+#
+# ChatGPT (OpenAI, 2025) – Assisted in refining the
+# placeholder summarisation task structure and ensuring
+# consistent file-reading usage across Rainn task modules.
+# Conversation Topic: "Iteration 2 – Summarisation task
+# placeholder and pipeline verification."
+# Date of assistance: November 2025
+#
+# References:
+# - None (logic is placeholder-only; no external
+#   summarisation library used at this stage)
+# ==========================================
+
 from task_logic.file_reader import FileReader
 
 def run_summarise(file):

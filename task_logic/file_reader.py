@@ -1,3 +1,20 @@
+# ==========================================
+# File: file_reader.py
+# Created in iteration: 2
+# Author: Karl Concha
+#
+# ChatGPT (OpenAI, 2025) – Assisted in refining
+# file-handling structure and ensuring consistent
+# read-function routing for PDF, TXT, and CSV files.
+# Conversation Topic: "Iteration 2 – File reading
+# utilities for Rainn (PDF/TXT/CSV support)."
+# Date of assistance: November 2025
+#
+# References:
+# - PyPDF2 Documentation – https://pypdf2.readthedocs.io/
+# - Python CSV Module – https://docs.python.org/3/library/csv.html
+# ==========================================
+
 import csv 
 from PyPDF2 import PdfReader
 
