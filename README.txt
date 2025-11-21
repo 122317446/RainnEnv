@@ -22,6 +22,7 @@ Own Code – 30%
         - add_agent.html
         - update_agent.html
         - update_stage.html
+        - agent_service.py
 
 
 ChatGPT / AI Assistance – 60%
