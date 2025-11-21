@@ -1,19 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- ======================================================
+ Agent Processes List
+ Shows all saved agent processes with options to
+ view, edit, or delete each entry.
+====================================================== -->
+
 <div class="container mt-4">
 
+    <!-- Page Title -->
     <h2>Test a flow that has been created here!</h2>
 
+</div>
 
+<!-- Separate container for table section -->
 <div class="container mt-4">
-
-    </p>
 
     <hr>
 
+    <!-- Section header -->
     <h4 class="mt-4">Agent Processes available</h4>
 
+    <!-- ==============================================
+         Processes Table
+         Dynamically rendered using Jinja.
+         Displays key metadata for each agent process.
+    =============================================== -->
     <table class="table table-bordered mt-3">
         <thead class="table-light">
             <tr>
@@ -29,23 +42,30 @@
         <tbody>
         {% for p in processes %}
         <tr>
+
+            <!-- Process details -->
             <td>{{ p.Process_ID }}</td>
             <td>{{ p.Agent_Name }}</td>
             <td>{{ p.AI_Model }}</td>
             <td>{{ p.Operation_Selected }}</td>
             <td>{{ p.Created_At }}</td>
+
+            <!-- Actions column -->
             <td>
 
+                <!-- View Process -->
                 <a href="{{ url_for('agent_runner_page', process_id=p.Process_ID) }}"
                    class="btn btn-primary btn-sm">
                    View
                 </a>
 
+                <!-- Edit Process -->
                 <a href="{{ url_for('update_process', process_id=p.Process_ID) }}"
                    class="btn btn-warning btn-sm">
                    Edit
                 </a>
 
+                <!-- Delete Process (POST form) -->
                 <form method="POST"
                       action="{{ url_for('delete_process', process_id=p.Process_ID) }}"
                       style="display:inline;">
@@ -65,4 +85,3 @@
 </div>
 
 {% endblock %}
-

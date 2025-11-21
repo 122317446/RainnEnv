@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<!-- ======================================================
+ Update Agent Process
+ Allows user to modify an existing agent’s name and
+ update the operation (TaskDef) associated with it.
+====================================================== -->
 <div class="container mt-4">
 
     <h2>Update Agent Process</h2>
 
+    <!-- Form submits updated fields to backend -->
     <form method="POST">
 
+        <!-- ===============================
+             Agent Name Field
+             Pre-filled with the current value.
+        =============================== -->
         <div class="mb-3">
             <label class="form-label">Agent Name</label>
             <input type="text"
@@ -15,6 +26,12 @@
                    value="{{ process.Agent_Name }}">
         </div>
 
+        <!-- ===============================
+             Operation Dropdown
+             Jinja loop renders all TaskDefs.
+             Selected option is matched to the
+             current process’ Operation_Selected.
+        =============================== -->
         <div class="mb-3">
             <label class="form-label">Update Operation</label>
             <select class="form-select" name="operation_selected">
@@ -27,8 +44,11 @@
             </select>
         </div>
 
+        <!-- Save button -->
         <button class="btn btn-success mt-2">Save Changes</button>
+
     </form>
 
 </div>
+
 {% endblock %}

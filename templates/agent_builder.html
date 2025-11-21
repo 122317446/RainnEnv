@@ -1,19 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- ======================================================
+ Agent Builder Form (Early build)
+ Allows user to name an agent, select a model, choose an
+ operation, and preview its stages before saving.
+====================================================== -->
+
 <div class="container mt-4">
     
     <h2>Build Your Agent</h2>
 
+    <!-- Form submits to the same route using POST -->
     <form method="POST">
 
-        <!-- Agent Name -->
+        <!-- ===============================
+             Agent Name Input
+        =============================== -->
         <div class="mb-3">
             <label class="form-label fw-bold">Agent Name</label>
             <input type="text" class="form-control" name="agent_name" required>
         </div>
 
-        <!-- AI Model -->
+        <!-- ===============================
+             AI Model Selection Dropdown
+        =============================== -->
         <div class="mb-3">
             <label class="form-label fw-bold">Select AI Model</label>
             <select name="ai_model" class="form-select" required>
@@ -23,8 +34,11 @@
             </select>
         </div>
 
-
-        <!-- Select Operation -->
+        <!-- ===============================
+             Operation / Template Selection
+             Uses Jinja loop to display all taskdefs.
+             selected_taskdef preserves user choice.
+        =============================== -->
         <div class="mb-3">
             <label class="form-label fw-bold">Select Operation</label>
             <select name="operation_selected" class="form-select" required>
@@ -38,7 +52,11 @@
             </select>
         </div>
 
-        <!-- Stages Preview -->
+        <!-- ===============================
+             Stages Preview (only displays
+             after selecting an operation).
+             Rendered dynamically using Jinja.
+        =============================== -->
         {% if stages %}
         <div class="mt-3">
             <h5>Stages for this Operation:</h5>
@@ -50,12 +68,18 @@
         </div>
         {% endif %}
 
-        <!-- Submit -->
+        <!-- ===============================
+             Submit Button
+        =============================== -->
         <button type="submit" name="save_agent" class="btn btn-success">
             Save Agent Process
         </button>
 
-        <!-- Success Message -->
+        <!-- ===============================
+             Success Message
+             Displayed only when an agent
+             is successfully created.
+        =============================== -->
         {% if agent_saved %}
             <div class="alert alert-success mt-3">
                 Agent Process created successfully!  

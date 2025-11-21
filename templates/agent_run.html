@@ -1,13 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- ======================================================
+ Step 2: Run Agent
+ Accepts a file path from the user and sends it to backend
+ for processing using the selected agent logic.
+====================================================== -->
+
 <div class="container mt-4">
 
+    <!-- Page Title -->
     <h2>Step 2: Run Your Agent</h2>
     <p class="text-muted">Provide a file path for your agent to process.</p>
 
+    <!-- Form sends file path to Flask backend -->
     <form method="POST">
 
+        <!-- ===============================
+             User Input: File Path
+             This is a simple text field as the
+             system only requires a directory path.
+        =============================== -->
         <div class="mb-3">
             <label class="form-label fw-bold">File Path</label>
             <input type="text"
@@ -17,6 +30,7 @@
                    required>
         </div>
 
+        <!-- Submit -->
         <button type="submit" class="btn btn-primary">Run Agent</button>
 
     </form>

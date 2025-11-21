@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<!-- ======================================================
+ Agent Process Viewer
+ Displays details of a specific agent process, its workflow
+ stages, and provides an upload form to run the agent.
+====================================================== -->
 <div class="container mt-4">
 
+    <!-- Process Metadata Card -->
     <h2 class="mb-3">Agent Process Viewer</h2>
 
     <div class="card p-3 mb-4">
@@ -13,6 +20,11 @@
         <p><strong>Created At:</strong> {{ process.Created_At }}</p>
     </div>
 
+    <!-- ======================================================
+         Workflow Stages
+         Rendered dynamically using Jinja. Shows the steps
+         associated with the selected TaskDef / process.
+    ======================================================= -->
     <h4>Workflow Stages</h4>
     <ul>
         {% for stage in stages %}
@@ -22,12 +34,21 @@
 
     <hr>
 
+    <!-- ======================================================
+         File Upload Form
+         Allows user to upload a file and execute the agent
+         against it. enctype is required for file handling.
+    ======================================================= -->
     <h4>Run This Process</h4>
     <form method="POST" enctype="multipart/form-data">
         <input type="file" name="uploaded_file" class="form-control mb-3">
         <button class="btn btn-primary">Run Agent</button>
     </form>
 
+    <!-- ======================================================
+         Output Section
+         Only shown if file_text exists (POST run completed).
+    ======================================================= -->
     {% if file_text %}
     <hr>
     <h4>Output:</h4>
@@ -35,4 +56,5 @@
     {% endif %}
 
 </div>
+
 {% endblock %}

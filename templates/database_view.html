@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!-- ======================================================
+ Database Overview Page
+ Used for debugging and visualising TaskDefs, TaskStages,
+ and Agent Processes stored in SQLite.
+====================================================== -->
+
 <div class="container mt-4">
 
+    <!-- Page Title -->
     <h2>Database Overview</h2>
     <p class="text-muted">Debug view of TaskDefs, TaskStages and Agent Processes.</p>
 
     <hr>
 
+    <!-- ==============================================
+         Task Definitions Table
+         Displays all available operations (TaskDef entries).
+    =============================================== -->
     <h4>Task Definitions (Operations)</h4>
     <table class="table table-dark table-hover">
         <tr>
@@ -25,6 +36,11 @@
     </table>
 
 
+    <!-- ==============================================
+         Task Stage Definitions Table
+         Shows workflow steps connected to TaskDefs.
+         Useful for verifying correct FK relationships.
+    =============================================== -->
     <h4>Task Stage Definitions (Workflow Steps)</h4>
     <table class="table table-dark table-hover">
         <tr>
@@ -43,10 +59,14 @@
         {% endfor %}
     </table>
 
+</div>
 
+<!-- ======================================================
+ Agent Processes Table
+ Lists processes created through the Agent Builder.
+ Includes view/edit/delete actions.
+====================================================== -->
 <div class="container mt-4">
-
-    </p>
 
     <hr>
 
@@ -67,23 +87,30 @@
         <tbody>
         {% for p in processes %}
         <tr>
+
+            <!-- Process metadata -->
             <td>{{ p.Process_ID }}</td>
             <td>{{ p.Agent_Name }}</td>
             <td>{{ p.AI_Model }}</td>
             <td>{{ p.Operation_Selected }}</td>
             <td>{{ p.Created_At }}</td>
+
+            <!-- Action buttons for each process -->
             <td>
 
+                <!-- View Process -->
                 <a href="{{ url_for('agent_runner_page', process_id=p.Process_ID) }}"
                    class="btn btn-primary btn-sm">
                    View
                 </a>
 
+                <!-- Edit Process -->
                 <a href="{{ url_for('update_process', process_id=p.Process_ID) }}"
                    class="btn btn-warning btn-sm">
                    Edit
                 </a>
 
+                <!-- Delete Process (POST form) -->
                 <form method="POST"
                       action="{{ url_for('delete_process', process_id=p.Process_ID) }}"
                       style="display:inline;">
@@ -103,4 +130,3 @@
 </div>
 
 {% endblock %}
-
