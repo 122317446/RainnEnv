@@ -26,19 +26,6 @@ class TaskDefDAO:
         self.connection = sqlite3.connect(db_name, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
-        self._create_table()
-
-    def _create_table(self):
-        """ Creates the TaskDef table if it does not already exist """
-
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS TaskDef (
-                TaskDef_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                TaskDef_Name TEXT NOT NULL,
-                TaskDef_Description TEXT
-            )
-        ''')
-        self.connection.commit()
 
     def add_TaskDef(self, task_def):
         """ Inserts a new TaskDef record into the database. """

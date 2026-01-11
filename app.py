@@ -19,7 +19,9 @@ from flask import Flask, render_template, request, redirect, url_for
 from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
 from service.agent_process_service import AgentProcessService
-from service.agent_runtime import AgentRuntime
+from service.agent_runtime_service import AgentRuntime
+from service.task_instance_service import TaskInstanceService
+from service.task_stage_instance_service import TaskStageInstanceService
 
 import tempfile, os
 
@@ -33,6 +35,8 @@ taskdef_service = TaskDefService()
 stage_service = TaskStageService()
 process_service = AgentProcessService()
 agent_runtime = AgentRuntime()
+task_instance = TaskInstanceService()
+task_stage_instance = TaskStageInstanceService()
 
 
 # ==========================================
@@ -66,12 +70,15 @@ def home_page():
 def database_page():
     """
     Shows TaskDefs, TaskStages, and AgentProcesses for debugging.
+    Iteration 3: Shows TaskInstances and TaskStageInstances
     """
     return render_template(
         "database_view.html",
         taskdefs=taskdef_service.list_taskdefs(),
         taskstages=stage_service.list_all_stages(),
-        processes=process_service.list_processes()
+        processes=process_service.list_processes(),
+        taskinstances=task_instance.list_task_instances(),
+        task_stage_instance=task_stage_instance.list_stage_instances()
     )
 
 @app.route("/test_agent")

@@ -129,4 +129,101 @@
 
 </div>
 
+<!-- ======================================================
+ Task Instances Table
+ Shows each execution (run) of an Agent Process.
+====================================================== -->
+<div class="container mt-4">
+
+    <hr>
+
+    <h4 class="mt-4">Task Instances (Runtime Executions)</h4>
+    <p class="text-muted">
+        Each row represents a single run of an Agent Process.
+    </p>
+
+    <table class="table table-dark table-hover">
+        <tr>
+            <th>ID</th>
+            <th>Process ID</th>
+            <th>TaskDef ID</th>
+            <th>Status</th>
+            <th>Run Folder</th>
+            <th>Created</th>
+            <th>Updated</th>
+        </tr>
+
+        {% for ti in task_instances %}
+        <tr>
+            <td>{{ ti.TaskInstance_ID }}</td>
+            <td>{{ ti.Process_ID_FK }}</td>
+            <td>{{ ti.TaskDef_ID_FK }}</td>
+            <td>
+                <span class="badge 
+                    {% if ti.Status == 'COMPLETED' %}bg-success
+                    {% elif ti.Status == 'FAILED' %}bg-danger
+                    {% else %}bg-warning{% endif %}">
+                    {{ ti.Status }}
+                </span>
+            </td>
+            <td>{{ ti.Run_Folder }}</td>
+            <td>{{ ti.Created_At }}</td>
+            <td>{{ ti.Updated_At }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+<!-- ======================================================
+ Task Stage Instances Table
+ Shows execution state of each stage per TaskInstance.
+====================================================== -->
+<div class="container mt-4">
+
+    <hr>
+
+    <h4 class="mt-4">Task Stage Instances (Execution Steps)</h4>
+    <p class="text-muted">
+        Displays stage-by-stage execution progress and generated artifacts.
+    </p>
+
+    <table class="table table-dark table-hover">
+        <tr>
+            <th>ID</th>
+            <th>Task Instance ID</th>
+            <th>Stage Order</th>
+            <th>Stage Name</th>
+            <th>Status</th>
+            <th>Artifact</th>
+            <th>Started</th>
+            <th>Ended</th>
+        </tr>
+
+        {% for si in task_stage_instances %}
+        <tr>
+            <td>{{ si.TaskStageInstance_ID }}</td>
+            <td>{{ si.TaskInstance_ID_FK }}</td>
+            <td>{{ si.Stage_Order }}</td>
+            <td>{{ si.Stage_Name }}</td>
+            <td>
+                <span class="badge 
+                    {% if si.Status == 'COMPLETED' %}bg-success
+                    {% elif si.Status == 'FAILED' %}bg-danger
+                    {% else %}bg-warning{% endif %}">
+                    {{ si.Status }}
+                </span>
+            </td>
+            <td class="text-truncate" style="max-width: 250px;">
+                {{ si.Output_Artifact_Path or "—" }}
+            </td>
+            <td>{{ si.Started_At }}</td>
+            <td>{{ si.Ended_At }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+
 {% endblock %}

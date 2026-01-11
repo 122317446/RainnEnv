@@ -26,21 +26,6 @@ class TaskStageDefDAO:
         self.connection = sqlite3.connect(db_name, check_same_thread=False)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
-        self._create_table()
-
-    def _create_table(self):
-        """ Creates the TaskStageDef table if it does not already exist. """
-
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS TaskStageDef (
-                TaskStageDef_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                TaskDef_ID_FK INTEGER,
-                TaskStageDef_Type TEXT NOT NULL,
-                TaskStageDef_Description TEXT,
-                FOREIGN KEY (TaskDef_ID_FK) REFERENCES TaskDef(TaskDef_ID)
-            )
-        ''')
-        self.connection.commit()
 
     def add_TaskStageDef(self, stage_def):
         """ Inserts a new TaskStageDef record into the database. """

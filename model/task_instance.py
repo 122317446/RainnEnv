@@ -14,20 +14,12 @@
 class TaskInstance:
     """ Represents an instance of a task derived from a Task Definition. """
 
-    def __init__(self, TaskInstance_ID, TaskDef_ID_FK, TaskInstance_Start, TaskInstance_End, TaskInstance_Status):
+    def __init__(self, TaskInstance_ID, Process_ID_FK, TaskDef_ID_FK, Status, Run_Folder, Created_At, Updated_At):
         """ Initializes TaskInstance attributes. """
         self.TaskInstance_ID = TaskInstance_ID
+        self.Process_ID_FK = Process_ID_FK
         self.TaskDef_ID_FK = TaskDef_ID_FK
-        self.TaskInstance_Start = TaskInstance_Start
-        self.TaskInstance_End = TaskInstance_End
-        self.TaskInstance_Status = TaskInstance_Status
-
-    def to_dict(self):
-        """ Converts TaskInstance instance to dictionary format. """
-        return {
-            "TaskInstance_ID": self.TaskInstance_ID,
-            "TaskDef_ID_FK": self.TaskDef_ID_FK,
-            "TaskInstance_Start": self.TaskInstance_Start,
-            "TaskInstance_End": self.TaskInstance_End,
-            "TaskInstance_Status": self.TaskInstance_Status
-        }
+        self.Status = Status
+        self.Run_Folder = Run_Folder
+        self.Created_At = Created_At
+        self.Updated_At = Updated_At
