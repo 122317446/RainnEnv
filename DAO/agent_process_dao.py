@@ -28,9 +28,9 @@ class AgentProcessDAO:
     def add_AgentProcess(self, process):
         """ Inserts a new AgentProcess record. """
         self.cursor.execute("""
-            INSERT INTO AgentProcess (User_ID, Agent_Name, AI_Model, Operation_Selected)
-            VALUES (?, ?, ?, ?)
-        """, (process.User_ID, process.Agent_Name, process.AI_Model, process.Operation_Selected))
+            INSERT INTO AgentProcess (User_ID, Agent_Name, Agent_Priming, AI_Model, Operation_Selected)
+            VALUES (?, ?, ?, ?, ?)
+        """, (process.User_ID, process.Agent_Name, process.Agent_Priming, process.AI_Model, process.Operation_Selected))
 
         self.conn.commit()
         process.Process_ID = self.cursor.lastrowid
@@ -49,6 +49,7 @@ class AgentProcessDAO:
             row["Process_ID"],
             row["User_ID"],
             row["Agent_Name"],
+            row["Agent_Priming"],
             row["AI_Model"],
             row["Operation_Selected"],
             row["Created_At"]
@@ -67,6 +68,7 @@ class AgentProcessDAO:
                 r["Process_ID"],
                 r["User_ID"],
                 r["Agent_Name"],
+                r["Agent_Priming"],
                 r["AI_Model"],
                 r["Operation_Selected"],
                 r["Created_At"]
@@ -83,6 +85,7 @@ class AgentProcessDAO:
             SET 
                 User_ID = ?,
                 Agent_Name = ?,
+                Agent_Priming = ?,
                 AI_Model = ?,
                 Operation_Selected = ?
             WHERE Process_ID = ?
@@ -90,6 +93,7 @@ class AgentProcessDAO:
             (
                 process.User_ID,
                 process.Agent_Name,
+                process.Agent_Priming,
                 process.AI_Model,
                 process.Operation_Selected,
                 process.Process_ID

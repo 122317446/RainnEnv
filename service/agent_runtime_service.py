@@ -24,6 +24,10 @@ from task_logic.file_reader import FileReader
 
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
+from service.agent_process_service import AgentProcessService
+from service.task_def_service import TaskDefService
+from service.task_stage_def_service import TaskStageService
+from service.prompt_complier import PromptCompiler
 
 
 
@@ -121,7 +125,32 @@ class AgentRuntime:
             task_stage_instance_service.mark_stage_completed(stage0_id, artifact_path)
 
             # ------------------------------------------
-            # 7) Dispatch task logic using normalised artifact
+            # 7) Compile + Prompt write
+            # ------------------------------------------
+            process_service = AgentProcessService()
+            taskdef_service = TaskDefService()
+            stage_service = TaskStageService()
+
+            process = process_service.get_process(process_id)
+            taskdef = taskdef_service.get_taskdef_by_id(taskdef_id)
+            stage_defs = stage_service.get_stages_for_task(taskdef_id)
+
+            agent_priming = process.Agent_Priming if process else ""
+
+            master_prompt = PromptCompiler.compile_master_prompt(
+                agent_priming=agent_priming,
+                taskdef=taskdef,
+                stage_defs=stage_defs,
+                input_text=plain_text
+            )
+
+            master_prompt_path = os.path.join(run_folder, "00_master_prompt.txt")
+            with open(master_prompt_path, "w", encoding="utf-8") as f:
+                f.write(master_prompt)
+
+
+            # ------------------------------------------
+            # 8) Dispatch task logic using normalised artifact
             # ------------------------------------------
             if taskdef_id == 1:
                 output = run_summarise(artifact_path)

@@ -190,11 +190,13 @@ def agent_builder_page():
 
     if request.method == "POST":
         agent_name = request.form.get("agent_name")
+        agent_priming = request.form.get("agent_priming")
         ai_model = request.form.get("ai_model")
 
         new_process = process_service.create_process(
             user_id=1,
             agent_name=agent_name,
+            agent_priming=agent_priming,
             taskdef_id=selected_taskdef,
             ai_model=ai_model
         )

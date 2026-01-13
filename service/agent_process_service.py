@@ -18,12 +18,13 @@ class AgentProcessService:
     def __init__(self):
         self.dao = AgentProcessDAO()
 
-    def create_process(self, user_id, agent_name, taskdef_id, ai_model):
+    def create_process(self, user_id, agent_name, agent_priming, taskdef_id, ai_model):
         """ Creates a new agent process entry in the database. """
         new_process = AgentProcess(
             Process_ID=None,
             User_ID=user_id,
             Agent_Name=agent_name,
+            Agent_Priming=agent_priming,
             Operation_Selected=taskdef_id,
             AI_Model=ai_model,
             Created_At=None
