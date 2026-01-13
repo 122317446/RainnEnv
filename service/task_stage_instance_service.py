@@ -42,3 +42,8 @@ class TaskStageInstanceService:
         """ Returns all TaskStageInstance entries (newest first). """
         return self.dao.get_all_stage_instances()
 
+    def mark_stage_completed(self, stage_instance_id, output_artifact_path):
+        return self.dao.mark_completed(stage_instance_id, output_artifact_path)
+
+    def mark_stage_failed(self, stage_instance_id, error_message):
+        return self.dao.mark_failed(stage_instance_id, error_message)

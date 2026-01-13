@@ -77,8 +77,8 @@ def database_page():
         taskdefs=taskdef_service.list_taskdefs(),
         taskstages=stage_service.list_all_stages(),
         processes=process_service.list_processes(),
-        taskinstances=task_instance.list_task_instances(),
-        task_stage_instance=task_stage_instance.list_stage_instances()
+        task_instances=task_instance.list_task_instances(),
+        task_stage_instances=task_stage_instance.list_stage_instances()
     )
 
 @app.route("/test_agent")
@@ -241,9 +241,11 @@ def agent_runner_page(process_id):
 
                 try:
                     file_text = agent_runtime.run_task(
+                        process_id=process_id,
                         taskdef_id=taskdef.TaskDef_ID,
-                        file_path=tmp.name
-                    )
+                        file_path=tmp.name,
+                        original_filename=uploaded.filename
+                    ) #Iteration 3 changes here to acommodate instances
                 except Exception as e:
                     file_text = f"Error: {e}"
 

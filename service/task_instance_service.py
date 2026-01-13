@@ -29,7 +29,12 @@ class TaskInstanceService:
         """ Returns all TaskInstance entries (newest first). """
         return self.dao.get_all_task_instances()
 
-
     def update_task_instance(self, task_instance):
         """ Updates an existing TaskInstance entry. """
         return self.dao.update_task_instance(task_instance)
+
+    def update_run_folder(self, task_instance_id, run_folder):
+        return self.dao.update_run_folder(task_instance_id, run_folder)
+
+    def update_status(self, task_instance_id, status):
+        return self.dao.update_status(task_instance_id, status)

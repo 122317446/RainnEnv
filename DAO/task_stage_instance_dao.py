@@ -9,14 +9,7 @@ class TaskStageInstanceDAO:
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
 
-    def create_stage_instance(
-        self,
-        task_instance_id_fk,
-        stage_order,
-        stage_name,
-        status,
-        output_artifact_path=None
-    ):
+    def create_stage_instance(self, stage_instance: TaskStageInstance):
         """
         Creates a TaskStageInstance row and returns its ID.
         """
@@ -27,15 +20,18 @@ class TaskStageInstanceDAO:
                  Status, Output_Artifact_Path, Started_At)
             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             """,
-            (task_instance_id_fk, stage_order, stage_name, status, output_artifact_path)
+            (
+                stage_instance.TaskInstance_ID_FK,
+                stage_instance.Stage_Order,
+                stage_instance.Stage_Name,
+                stage_instance.Status,
+                stage_instance.Output_Artifact_Path
+            )
         )
         self.connection.commit()
         return self.cursor.lastrowid
 
     def mark_completed(self, stage_instance_id, output_artifact_path):
-        """
-        Marks a stage instance as completed.
-        """
         self.cursor.execute(
             """
             UPDATE TaskStageInstance
@@ -49,9 +45,6 @@ class TaskStageInstanceDAO:
         self.connection.commit()
 
     def mark_failed(self, stage_instance_id, error_message):
-        """
-        Marks a stage instance as failed.
-        """
         self.cursor.execute(
             """
             UPDATE TaskStageInstance
@@ -65,9 +58,6 @@ class TaskStageInstanceDAO:
         self.connection.commit()
 
     def get_stages_for_task_instance(self, task_instance_id_fk):
-        """
-        Returns all TaskStageInstances for a TaskInstance.
-        """
         self.cursor.execute(
             """
             SELECT * FROM TaskStageInstance
@@ -94,7 +84,6 @@ class TaskStageInstanceDAO:
         ]
 
     def get_all_stage_instances(self):
-        """ Retrieves all TaskStageInstance records (newest first). """
         self.cursor.execute("SELECT * FROM TaskStageInstance ORDER BY TaskStageInstance_ID DESC")
         rows = self.cursor.fetchall()
 
@@ -112,7 +101,6 @@ class TaskStageInstanceDAO:
             )
             for row in rows
         ]
-
 
     def close_connection(self):
         self.connection.close()

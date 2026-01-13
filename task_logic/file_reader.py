@@ -36,7 +36,19 @@ class FileReader:
     #Basically a text extractor which is added into a var (or array) combined with breaks using \n
     def read_pdf(path):
         reader = PdfReader(path)
-        return "".join(page.extract_text() or "" for page in reader.pages)
+        
+        plain_text = ""
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                plain_text += text + '\n'
+        
+        plain_text = plain_text.replace("\r\n", "\n").replace("\r", "\n")
+
+        if "\n" not in plain_text and len(plain_text) > 250:
+            plain_text = plain_text.replace(". ", ".\n")
+        
+        return plain_text
 
     #This is a simple command for reading txt files (within your project directory)
     @staticmethod

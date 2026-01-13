@@ -126,7 +126,7 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("✔ Rainn DB initialised (Iteration 3, AgentProcess schema).")
+    print("Rainn DB initialised (Iteration 3, AgentProcess schema).")
 
 
 if __name__ == "__main__":

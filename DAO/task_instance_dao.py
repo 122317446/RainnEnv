@@ -9,7 +9,7 @@ class TaskInstanceDAO:
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
 
-    def create_task_instance(self, process_id_fk, taskdef_id_fk, status, run_folder):
+    def create_task_instance(self, task_instance: TaskInstance):
         """
         Creates a new TaskInstance row and returns its ID.
         """
@@ -19,15 +19,17 @@ class TaskInstanceDAO:
                 (Process_ID_FK, TaskDef_ID_FK, Status, Run_Folder)
             VALUES (?, ?, ?, ?)
             """,
-            (process_id_fk, taskdef_id_fk, status, run_folder)
+            (
+                task_instance.Process_ID_FK,
+                task_instance.TaskDef_ID_FK,
+                task_instance.Status,
+                task_instance.Run_Folder
+            )
         )
         self.connection.commit()
         return self.cursor.lastrowid
 
     def get_task_instance_by_id(self, task_instance_id):
-        """
-        Returns a TaskInstance object or None.
-        """
         self.cursor.execute(
             "SELECT * FROM TaskInstance WHERE TaskInstance_ID = ?",
             (task_instance_id,)
@@ -47,9 +49,6 @@ class TaskInstanceDAO:
         )
 
     def update_status(self, task_instance_id, status):
-        """
-        Updates the status of a TaskInstance.
-        """
         self.cursor.execute(
             """
             UPDATE TaskInstance
@@ -61,9 +60,6 @@ class TaskInstanceDAO:
         self.connection.commit()
 
     def update_run_folder(self, task_instance_id, run_folder):
-        """
-        Updates the run folder path.
-        """
         self.cursor.execute(
             """
             UPDATE TaskInstance
@@ -75,7 +71,6 @@ class TaskInstanceDAO:
         self.connection.commit()
 
     def get_all_task_instances(self):
-        """ Retrieves all TaskInstance records (newest first). """
         self.cursor.execute("SELECT * FROM TaskInstance ORDER BY TaskInstance_ID DESC")
         rows = self.cursor.fetchall()
 
