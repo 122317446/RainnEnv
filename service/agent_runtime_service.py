@@ -18,16 +18,18 @@
 
 import os
 
-from task_logic.summarise import run_summarise
-from task_logic.sentiment import run_sentiment
-from task_logic.file_reader import FileReader
+from service.input_normaliser import Stage0InputNormaliser
+from service.stage_execution_engine import StageExecutionEngine
 
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
 from service.agent_process_service import AgentProcessService
 from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
-from service.prompt_complier import PromptCompiler
+
+from service.prompt_compiler import PromptCompiler
+from service.model_client import MockModelClient
+
 
 
 
@@ -83,41 +85,28 @@ class AgentRuntime:
             os.makedirs(run_folder, exist_ok=True)
             task_instance_service.update_run_folder(task_instance_id, run_folder)
 
+            artifacts_dir = os.path.join(run_folder, "artifacts")
+            os.makedirs(artifacts_dir, exist_ok=True) #Implentation of staging the artifact steps
+
             # ------------------------------------------
             # 3) Create Stage 0 TaskStageInstance (RUNNING)
             # ------------------------------------------
             stage0_id = task_stage_instance_service.create_stage_instance(
                 task_instance_id_fk=task_instance_id,
                 stage_order=0,
-                stage_name="input_normalisation",
+                stage_name="input",
                 status="RUNNING",
                 output_artifact_path=None
             )
 
             # ------------------------------------------
-            # 4) Read file to plain text (normalisation)
-            #    Uses existing FileReader utility
+            # 4) Execute Stage 0 (Input Normalisation)
             # ------------------------------------------
-            plain_text = FileReader.read_file(file_path)
-
-            # Minimal normalisation pass (consistent newlines)
-            if plain_text is None:
-                raise Exception("FileReader returned no content.")
-
-            plain_text = plain_text.replace("\r\n", "\n").replace("\r", "\n").strip()
-
-            if plain_text.strip() == "[Unsupported file type]":
-                raise Exception(f"Unsupported file type: {original_filename}")
-
-            if len(plain_text) == 0:
-                raise Exception("No text content extracted from file.")
-
-            # ------------------------------------------
-            # 5) Write initial artifact 00_input_original.txt
-            # ------------------------------------------
-            artifact_path = os.path.join(run_folder, "00_input_original.txt")
-            with open(artifact_path, "w", encoding="utf-8") as f:
-                f.write(plain_text)
+            plain_text, artifact_path = Stage0InputNormaliser.run(
+                file_path=file_path,
+                run_folder=run_folder,
+                original_filename=original_filename
+            )
 
             # ------------------------------------------
             # 6) Mark Stage 0 COMPLETED (store artifact path)
@@ -148,25 +137,38 @@ class AgentRuntime:
             with open(master_prompt_path, "w", encoding="utf-8") as f:
                 f.write(master_prompt)
 
+            # Client loading mock
+            model_client = MockModelClient()
+            model_name = process.AI_Model if process else "mock-model"
 
             # ------------------------------------------
-            # 8) Dispatch task logic using normalised artifact
+            # 8) Execute stages 1..N (Stage Execution Engine)
             # ------------------------------------------
-            if taskdef_id == 1:
-                output = run_summarise(artifact_path)
+            final_output_path = StageExecutionEngine.execute(
+                task_instance_id=task_instance_id,
+                run_folder=run_folder,
+                artifacts_dir=artifacts_dir,
+                stage_defs=stage_defs,
+                master_prompt=master_prompt,
+                model_client=model_client,
+                model_name=model_name,
+                task_stage_instance_service=task_stage_instance_service,
+                stage0_artifact_path=artifact_path
+            )
 
-            elif taskdef_id == 2:
-                output = run_sentiment(artifact_path)
-
+            # ------------------------------------------
+            # 9) Read final output (Choice A) and return it
+            # ------------------------------------------
+            if final_output_path:
+                with open(final_output_path, "r", encoding="utf-8") as f:
+                    output_text = f.read()
             else:
-                output = "[Unsupported Task]"
+                # If no executable stages, return Stage 0 plain text
+                output_text = plain_text
 
-            # ------------------------------------------
-            # 8) Mark TaskInstance as COMPLETED (for now)
-            # ------------------------------------------
             task_instance_service.update_status(task_instance_id, "COMPLETED")
+            return output_text
 
-            return output
 
         except Exception as e:
             # Mark stage failed if stage row exists

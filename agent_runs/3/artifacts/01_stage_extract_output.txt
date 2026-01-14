@@ -1,0 +1,9 @@
+[MOCK MODEL OUTPUT]
+model=Gemma 3.1
+prompt_chars=7416
+prompt_preview=[SYSTEM / PRIMING]
+        You are an IT specialist. Give key tech information for debugging.
+
+        [AGENT TEMPLATE]
+        Name: summarise
+        Description: Summarise any document or text file
