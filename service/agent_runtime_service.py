@@ -28,9 +28,7 @@ from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
 
 from service.prompt_compiler import PromptCompiler
-from service.model_client import MockModelClient
-
-
+from service.model_client_ollama import OllamaModelClient
 
 
 class AgentRuntime:
@@ -138,7 +136,7 @@ class AgentRuntime:
                 f.write(master_prompt)
 
             # Client loading mock
-            model_client = MockModelClient()
+            model_client = OllamaModelClient()
             model_name = process.AI_Model if process else "mock-model"
 
             # ------------------------------------------
@@ -168,7 +166,6 @@ class AgentRuntime:
 
             task_instance_service.update_status(task_instance_id, "COMPLETED")
             return output_text
-
 
         except Exception as e:
             # Mark stage failed if stage row exists

@@ -117,15 +117,16 @@ class StageExecutionEngine:
         stage_description = (stage_description or "").strip()
         input_text = (input_text or "").strip()
 
-        return f"""{master_prompt}
+        return f"""
+{master_prompt}
 
-        [CURRENT STAGE]
-        Type: {stage_type}
-        Goal: {stage_description}
+[CURRENT STAGE]
+Type: {stage_type}
+Goal: {stage_description}
 
-        [CURRENT INPUT]
-        {input_text}
+[CURRENT INPUT]
+{input_text}
 
-        [INSTRUCTIONS]
-        Perform ONLY this stage. Output must be suitable as input to the next stage.
-        """.strip()
+[INSTRUCTIONS]
+Perform ONLY this stage. Output must be suitable as input to the next stage.
+""".strip()
