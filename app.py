@@ -292,7 +292,7 @@ def update_process(process_id):
 @app.route("/delete_process/<int:process_id>", methods=["POST"])
 def delete_process(process_id):
     process_service.delete_process(process_id)
-    return redirect(url_for("database_page"))
+    return redirect(url_for("test_agent_page"))
 
 
 # ==========================================

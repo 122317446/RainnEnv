@@ -1,89 +1,74 @@
 {% extends "base.html" %}
+
+{% block title %}Rainn | Agents{% endblock %}
+
 {% block content %}
 
-<!-- ======================================================
- Agent Processes List
- Shows all saved agent processes with options to
- view, edit, or delete each entry.
-====================================================== -->
-
-<div class="container mt-4">
-
-    <!-- Page Title -->
-    <h2>Test a flow that has been created here!</h2>
-
+<div class="page-header d-print-none">
+  <div class="row g-2 align-items-center">
+    <div class="col">
+      <div class="page-pretitle">Agents</div>
+      <h2 class="page-title">Your saved agent processes</h2>
+      <div class="text-secondary">View, run, edit, or delete an agent process.</div>
+    </div>
+    <div class="col-auto ms-auto d-print-none">
+      <a href="{{ url_for('agent_builder_page') }}" class="btn btn-primary">
+        <i class="ti ti-plus me-2"></i>Create Agent (Preview)
+      </a>
+    </div>
+  </div>
 </div>
 
-<!-- Separate container for table section -->
-<div class="container mt-4">
-
-    <hr>
-
-    <!-- Section header -->
-    <h4 class="mt-4">Agent Processes available</h4>
-
-    <!-- ==============================================
-         Processes Table
-         Dynamically rendered using Jinja.
-         Displays key metadata for each agent process.
-    =============================================== -->
-    <table class="table table-bordered mt-3">
-        <thead class="table-light">
-            <tr>
-                <th>ID</th>
-                <th>Agent Name</th>
-                <th>Agent Primer</th>
-                <th>AI Model</th>
-                <th>Task</th>
-                <th>Created</th>
-                <th style="width: 200px;">Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        {% for p in processes %}
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="fw-semibold">Agent Processes</div>
+      <div class="text-secondary small">Tip: click “Run” to upload an input file and execute stages 1..N.</div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table card-table table-vcenter text-nowrap">
+      <thead>
         <tr>
-
-            <!-- Process details -->
-            <td>{{ p.Process_ID }}</td>
-            <td>{{ p.Agent_Name }}</td>
-            <td>{{ p.Agent_Priming }}</td>
-            <td>{{ p.AI_Model }}</td>
-            <td>{{ p.Operation_Selected }}</td>
-            <td>{{ p.Created_At }}</td>
-
-            <!-- Actions column -->
-            <td>
-
-                <!-- View Process -->
-                <a href="{{ url_for('agent_runner_page', process_id=p.Process_ID) }}"
-                   class="btn btn-primary btn-sm">
-                   View
-                </a>
-
-                <!-- Edit Process -->
-                <a href="{{ url_for('update_process', process_id=p.Process_ID) }}"
-                   class="btn btn-warning btn-sm">
-                   Edit
-                </a>
-
-                <!-- Delete Process (POST form) -->
-                <form method="POST"
-                      action="{{ url_for('delete_process', process_id=p.Process_ID) }}"
-                      style="display:inline;">
-                    <button type="submit"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Delete this process?');">
-                        Delete
-                    </button>
-                </form>
-
-            </td>
+          <th>ID</th>
+          <th>Agent Name</th>
+          <th class="text-secondary">Model</th>
+          <th class="text-secondary">Task</th>
+          <th class="text-secondary">Created</th>
+          <th class="w-1"></th>
         </tr>
-        {% endfor %}
-        </tbody>
+      </thead>
+      <tbody>
+      {% for p in processes %}
+        <tr>
+          <td class="text-secondary">{{ p.Process_ID }}</td>
+          <td>
+            <div class="fw-semibold">{{ p.Agent_Name }}</div>
+            <div class="text-secondary text-truncate" style="max-width: 520px;">{{ p.Agent_Priming }}</div>
+          </td>
+          <td>{{ p.AI_Model }}</td>
+          <td>{{ p.Operation_Selected }}</td>
+          <td class="text-secondary">{{ p.Created_At }}</td>
+          <td>
+            <div class="btn-list flex-nowrap">
+              <a href="{{ url_for('agent_runner_page', process_id=p.Process_ID) }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-player-play me-1"></i>Run
+              </a>
+              <a href="{{ url_for('update_process', process_id=p.Process_ID) }}" class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-edit me-1"></i>Edit
+              </a>
+              <form method="POST" action="{{ url_for('delete_process', process_id=p.Process_ID) }}" style="display:inline;">
+                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this process?');">
+                  <i class="ti ti-trash me-1"></i>Delete
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
     </table>
-
+  </div>
 </div>
 
 {% endblock %}

@@ -1,9 +1,19 @@
-.nav-pills .nav-link.active,
-.nav-pills .show > .nav-link {
-  background-color: #280137 !important;
-  border-color: #280137 !important;
+:root {
+  --tblr-primary: #6f42c1;
+  --tblr-primary-rgb: 111, 66, 193;
 }
 
-.nav-pills .nav-link {
-  color: #FBFFFE; /* optional for contrast */
+.navbar-nav .nav-link.active {
+  background-color: rgba(111, 66, 193, 0.12);
+  color: #6f42c1;
+}
+
+.btn-primary {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+}
+
+.btn-primary:hover {
+  background-color: #5a35a6;
+  border-color: #5a35a6;
 }

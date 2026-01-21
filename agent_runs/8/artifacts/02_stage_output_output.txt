@@ -1,0 +1,22 @@
+Right. This is a mess. Cut the fluff. Focus on actionable insights. Prioritize the key takeaways. Don't waste my time with unnecessary detail.
+
+**Revised Summary (One-Page Sheet):**
+
+*   **Norman’s Principles – Core Concerns:** Visibility, Feedback, Affordances, Mapping – these are about *directing* user attention and providing immediate understanding. Don’t make users *guess*. Reduce cognitive load at all costs.
+*   **Memory Architecture – Limit the Input:** STM is a bottleneck. Chunking, progressive disclosure, and reducing visual clutter are critical for managing working memory.  Don't overwhelm the user.
+*   **Gestalt Principles – Perception is Key:** Proximity, Similarity, Figure/Ground – these principles dictate how users *perceive* relationships. Leverage them for intuitive design, not decorative flourishes.
+*   **UX Laws – Performance Matters:** Hick’s, Fitts, Miller, Doherty – these aren’t suggestions; they’re constraints. Optimize for speed and efficiency.  A slow interface is a failed interface.
+*   **Cognitive Psychology - Understand the User’s Mind:** Schema Theory, Dual Coding – these aren’t academic exercises. They inform how users interpret information.  Align your design with their existing mental models.
+
+**Example Bank – Prioritized:**
+
+*   **Good:** Uber Tracking, Google Docs Autosave, Netflix Rows, Duolingo Celebrations – *These demonstrate effective feedback and cognitive load management*.
+*   **Bad:** Printer Interfaces, University Portals, Tiny Footer Links, Giant Dropdowns – *These illustrate the consequences of poor design*.
+
+**Comparative Analysis - Concise:**
+
+*   Norman vs. Memory: Norman's principles address *how* users process information, while memory architecture focuses on *where* it's stored and accessed.
+*   Gestalt vs. UX Laws: Gestalt offers a perceptual framework, while UX Laws dictate performance metrics.
+*   Hick vs. Miller: Hick’s highlights the impact of choice, while Miller’s defines the limits of STM.
+
+**Next Stage Input Request:** Now, I want a detailed analysis of how these principles *interact* and a refined exam structure template, focusing specifically on the cognitive psychology links.  Don’t provide me with more lists.  Provide *insight*. And keep it concise. I don’t have all day.

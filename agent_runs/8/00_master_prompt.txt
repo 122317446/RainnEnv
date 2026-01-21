@@ -1,0 +1,155 @@
+[SYSTEM / PRIMING]
+        You are a strict manager.
+Be harsh and blunt.
+Bullet points only.
+
+        [AGENT TEMPLATE]
+        Name: summarise
+        Description: Summarise any document or text file.
+
+        [WORKFLOW PLAN]
+        1. input - Receive files for summarisation.
+2. extract - Extract key information.
+3. output - Display summary.
+
+        [INPUT]
+        Q1 Full 80%+ Study Kit
+Intr o ductor y UX The or y — IS4445
+Part A: Don Norman’s Design Principles
+Visibility
+Users must b e able to p er ceiv e system status and available actions. Visibility r e duces 
+cognitiv e load by e xternalising system information.
+Examples ( Go o d)
+• Ub er map sho wing r eal-time driv er mo v ement
+• Go ogle Do cs “Saving… ” → “Sav e d”
+• Passw or d str ength indicators
+Examples (Bad)
+• Printers with no status display
+• Hidden menus for cing guessw ork
+Fe e dback
+Systems must r esp ond imme diately and clearly to user actions.
+Examples ( Go o d)
+• Instagram heart animation
+• Upload/do wnload pr ogr ess bars
+• “ A dde d to Cart” banners
+Examples (Bad)
+• Forms that fail silently
+• Buttons with no visible r eaction
+Affor dances & Signifiers
+Affor dance = p ossible action. Signifier = visual cue indicating action.
+Examples ( Go o d)
+• Raise d buttons → tap
+• Underline d te xt → click
+• T rash icon → delete
+Mapping
+Relationship b etw e en contr ols and their r eal-w orld effe cts.
+Examples ( Go o d)
+• V olume buttons up/do wn
+• Horizontal sliders for time/v olume
+Examples (Bad)
+• O v erloade d micr o wav e panels
+Constraints
+Limit available actions to r e duce user err or .
+T yp es:  physical, logical, semantic, cultural
+Examples:  disable d submit buttons, radio-button e xclusivity
+Consistency
+Users r ely on learne d patterns to interpr et ne w interfaces.
+Examples:
+• Standar d shar e/sear ch icons
+• iOS consistent gestur es
+• Go ogle Material comp onents
+Conceptual Mo dels
+Users cr eate mental mo dels of ho w systems w ork.
+Go o d Mo dels:
+• Online shopping che ckout
+• Digital folder systems
+Po or Mo dels:
+• Univ ersity p ortals with unclear flo ws
+• Banking apps with non-standar d lab els
+Part B: Designing with Memor y in Mind
+Memor y Ar chite ctur e
+• Sensor y memor y ( <1 se c)
+• W orking memor y (STM, 7 ± 2 items)
+• Long-term memor y (r e cognition > r e call)
+STM Limits & Cognitiv e Load
+Re duce information bur den to av oid o v erload.
+Design Strategies:
+• Limit menu items
+• Chunk information
+• Use pr ogr essiv e disclosur e
+• Pr esent str ong visual hierar chy
+Re cognition O v er Re call
+Re cognition r e quir es less cognitiv e effort.
+Examples:
+• A uto complete
+• Album co v ers (Sp otify )
+• Pr ofile pictur es
+• Re cent items lists
+Chunking
+Gr oup information into meaningful units.
+Examples:
+• Settings categories
+• Step-by-step forms
+• Gr oup e d menu items
+Pr ogr essiv e Disclosur e
+Sho w only essential info initially .
+Examples:
+• “Sho w mor e ” buttons
+• Collapsible pr o duct details
+• Calendar detail-on-tap
+Part C: Gestalt Principles
+Pr o ximity
+Close elements app ear r elate d. Examples: Instagram pr ofile lay out, Amazon pr o duct 
+gr oupings.
+Similarity
+Similar elements form p er ceiv e d gr oups. Examples: colour-co de d calendar e v ents, consistent 
+button styles.
+Figur e/Gr ound
+Distinguish main content fr om backgr ound. Examples: Sp otify UI, high-contrast ne ws apps.
+Prägnanz (Simplicity )
+Users pr efer simple , clear lay outs. Examples: Go ogle homepage , Apple icons.
+Common Fate
+Shar e d mo v ement indicates gr ouping. Examples: onb oar ding slides, car ousel animations.
+Part D: Laws of UX
+Hick’s Law
+Mor e choices → slo w er de cisions. Examples: simplifie d mobile menus, TikT ok’s swip e UX.
+Fitts’s Law
+Bigger + closer targets → faster interaction. Examples: b ottom nav bars, large CT A buttons.
+Miller’s Law
+Users can hold 7 ± 2 items in STM. Supp orts chunking.
+Doherty Thr eshold
+Systems should r esp ond <400ms for optimal flo w .
+Peak-End Rule
+Users r ememb er p eak & final emotional moments. Example: Duolingo celebration scr e ens.
+V on Restorff Effe ct
+Unique items stand out mor e . Examples: highlighte d CT A buttons.
+2. Cognitiv e Psy chology Links
+• Cognitiv e Load The or y
+• Schema The or y
+• Behaviourism (fe e dback lo ops)
+• Attention The or y
+• Dual Co ding (te xt + visual cues)
+3. High-Quality Example Bank
+Go o d Examples:  Ub er tracking, Go ogle Do cs autosav e , Netflix r o ws, Duolingo 
+celebrations.
+Bad Examples:  Printer interfaces, univ ersity p ortals, tiny fo oter links, giant dr op do wns.
+4. Comparativ e Analysis
+• Norman vs Memor y: interaction cues vs cognitiv e limits
+• Gestalt vs UX Laws: p er ception vs p erformance pr e diction
+• Hick vs Miller: choices vs memor y span
+5. Exam Structur e T emplate
+Intr o duction:  define the or y , r ele vance , cognition link, e xamples. Bo dy:  define → e xplain 
+→ psy chology → e xample → counter e xample → impact. Conclusion:  conne ct the or y to 
+usability , cognition, clarity , learnability .
+6. One-Page Re vision She et
+Norman:  Visibility , Fe e dback, Affor dances, Signifiers, Mapping, Constraints, Consistency , 
+Conceptual Mo dels.
+Memor y:  STM limits, chunking, r e cognition > r e call, pr ogr essiv e disclosur e .
+Gestalt:  Pr o ximity , Similarity , Figur e/Gr ound, Prägnanz, Common Fate .
+UX Laws:  Hick, Fitts, Miller , V on Restorff, Peak-End, Doherty .
+Cognition:  Load, schemas, attention, b ehaviourism, dual-co ding.
+
+        [OUTPUT RULES]
+        - Follow the workflow plan step-by-step.
+        - Keep outputs clear and structured.
+        - Do not invent facts not present in the input.

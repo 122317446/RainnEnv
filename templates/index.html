@@ -1,46 +1,82 @@
-<!-- ==========================================
-File: index.html
-Created in iteration: 1
-Author: Karl Concha
-
-#ChatGPT (OpenAI, 2025) – Assisted in structuring Jinja2 logic for listing agents and stages,
-and integrating Bootstrap modal components for stage viewing and editing.
-Conversation Topic: "Rainn Iteration 1 – Index page displaying CRUD data with Bootstrap modals"
-Date: November 2025
-
-References:
-- Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.3/components/modal/
-- Flask Jinja2 Templating Guide: https://flask.palletsprojects.com/
-- UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements
-
-Notes:
-This template serves as the main landing page for Rainn’s web interface.
-It displays a simple entry point into the system and links to the Agent Builder flow.
-========================================== -->
-
 {% extends "base.html" %}
 
 {% block content %}
 
-<!-- ======================================================
- Main container (centered vertically and horizontally)
- Used as a splash-style landing page before agent creation
-====================================================== -->
-<div class="d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
+<div class="page-header d-print-none">
+  <div class="row g-2 align-items-center">
+    <div class="col">
+      <div class="page-pretitle">Rainn</div>
+      <h2 class="page-title">Guided AI Agent Builder</h2>
+    </div>
+  </div>
+</div>
 
-    <!-- System Title -->
-    <h1 class="display-3 fw-bold">RAINN</h1>
+<div class="row row-cards">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">Build and run local-first agent workflows</h3>
+        <p class="text-secondary">
+          Create an agent process, upload an input file, and execute a multi-stage workflow using a local Ollama model.
+          Each stage produces an artifact so results are traceable and reproducible.
+        </p>
 
-    <!-- Short description / tagline -->
-    <p class="lead mt-3">
-        Build AI agent workflows with local-first and local use!
-    </p>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{{ url_for('test_agent_page') }}" class="btn btn-primary">
+            <i class="ti ti-box me-2"></i>View Agents
+          </a>
+          <a href="{{ url_for('test_agent_page') }}" class="btn btn-outline-primary">
+            <i class="ti ti-player-play me-2"></i>Run an Agent
+          </a>
+          <a href="{{ url_for('agent_builder_page') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-wand me-2"></i>Builder (Preview)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Navigation button redirecting user to the agent builder -->
-    <a href="{{ url_for('agent_builder_page') }}" class="btn btn-primary btn-lg mt-4">
-        Get Started
-    </a>
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <span class="avatar me-3"><i class="ti ti-layers-subtract"></i></span>
+          <div>
+            <div class="fw-semibold">Multi-stage workflows</div>
+            <div class="text-secondary">Stage 0 normalises input, then Stage 1..N execute sequentially.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <span class="avatar me-3"><i class="ti ti-file-text"></i></span>
+          <div>
+            <div class="fw-semibold">Artifacts per stage</div>
+            <div class="text-secondary">Inputs and outputs are saved to disk for inspection and debugging.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-center">
+          <span class="avatar me-3"><i class="ti ti-cpu"></i></span>
+          <div>
+            <div class="fw-semibold">Local model execution</div>
+            <div class="text-secondary">Runs on Ollama for privacy and control during development.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -1,145 +1,148 @@
 <!-- ==========================================
 File: base.html
-Created in iteration: 1
+Created in iteration: 3
 Author: Karl Concha
 
-#ChatGPT (OpenAI, 2025) – Assisted in Bootstrap layout structuring 
-and sidebar navigation consistency for Rainn’s Flask templates.
-Conversation Topic: "Rainn Iteration 1 – Base HTML template with static sidebar and footer"
-Date: November 2025
-
-References:
-- Bootstrap 5 Documentation: https://getbootstrap.com/docs/5.3/getting-started/introduction/
-- Flask Jinja2 Templating Guide: https://flask.palletsprojects.com/
-- UCC IS4470 FYP Bible – Iteration documentation and code referencing requirements
+#ChatGPT (OpenAI, 2026) – Assisted in refactoring the base layout to Tabler
+and aligning navigation with Iteration 3 sitemap (Home, Agents, Run, Builder).
+Conversation Topic: "Iteration 3 – Tabler base layout + sidebar navigation".
+Date: January 2026
 
 Notes:
-This base template defines the static navigation sidebar and layout structure 
-used across all Rainn web pages. It was created during Iteration 1 and reused 
-by all subsequent HTML templates through Jinja inheritance.
-
-Iteration 2 Update:
-Sidebar links updated to include the new Test Agent flow and pages created 
-during Iteration 2. Layout remains the same, with only navigation adjustments.
+- Uses Tabler (Bootstrap 5-based) for a clean, modern dashboard UI.
+- Sidebar is kept across most pages to keep the system visually contained.
+- Child templates render within the block.
 ========================================== -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Welcome to Rainn!</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rainn</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Tabler CSS (includes Bootstrap 5 styling) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/css/tabler.min.css">
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Optional: Tabler Icons (used by Tabler nav) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
-    <!-- User CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <!-- Your existing CSS (keep if you have it) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
+  <div class="page">
 
-<!-- ======================================================
- Layout: Fixed Sidebar + Main Content
- Sidebar stays static while each page loads in the content block.
-====================================================== -->
-<div class="d-flex" style="height:100vh">
+    <!-- Sidebar -->
+    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="light">
+      <div class="container-fluid">
 
-  <!-- ======================================================
-       Sidebar Navigation (Updated in Iteration 2)
-       New links added for Test Agent and other process pages.
-  ======================================================= -->
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-white"
-       style="background-color: #7F6A93; width: 200px; height: 100vh; position: fixed; top: 0; left: 0;">
+        <!-- Brand -->
+        <h1 class="navbar-brand navbar-brand-autodark">
+          <a href="{{ url_for('home_page') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+            <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}" alt="Rainn" class="navbar-brand-image" style="height: 28px; width: auto;">
+            <span class="fw-semibold">Rainn</span>
+          </a>
+        </h1>
 
-    <!-- Logo -->
-    <a href="{{ url_for('home_page') }}">
-      <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}"
-           alt="Rainn Logo"
-           class="img-fluid me-2"
-           style="height:auto; width:auto;">
-    </a>
+        <div class="navbar-nav flex-row d-lg-none">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
 
-    <hr>
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+          <ul class="navbar-nav pt-lg-3">
 
-    <!-- Navigation Menu -->
-    <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('home_page') }}">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-home"></i></span>
+                <span class="nav-link-title">Home</span>
+              </a>
+            </li>
 
-      <!-- Create Agent (Iteration 1 + 2 entry point) -->
-      <li class="nav-item">
-        <a href="{{ url_for('agent_builder_page') }}" class="nav-link active">
-          Create Agent
-        </a>
-      </li>
+            <!-- Agents list (Iteration 3) -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('test_agent_page') }}">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-box"></i></span>
+                <span class="nav-link-title">Agents</span>
+              </a>
+            </li>
 
-      <!-- Placeholder for future agent list -->
-      <li>
-        <a href="#" class="nav-link text-white">
-          My Agent
-        </a>
-      </li>
+            <!-- Run Agent (kept as separate nav entry even if it lands on list) -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('test_agent_page') }}">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-player-play"></i></span>
+                <span class="nav-link-title">Run Agent</span>
+              </a>
+            </li>
 
-      <!-- Test Agent (ADDED in Iteration 2) -->
-      <li>
-        <a href="{{ url_for('test_agent_page') }}" class="nav-link text-white">
-          Test Agent
-        </a>
-      </li>
+            <!-- Builder (Iteration 4 preview) -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('agent_builder_page') }}">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-wand"></i></span>
+                <span class="nav-link-title">Builder (Preview)</span>
+              </a>
+            </li>
 
-      <!-- Placeholder for toolkit section -->
-      <li>
-        <a href="#" class="nav-link text-white">
-          My Toolkit
-        </a>
-      </li>
+            <li class="nav-item mt-3">
+              <div class="nav-link disabled text-uppercase fw-semibold small" style="opacity:.7;">Demo Tools</div>
+            </li>
 
-      <!-- Database debug view -->
-      <li>
-        <a href="{{ url_for('database_page') }}" class="nav-link text-white">
-          DATABASE VIEW (FOR DEMO)
-        </a>
-      </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('database_page') }}">
+                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-database"></i></span>
+                <span class="nav-link-title">Database View</span>
+              </a>
+            </li>
 
-    </ul>
+          </ul>
 
-    <hr>
+          <div class="mt-auto pt-3">
+            <div class="card card-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center">
+                  <span class="avatar me-2" style="background-image: url(https://github.com/mdo.png)"></span>
+                  <div class="flex-fill">
+                    <div class="fw-semibold">[ACCOUNT]</div>
+                    <div class="text-secondary small">Local demo</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-    <!-- User Account Dropdown -->
-    <div class="dropdown">
-      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+    <!-- Page content -->
+    <div class="page-wrapper">
+      <div class="page-body">
+        <div class="container-xl">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
 
-        <img src="https://github.com/mdo.png" alt="" width="32" height="32"
-             class="rounded-circle me-2">
-        <strong>[ACCOUNT]</strong>
-
-      </a>
-
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-        <li><a class="dropdown-item" href="#">New project...</a></li>
-        <li><a class="dropdown-item" href="#">Settings</a></li>
-        <li><a class="dropdown-item" href="#">Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Sign out</a></li>
-      </ul>
+      <footer class="footer footer-transparent d-print-none">
+        <div class="container-xl">
+          <div class="row text-center align-items-center">
+            <div class="col-12 col-lg-auto">
+              <ul class="list-inline list-inline-dots mb-0">
+                <li class="list-inline-item">Rainn – Guided AI Agent Builder</li>
+                <li class="list-inline-item"><span class="text-secondary">Iteration 3</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+
   </div>
 
-  <!-- ======================================================
-       Main Content Area
-       All child templates render inside this block.
-  ======================================================= -->
-  <div class="container-fluid" style="margin-left: 200px;">
-    {% block content %}
-    {% endblock %}
-  </div>
-
-</div>
-
+  <!-- Tabler JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/js/tabler.min.js"></script>
 </body>
 
 </html>

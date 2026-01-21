@@ -1,0 +1,69 @@
+Okay, here’s the extracted information, formatted for the next stage of the workflow:
+
+**Don Norman’s Design Principles:**
+
+*   **Visibility:** Users must perceive system status and available actions. Reduces cognitive load.
+    *   *Good Examples:* Uber tracking, Google Docs “Saving…”, Password strength indicators.
+    *   *Bad Examples:* Printers with no status display, Hidden menus.
+*   **Feedback:** Systems must respond immediately and clearly to user actions.
+    *   *Good Examples:* Instagram heart animation, Upload/download progress bars, “Added to Cart” banners.
+    *   *Bad Examples:* Forms that fail silently, Buttons with no visible reaction.
+*   **Affordances & Signifiers:** Affordance = possible action; Signifier = visual cue.
+    *   *Good Examples:* Raised buttons, Underlined text, Trash icon.
+*   **Mapping:** Relationship between controls and their real-world effects.
+    *   *Good Examples:* Volume buttons, Horizontal sliders.
+    *   *Bad Examples:* Overloaded microwave panels.
+*   **Constraints:** Limit available actions to reduce user error.
+    *   *Types:* Physical, logical, semantic, cultural.
+    *   *Good Examples:* Disabled submit buttons, Radio-button exclusivity.
+*   **Consistency:** Users rely on learned patterns to interpret new interfaces.
+    *   *Good Examples:* Standard share/search icons, iOS consistent gestures, Google Material components.
+*   **Conceptual Models:** Users create mental models of how systems work.
+    *   *Good Models:* Online shopping checkout, Digital folder systems.
+    *   *Bad Models:* University portals with unclear flows, Banking apps with non-standard labels.
+
+**Designing with Memory in Mind:**
+
+*   **Memory Architecture:** Sensor y memory (<1 sec), Working memory (STM, 7±2 items), Long-term memory (recognition > recall).
+*   **STM Limits & Cognitive Load:** Reduce information burden to avoid overload.
+    *   *Design Strategies:* Limit menu items, Chunk information, Use progressive disclosure, Present strong visual hierarchy.
+*   **Recognition > Recall:** Recognition requires less cognitive effort.
+    *   *Good Examples:* Auto complete, Album covers (Spotify), Profile pictures, Recent items lists.
+*   **Chunking:** Group information into meaningful units.
+    *   *Examples:* Settings categories, Step-by-step forms, Grouped menu items.
+*   **Progressive Disclosure:** Show only essential info initially.
+    *   *Examples:* “Show more” buttons, Collapsible product details, Calendar detail-on-tap.
+
+**Gestalt Principles:**
+
+*   **Proximity:** Close elements appear related.
+    *   *Examples:* Instagram profile layout, Amazon product groupings.
+*   **Similarity:** Similar elements form perceived groups.
+    *   *Examples:* Color-coded calendar events, consistent button styles.
+*   **Figure/Ground:** Distinguish main content from background.
+    *   *Examples:* Spotify UI, high-contrast news apps.
+*   **Prägnanz (Simplicity):** Users prefer simple, clear layouts.
+    *   *Examples:* Google homepage, Apple icons.
+*   **Common Fate:** Shared movement indicates grouping.
+    *   *Examples:* Onboarding slides, carousel animations.
+
+**UX Laws:**
+
+*   **Hick’s Law:** More choices → slower decisions.
+    *   *Examples:* Simplified mobile menus, TikTok’s swipe UX.
+*   **Fitts’s Law:** Bigger + closer targets → faster interaction.
+    *   *Examples:* Bottom nav bars, large CTA buttons.
+*   **Miller’s Law:** Users can hold 7±2 items in STM. Supports chunking.
+*   **Doherty Threshold:** Systems should respond <400ms for optimal flow.
+*   **Peak-End Rule:** Users remember peak & final emotional moments.
+    *   *Example:* Duolingo celebration screens.
+*   **Von Restorff Effect:** Unique items stand out more.
+    *   *Examples:* Highlighted CTA buttons.
+
+**Cognitive Psychology Links:**
+
+*   Cognitive Load Theory
+*   Schema Theory
+*   Behaviorism (Feedback Loops)
+*   Attention Theory
+*   Dual Coding (Text + Visual Cues)
