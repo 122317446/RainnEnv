@@ -1,17 +1,27 @@
 # ==========================================
 # File: app.py
-# Updated in iteration: 2
+# Updated in iteration: 3
 # Author: Karl Concha
+#
+# Purpose:
+# Flask entrypoint for Rainn (Guided AI Agent Builder).
+#
+# Iteration 3 Notes:
+# - Runtime execution now creates TaskInstance + TaskStageInstance records
+# - Uploaded files are normalised to text (Stage 0) and written to artifacts
+# - DB view now includes TaskInstance and TaskStageInstance listings
 #
 # #ChatGPT (OpenAI, 2025) – Assisted in refactoring Flask routing
 # to use modular DAO + Service layers following supervisor
 # feedback. Updated naming (Pipeline → Process) to match
 # revised architecture and ERD in Iteration 2.
-#
 # Conversation Topic: "Rainn Iteration 2 – Modular Routing + Process Runner"
+# Date: January 2026
 # ==========================================
 
 from flask import Flask, render_template, request, redirect, url_for
+import tempfile
+import os
 
 # ==========================================
 # SERVICE IMPORTS
@@ -23,8 +33,6 @@ from service.agent_runtime_service import AgentRuntime
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
 
-import tempfile, os
-
 
 # ==========================================
 # INITIALISE APP + SERVICES
@@ -35,6 +43,8 @@ taskdef_service = TaskDefService()
 stage_service = TaskStageService()
 process_service = AgentProcessService()
 agent_runtime = AgentRuntime()
+
+# Iteration 3: instance tracking services (execution traceability)
 task_instance = TaskInstanceService()
 task_stage_instance = TaskStageInstanceService()
 
@@ -48,7 +58,6 @@ def home_page():
     Displays all TaskDefs and their TaskStageDefs.
     Stages grouped by TaskDef_ID for clarity.
     """
-
     taskdefs = taskdef_service.list_taskdefs()
     stages = stage_service.list_all_stages()
 
@@ -70,7 +79,7 @@ def home_page():
 def database_page():
     """
     Shows TaskDefs, TaskStages, and AgentProcesses for debugging.
-    Iteration 3: Shows TaskInstances and TaskStageInstances
+    Iteration 3: Shows TaskInstances and TaskStageInstances.
     """
     return render_template(
         "database_view.html",
@@ -81,22 +90,29 @@ def database_page():
         task_stage_instances=task_stage_instance.list_stage_instances()
     )
 
+
+# ==========================================
+# PROCESS LIST (Agent Test Page)
+# ==========================================
 @app.route("/test_agent")
 def test_agent_page():
     """
-    Shows the Agent Processes available in a page
+    Shows the Agent Processes available in a page.
     """
     return render_template(
         "agent_test_list.html",
         processes=process_service.list_processes()
     )
 
+
 # ==========================================
 # CREATE TASKDEF (Agent Template)
 # ==========================================
 @app.route("/add_agent", methods=["GET", "POST"])
 def add_agent():
-
+    """
+    Creates a TaskDef (agent template) plus its stage definitions.
+    """
     if request.method == "POST":
         name = request.form.get("agent_name")
         desc = request.form.get("agent_description")
@@ -121,7 +137,9 @@ def add_agent():
 # ==========================================
 @app.route("/update_agent/<int:taskdef_id>", methods=["GET", "POST"])
 def update_agent(taskdef_id):
-
+    """
+    Updates an existing TaskDef and displays its stages.
+    """
     agent = taskdef_service.get_taskdef_by_id(taskdef_id)
     agent_stages = stage_service.get_stages_for_task(taskdef_id)
 
@@ -140,7 +158,9 @@ def update_agent(taskdef_id):
 # ==========================================
 @app.route("/update_stage/<int:stage_id>", methods=["GET", "POST"])
 def update_stage(stage_id):
-
+    """
+    Updates an existing TaskStageDef.
+    """
     stage = stage_service.taskstage_dao.get_TaskStageDef_by_id(stage_id)
 
     if request.method == "POST":
@@ -162,6 +182,9 @@ def update_stage(stage_id):
 # ==========================================
 @app.route("/delete_agent/<int:taskdef_id>", methods=["POST"])
 def delete_agent(taskdef_id):
+    """
+    Deletes a TaskDef and all stages attached to it.
+    """
     stage_service.delete_stages_for_task(taskdef_id)
     taskdef_service.delete_taskdef(taskdef_id)
     return redirect(url_for("home_page"))
@@ -172,7 +195,10 @@ def delete_agent(taskdef_id):
 # ==========================================
 @app.route("/agent_builder", methods=["GET", "POST"])
 def agent_builder_page():
-
+    """
+    Creates an AgentProcess (configured runnable agent).
+    Uses the working zip-style create_process signature.
+    """
     taskdefs = taskdef_service.list_taskdefs()
 
     selected_taskdef = (
@@ -193,6 +219,8 @@ def agent_builder_page():
         agent_priming = request.form.get("agent_priming")
         ai_model = request.form.get("ai_model")
 
+        # IMPORTANT:
+        # Keep the zip version signature (it works with your current service).
         new_process = process_service.create_process(
             user_id=1,
             agent_name=agent_name,
@@ -215,11 +243,20 @@ def agent_builder_page():
 
 
 # ==========================================
-# AGENT RUNTIME — RUN PROCESS
+# AGENT RUNTIME — RUN PROCESS (Iteration 3)
 # ==========================================
 @app.route("/agent_runner/<int:process_id>", methods=["GET", "POST"])
 def agent_runner_page(process_id):
+    """
+    Executes a selected AgentProcess against a user-uploaded file.
 
+    Iteration 3 runtime behaviour:
+    - Creates TaskInstance record (RUNNING)
+    - Stage 0 normalises input to text and writes 00_input_original.txt
+    - Executes stage 1..N sequentially (stop on first failure)
+    - Writes per-stage artifacts and persists paths in TaskStageInstance
+    - Marks TaskInstance COMPLETED/FAILED accordingly
+    """
     process = process_service.get_process(process_id)
     if not process:
         return "Agent Process not found.", 404
@@ -247,7 +284,7 @@ def agent_runner_page(process_id):
                         taskdef_id=taskdef.TaskDef_ID,
                         file_path=tmp.name,
                         original_filename=uploaded.filename
-                    ) #Iteration 3 changes here to acommodate instances
+                    )  # Iteration 3 changes here to accommodate instances
                 except Exception as e:
                     file_text = f"Error: {e}"
 
@@ -265,7 +302,10 @@ def agent_runner_page(process_id):
 # ==========================================
 @app.route("/update_process/<int:process_id>", methods=["GET", "POST"])
 def update_process(process_id):
-
+    """
+    Updates an existing AgentProcess.
+    Keeps zip-style update_process(process) behaviour (object mutation).
+    """
     process = process_service.get_process(process_id)
     if not process:
         return "Agent Process not found.", 404
@@ -291,12 +331,8 @@ def update_process(process_id):
 # ==========================================
 @app.route("/delete_process/<int:process_id>", methods=["POST"])
 def delete_process(process_id):
+    """
+    Deletes an AgentProcess.
+    """
     process_service.delete_process(process_id)
     return redirect(url_for("test_agent_page"))
-
-
-# ==========================================
-# RUN APP
-# ==========================================
-if __name__ == "__main__":
-    app.run(debug=True)

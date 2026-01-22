@@ -4,6 +4,11 @@
 
 {% block content %}
 
+<!-- ======================================================
+ Page Header
+ Displays selected agent process name and provides navigation
+ back to the Agents list.
+====================================================== -->
 <div class="page-header d-print-none">
   <div class="row g-2 align-items-center">
     <div class="col">
@@ -11,6 +16,8 @@
       <h2 class="page-title">{{ process.Agent_Name }}</h2>
       <div class="text-secondary">Upload a file, then execute the multi-stage workflow (Stage 1..N).</div>
     </div>
+
+    <!-- Back to Agents -->
     <div class="col-auto ms-auto d-print-none">
       <a href="{{ url_for('test_agent_page') }}" class="btn btn-outline-secondary">
         <i class="ti ti-arrow-left me-2"></i>Back to Agents
@@ -19,20 +26,43 @@
   </div>
 </div>
 
+<!-- ======================================================
+ Main Layout (Details + Stages + Run Form + Output)
+====================================================== -->
 <div class="row row-cards">
 
-  <!-- Metadata -->
+  <!-- ======================================================
+   Process Details (Metadata)
+   Displays key metadata for the selected process including
+   model, operation, and primer text.
+  ======================================================= -->
   <div class="col-12 col-lg-5">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Process Details</h3>
       </div>
       <div class="card-body">
-        <div class="mb-2"><span class="text-secondary">Process ID:</span> <span class="fw-semibold">{{ process.Process_ID }}</span></div>
-        <div class="mb-2"><span class="text-secondary">Model:</span> <span class="fw-semibold">{{ process.AI_Model }}</span></div>
-        <div class="mb-2"><span class="text-secondary">Operation:</span> <span class="fw-semibold">{{ taskdef.TaskDef_Name }}</span></div>
-        <div class="mb-2"><span class="text-secondary">Created:</span> <span class="fw-semibold">{{ process.Created_At }}</span></div>
+        <div class="mb-2">
+          <span class="text-secondary">Process ID:</span>
+          <span class="fw-semibold">{{ process.Process_ID }}</span>
+        </div>
 
+        <div class="mb-2">
+          <span class="text-secondary">Model:</span>
+          <span class="fw-semibold">{{ process.AI_Model }}</span>
+        </div>
+
+        <div class="mb-2">
+          <span class="text-secondary">Operation:</span>
+          <span class="fw-semibold">{{ taskdef.TaskDef_Name }}</span>
+        </div>
+
+        <div class="mb-2">
+          <span class="text-secondary">Created:</span>
+          <span class="fw-semibold">{{ process.Created_At }}</span>
+        </div>
+
+        <!-- Agent Primer -->
         <div class="mt-3">
           <div class="text-secondary mb-1">Primer</div>
           <div class="p-2 border rounded bg-light">{{ process.Agent_Priming }}</div>
@@ -41,14 +71,21 @@
     </div>
   </div>
 
-  <!-- Stages -->
+  <!-- ======================================================
+   Workflow Stages
+   Rendered dynamically using Jinja.
+   Displays the ordered stages for the selected TaskDef.
+  ======================================================= -->
   <div class="col-12 col-lg-7">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Workflow Stages</h3>
       </div>
+
       <div class="table-responsive">
         <table class="table card-table table-vcenter">
+
+          <!-- Table Headings -->
           <thead>
             <tr>
               <th class="w-1">#</th>
@@ -56,6 +93,8 @@
               <th class="text-secondary">Description</th>
             </tr>
           </thead>
+
+          <!-- Stage Rows -->
           <tbody>
             {% for stage in stages %}
             <tr>
@@ -65,12 +104,17 @@
             </tr>
             {% endfor %}
           </tbody>
+
         </table>
       </div>
     </div>
   </div>
 
-  <!-- Run form -->
+  <!-- ======================================================
+   Run Form (File Upload)
+   Allows user to upload a file and execute the agent process.
+   enctype is required for multipart file handling.
+  ======================================================= -->
   <div class="col-12">
     <div class="card">
       <div class="card-header">
@@ -78,22 +122,30 @@
       </div>
       <div class="card-body">
         <form method="POST" enctype="multipart/form-data" class="row g-3 align-items-end">
+
+          <!-- File Input -->
           <div class="col-12 col-md-8">
             <label class="form-label">Input file</label>
             <input type="file" name="uploaded_file" class="form-control" required>
             <div class="form-hint">Supported: .txt, .csv, .pdf (Stage 0 normalises to plain text).</div>
           </div>
+
+          <!-- Run Button -->
           <div class="col-12 col-md-4">
             <button class="btn btn-primary w-100">
               <i class="ti ti-player-play me-2"></i>Run Agent
             </button>
           </div>
+
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Output -->
+  <!-- ======================================================
+   Output Section
+   Only displayed if file_text exists (POST run completed).
+  ======================================================= -->
   {% if file_text %}
   <div class="col-12">
     <div class="card">

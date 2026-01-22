@@ -1,19 +1,28 @@
 # ==========================================
-# File: agent_runtime.py
-# Created in iteration: 2
+# File: agent_runtime_service.py
+# Updated in iteration: 3
 # Author: Karl Concha
 #
-# ChatGPT (OpenAI, 2025) – Assisted in renaming and
-# refactoring the runtime routing structure to align
-# with the agent workflow design and FYP Bible
-# requirements on code clarity and maintainability.
-# Conversation Topic: "Iteration 2 – Agent runtime
-# routing and operation dispatch refinement."
-# Date of assistance: November 2025
+# Central runtime orchestrator for executing an AgentProcess.
+# Iteration 3 responsibilities (traceable execution):
+# - Create TaskInstance (RUNNING) as the top-level execution record
+# - Create a per-run folder: agent_runs/<TaskInstance_ID>/
+# - Stage 0: read uploaded file, normalise to plain text, write 00_input_original.txt
+# - Create TaskStageInstance rows for each stage (stage_order = 0..N)
+# - Execute stages sequentially (stop on first failure)
+# - Write each stage output to an artifact file and persist the output path
+# - Mark TaskInstance COMPLETED/FAILED accordingly
 #
-# References:
-# - None (runtime logic developed manually; only
-#   ChatGPT assistance noted above)
+# #ChatGPT (OpenAI, 2025) – Assisted in refactoring the runtime execution
+# architecture to support multi-stage workflows, explicit failure
+# propagation, and artifact traceability, in line with Iteration 3
+# requirements and FYP Bible guidelines.
+# Conversation Topic: "Iteration 3 – Multi-stage Agent Execution Engine"
+# Date: January 2026
+#
+# Notes:
+# - DB logic is done via Service/DAO layers (TaskInstanceService, TaskStageInstanceService)
+# - Stage execution is delegated to StageExecutionEngine
 # ==========================================
 
 import os
@@ -33,27 +42,18 @@ from service.model_client_ollama import OllamaModelClient
 
 class AgentRuntime:
     """
-    The runtime engine responsible for executing the agent's operations.
-    Now supports Iteration 3 Stage 0:
-    - Input normalisation to plain text
-    - Writing initial artifact (00_input_original.txt)
-    - Creating TaskInstance + TaskStageInstance execution records
+    Orchestrates a full agent execution from uploaded file -> stage outputs.
+
+    In Iteration 3,
+    - execution lifecycle (TaskInstance status)
+    - stage lifecycle (TaskStageInstance status)
+    - artifact folder structure
     """
 
     @staticmethod
     def run_task(process_id, taskdef_id, file_path, original_filename):
         """
-        Executes Stage 0 (Input Normalisation) and then routes to the correct task logic
-        based on TaskDef_ID.
-
-        Stage 0:
-        - Create TaskInstance (RUNNING)
-        - Create run folder runs/<TaskInstance_ID>/
-        - Create TaskStageInstance (stage order = 0, RUNNING)
-        - Read + normalise file into plain text
-        - Write 00_input_original.txt
-        - Mark Stage 0 COMPLETED and store artifact path
-        - Dispatch summarise/sentiment using the artifact path
+        Executes Stage 0 (Input Normalisation) and then executes stages 1..N.
         """
 
         task_instance_service = TaskInstanceService()
@@ -63,9 +63,6 @@ class AgentRuntime:
         stage0_id = None
 
         try:
-            print("Loaded AgentRuntime from:", __file__)
-            print("run_task called:", process_id, taskdef_id, original_filename)
-
             # ------------------------------------------
             # 1) Create TaskInstance (RUNNING)
             # ------------------------------------------
@@ -77,14 +74,14 @@ class AgentRuntime:
             )
 
             # ------------------------------------------
-            # 2) Create run folder runs/<TaskInstance_ID>/
+            # 2) Create per-run folder: agent_runs/<id>/
             # ------------------------------------------
             run_folder = os.path.join("agent_runs", str(task_instance_id))
             os.makedirs(run_folder, exist_ok=True)
             task_instance_service.update_run_folder(task_instance_id, run_folder)
 
             artifacts_dir = os.path.join(run_folder, "artifacts")
-            os.makedirs(artifacts_dir, exist_ok=True) #Implentation of staging the artifact steps
+            os.makedirs(artifacts_dir, exist_ok=True)
 
             # ------------------------------------------
             # 3) Create Stage 0 TaskStageInstance (RUNNING)
@@ -98,32 +95,38 @@ class AgentRuntime:
             )
 
             # ------------------------------------------
-            # 4) Execute Stage 0 (Input Normalisation)
+            # 4) Execute Stage 0 (Input Normalisation) / Input stage
+            #    Output: 00_input_original.txt
             # ------------------------------------------
-            plain_text, artifact_path = Stage0InputNormaliser.run(
+            plain_text, stage0_artifact_path = Stage0InputNormaliser.run(
                 file_path=file_path,
                 run_folder=run_folder,
                 original_filename=original_filename
             )
 
             # ------------------------------------------
-            # 6) Mark Stage 0 COMPLETED (store artifact path)
+            # 5) Mark Stage 0 COMPLETED (store artifact path) (traceback purposes)
             # ------------------------------------------
-            task_stage_instance_service.mark_stage_completed(stage0_id, artifact_path)
+            task_stage_instance_service.mark_stage_completed(stage0_id, stage0_artifact_path)
 
             # ------------------------------------------
-            # 7) Compile + Prompt write
+            # 6) Load process + template + stage definitions
             # ------------------------------------------
             process_service = AgentProcessService()
             taskdef_service = TaskDefService()
             stage_service = TaskStageService()
 
-            process = process_service.get_process(process_id)
+            process = process_service.get_process(process_id) #The agent process
             taskdef = taskdef_service.get_taskdef_by_id(taskdef_id)
             stage_defs = stage_service.get_stages_for_task(taskdef_id)
 
             agent_priming = process.Agent_Priming if process else ""
+            model_name = process.AI_Model if process else "mock-model"
 
+            # ------------------------------------------
+            # 7) Compile and persist the “master prompt”
+            #    This is useful for reporting/debugging.
+            # ------------------------------------------
             master_prompt = PromptCompiler.compile_master_prompt(
                 agent_priming=agent_priming,
                 taskdef=taskdef,
@@ -135,13 +138,12 @@ class AgentRuntime:
             with open(master_prompt_path, "w", encoding="utf-8") as f:
                 f.write(master_prompt)
 
-            # Client loading mock
+            # ------------------------------------------
+            # 8) Execute stages 1..N sequentially
+            #    Stops on first failure (exception is raised).
+            # ------------------------------------------
             model_client = OllamaModelClient()
-            model_name = process.AI_Model if process else "mock-model"
 
-            # ------------------------------------------
-            # 8) Execute stages 1..N (Stage Execution Engine)
-            # ------------------------------------------
             final_output_path = StageExecutionEngine.execute(
                 task_instance_id=task_instance_id,
                 run_folder=run_folder,
@@ -151,31 +153,31 @@ class AgentRuntime:
                 model_client=model_client,
                 model_name=model_name,
                 task_stage_instance_service=task_stage_instance_service,
-                stage0_artifact_path=artifact_path
+                stage0_artifact_path=stage0_artifact_path
             )
 
             # ------------------------------------------
-            # 9) Read final output (Choice A) and return it
+            # 9) Read final output artifact (if any)
             # ------------------------------------------
             if final_output_path:
                 with open(final_output_path, "r", encoding="utf-8") as f:
                     output_text = f.read()
             else:
-                # If no executable stages, return Stage 0 plain text
+                # If there are no executable stages (e.g., only input stage), return stage-0 text
                 output_text = plain_text
 
             task_instance_service.update_status(task_instance_id, "COMPLETED")
             return output_text
 
         except Exception as e:
-            # Mark stage failed if stage row exists
+            # Mark Stage 0 failed if it exists (or if failure happened during stage-0 path)
             if stage0_id is not None:
                 try:
                     task_stage_instance_service.mark_stage_failed(stage0_id, str(e))
                 except Exception:
                     pass
 
-            # Mark task failed if task row exists
+            # Mark TaskInstance failed if it exists
             if task_instance_id is not None:
                 try:
                     task_instance_service.update_status(task_instance_id, "FAILED")

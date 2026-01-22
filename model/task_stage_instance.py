@@ -1,13 +1,11 @@
 # ==========================================
-# File: task_stage_instance.py
-# Created in iteration: 1
+# File: task__stage_instance.py
+# Updated in iteration: 3
 # Author: Karl Concha
 #
 # Notes:
-# This model was introduced in Iteration 1 to represent individual task stage instances 
-# linked to Task Instances. 
-# It has not been actively used or connected to DAO logic as of Iteration 1, 
-# but is retained for completeness and planned integration in later iterations.
+# Implemented in iteration 3 with slight changes of its attributes
+# to fit the db schema
 # ==========================================
 
 

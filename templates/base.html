@@ -11,9 +11,8 @@ Date: January 2026
 Notes:
 - Uses Tabler (Bootstrap 5-based) for a clean, modern dashboard UI.
 - Sidebar is kept across most pages to keep the system visually contained.
-- Child templates render within the block.
+- Child templates render within the Jinja content block.
 ========================================== -->
-
 <!doctype html>
 <html lang="en">
 
@@ -22,89 +21,129 @@ Notes:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Rainn</title>
 
-  <!-- Tabler CSS (includes Bootstrap 5 styling) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/css/tabler.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/css/tabler.min.css"> <!-- Tabler import -->
 
-  <!-- Optional: Tabler Icons (used by Tabler nav) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
-  <!-- Your existing CSS (keep if you have it) -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
+
   <div class="page">
 
-    <!-- Sidebar -->
+    <!-- ======================================================
+         Sidebar Navigation
+         Persistent vertical navigation used across the system.
+    ======================================================= -->
     <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="light">
       <div class="container-fluid">
 
-        <!-- Brand -->
         <h1 class="navbar-brand navbar-brand-autodark">
-          <a href="{{ url_for('home_page') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-            <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}" alt="Rainn" class="navbar-brand-image" style="height: 28px; width: auto;">
+          <a href="{{ url_for('home_page') }}"
+             class="d-flex align-items-center gap-2 text-decoration-none">
+            <img src="{{ url_for('static', filename='images/Rainn_Logo.png') }}"
+                 alt="Rainn"
+                 class="navbar-brand-image"
+                 style="height: 28px; width: auto;">
             <span class="fw-semibold">Rainn</span>
           </a>
         </h1>
 
+        <!-- ======================================================
+             Mobile Sidebar Toggle
+             Collapses navigation on smaller screen sizes.
+        ======================================================= -->
         <div class="navbar-nav flex-row d-lg-none">
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#sidebar-menu"
+                  aria-controls="sidebar-menu"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
         </div>
 
+        <!-- ======================================================
+             Sidebar Menu
+             Main navigation links for Iteration 3.
+        ======================================================= -->
         <div class="collapse navbar-collapse" id="sidebar-menu">
           <ul class="navbar-nav pt-lg-3">
 
+            <!-- Home -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('home_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-home"></i></span>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-home"></i>
+                </span>
                 <span class="nav-link-title">Home</span>
               </a>
             </li>
 
-            <!-- Agents list (Iteration 3) -->
+            <!-- Agents List -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('test_agent_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-box"></i></span>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-box"></i>
+                </span>
                 <span class="nav-link-title">Agents</span>
               </a>
             </li>
 
-            <!-- Run Agent (kept as separate nav entry even if it lands on list) -->
+            <!-- Run Agent -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('test_agent_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-player-play"></i></span>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-player-play"></i>
+                </span>
                 <span class="nav-link-title">Run Agent</span>
               </a>
             </li>
 
-            <!-- Builder (Iteration 4 preview) -->
+            <!-- Builder Preview -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('agent_builder_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-wand"></i></span>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-wand"></i>
+                </span>
                 <span class="nav-link-title">Builder (Preview)</span>
               </a>
             </li>
 
+            <!-- Section Divider -->
             <li class="nav-item mt-3">
-              <div class="nav-link disabled text-uppercase fw-semibold small" style="opacity:.7;">Demo Tools</div>
+              <div class="nav-link disabled text-uppercase fw-semibold small"
+                   style="opacity:.7;">
+                Demo Tools
+              </div>
             </li>
 
+            <!-- Database View -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('database_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-database"></i></span>
+                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                  <i class="ti ti-database"></i>
+                </span>
                 <span class="nav-link-title">Database View</span>
               </a>
             </li>
 
           </ul>
 
+          <!-- ======================================================
+               User Account Summary
+               Placeholder account card for demo purposes. Likely to be removed in future iterations.
+          ======================================================= -->
           <div class="mt-auto pt-3">
             <div class="card card-sm">
               <div class="card-body">
                 <div class="d-flex align-items-center">
-                  <span class="avatar me-2" style="background-image: url(https://github.com/mdo.png)"></span>
+                  <span class="avatar me-2"
+                        style="background-image: url(https://github.com/mdo.png)">
+                  </span>
                   <div class="flex-fill">
                     <div class="fw-semibold">[ACCOUNT]</div>
                     <div class="text-secondary small">Local demo</div>
@@ -113,11 +152,14 @@ Notes:
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </aside>
 
-    <!-- Page content -->
+    <!-- ======================================================
+         Main Page Content
+    ======================================================= -->
     <div class="page-wrapper">
       <div class="page-body">
         <div class="container-xl">
@@ -125,13 +167,21 @@ Notes:
         </div>
       </div>
 
+      <!-- ======================================================
+           Footer
+           Displays project name and iteration information.
+      ======================================================= -->
       <footer class="footer footer-transparent d-print-none">
         <div class="container-xl">
           <div class="row text-center align-items-center">
             <div class="col-12 col-lg-auto">
               <ul class="list-inline list-inline-dots mb-0">
-                <li class="list-inline-item">Rainn – Guided AI Agent Builder</li>
-                <li class="list-inline-item"><span class="text-secondary">Iteration 3</span></li>
+                <li class="list-inline-item">
+                  Rainn - Guided AI Agent Builder
+                </li>
+                <li class="list-inline-item">
+                  <span class="text-secondary">Iteration 3</span>
+                </li>
               </ul>
             </div>
           </div>
@@ -141,8 +191,11 @@ Notes:
 
   </div>
 
-  <!-- Tabler JS -->
+  <!-- ======================================================
+       JavaScript Dependencies
+       Required for Tabler components and interactivity.
+  ======================================================= -->
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta21/dist/js/tabler.min.js"></script>
-</body>
 
+</body>
 </html>

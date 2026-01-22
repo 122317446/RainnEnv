@@ -4,33 +4,61 @@
 
 {% block content %}
 
+<!-- ======================================================
+ Builder Header (Tabler Page Header)
+ Shows page context and notes that this is retained for
+ Iteration 3 demos while previewing Iteration 4 direction.
+====================================================== -->
 <div class="page-header d-print-none">
   <div class="row g-2 align-items-center">
     <div class="col">
       <div class="page-pretitle">Builder</div>
       <h2 class="page-title">Create an agent process</h2>
-      <div class="text-secondary">Iteration 4 preview – current form is retained for Iteration 3 demos.</div>
+      <div class="text-secondary">Iteration 4 preview - current form is retained for Iteration 3 demos.</div>
     </div>
   </div>
 </div>
 
+<!-- ======================================================
+ Main Layout (Form + Stage Preview)
+ Left: Agent builder form
+ Right: Stage preview for selected operation/template
+====================================================== -->
 <div class="row row-cards">
+
+  <!-- ======================================================
+   Agent Builder Form Card
+   Submits to same route using POST.
+  ======================================================= -->
   <div class="col-12 col-lg-8">
     <div class="card">
       <div class="card-body">
+
+        <!-- Form submits to the same route using POST -->
         <form method="POST" class="row g-3">
 
+          <!-- ===============================
+               Agent Name Input
+          =============================== -->
           <div class="col-12">
             <label class="form-label">Agent name</label>
             <input type="text" class="form-control" name="agent_name" required>
           </div>
 
+          <!-- ===============================
+               Agent Primer Input
+               Captures role, tone, constraints, and output expectations.
+          =============================== -->
           <div class="col-12">
             <label class="form-label">Agent primer</label>
             <textarea class="form-control" name="agent_priming" rows="3" required></textarea>
             <div class="form-hint">Describe the agent role, tone, constraints, and what “good output” looks like.</div>
           </div>
 
+          <!-- ===============================
+               AI Model Selection (Ollama)
+               Uses exact Ollama model id (will change in future iterations to a simpler name selection).
+          =============================== -->
           <div class="col-12 col-md-6">
             <label class="form-label">AI model (Ollama)</label>
             <select name="ai_model" class="form-select" required>
@@ -41,6 +69,11 @@
             <div class="form-hint">Use the exact Ollama model id.</div>
           </div>
 
+          <!-- ===============================
+               Operation / Template Selection
+               Uses Jinja loop to display all taskdefs.
+               selected_taskdef preserves user choice.
+          =============================== -->
           <div class="col-12 col-md-6">
             <label class="form-label">Operation / template</label>
             <select name="operation_selected" class="form-select" required>
@@ -53,12 +86,20 @@
             </select>
           </div>
 
+          <!-- ===============================
+               Submit Button
+               Triggers saving the agent process definition.
+          =============================== -->
           <div class="col-12">
             <button type="submit" name="save_agent" class="btn btn-primary">
               <i class="ti ti-device-floppy me-2"></i>Save agent process
             </button>
           </div>
 
+          <!-- ===============================
+               Success Message
+               Displayed only when agent process is created.
+          =============================== -->
           {% if agent_saved %}
             <div class="col-12">
               <div class="alert alert-success mb-0">
@@ -72,12 +113,19 @@
     </div>
   </div>
 
+  <!-- ======================================================
+   Stages Preview Panel
+   Displays stages for the selected operation/template.
+   If no stages are available, shows a hint message.
+  ======================================================= -->
   <div class="col-12 col-lg-4">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Stages preview</h3>
       </div>
       <div class="card-body">
+
+        <!-- Stages only render after selecting an operation -->
         {% if stages %}
           <ol class="mb-0">
             {% for s in stages %}
@@ -90,9 +138,11 @@
         {% else %}
           <div class="text-secondary">Select an operation to preview its stages.</div>
         {% endif %}
+
       </div>
     </div>
   </div>
+
 </div>
 
 {% endblock %}

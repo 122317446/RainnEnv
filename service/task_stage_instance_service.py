@@ -1,22 +1,27 @@
+ # ==========================================
+# File: task_stage_instance_service.py
+# Created in iteration: 3
+# Author: Karl Concha
+#
+# Purpose:
+# Service layer for managing TaskStageInstance execution records.
+#
+# Date: January 2026
+# ==========================================
+
 from dao.task_stage_instance_dao import TaskStageInstanceDAO
 from model.task_stage_instance import TaskStageInstance
 
 
 class TaskStageInstanceService:
-    """ Service layer for managing TaskStageInstance runtime execution. """
+    """Service layer for managing TaskStageInstance runtime execution."""
 
     def __init__(self):
         self.dao = TaskStageInstanceDAO()
 
-    def create_stage_instance(
-        self,
-        task_instance_id_fk,
-        stage_order,
-        stage_name,
-        status,
-        output_artifact_path=None
-    ):
-        """ Creates a new TaskStageInstance entry. """
+    def create_stage_instance(self, task_instance_id_fk, stage_order, stage_name, status, output_artifact_path=None):
+        """Creates a new TaskStageInstance entry."""
+        
         new_stage = TaskStageInstance(
             TaskStageInstance_ID=None,
             TaskInstance_ID_FK=task_instance_id_fk,
@@ -31,19 +36,21 @@ class TaskStageInstanceService:
         return self.dao.create_stage_instance(new_stage)
 
     def update_stage_instance(self, stage_instance):
-        """ Updates an existing TaskStageInstance entry. """
+        """Updates an existing TaskStageInstance entry."""
         return self.dao.update_stage_instance(stage_instance)
 
     def get_stages_for_task_instance(self, task_instance_id_fk):
-        """ Retrieves all stage instances for a given TaskInstance. """
+        """Retrieves all stage executions for a TaskInstance."""
         return self.dao.get_stages_for_task_instance(task_instance_id_fk)
-    
+
     def list_stage_instances(self):
-        """ Returns all TaskStageInstance entries (newest first). """
+        """Returns all TaskStageInstances (newest first)."""
         return self.dao.get_all_stage_instances()
 
     def mark_stage_completed(self, stage_instance_id, output_artifact_path):
+        """Marks a stage as completed."""
         return self.dao.mark_completed(stage_instance_id, output_artifact_path)
 
     def mark_stage_failed(self, stage_instance_id, error_message):
+        """Marks a stage as failed."""
         return self.dao.mark_failed(stage_instance_id, error_message)

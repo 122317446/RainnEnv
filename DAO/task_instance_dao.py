@@ -1,3 +1,16 @@
+# ==========================================
+# File: task_instance_dao.py
+# Created in iteration: 3 
+# Author: Karl Concha
+#
+# Data access layer for TaskInstance persistence.
+#
+# Notes:
+# - Handles CRUD operations for execution runs
+# - Uses SQLite timestamps for Created_At / Updated_At
+# - Keeps logic intentionally simple and transparent
+# ==========================================
+
 import sqlite3
 from model.task_instance import TaskInstance
 
@@ -10,9 +23,7 @@ class TaskInstanceDAO:
         self.cursor = self.connection.cursor()
 
     def create_task_instance(self, task_instance: TaskInstance):
-        """
-        Creates a new TaskInstance row and returns its ID.
-        """
+        """Creates a new TaskInstance row and returns its ID."""
         self.cursor.execute(
             """
             INSERT INTO TaskInstance
@@ -30,6 +41,7 @@ class TaskInstanceDAO:
         return self.cursor.lastrowid
 
     def get_task_instance_by_id(self, task_instance_id):
+        """Fetches a TaskInstance by primary key."""
         self.cursor.execute(
             "SELECT * FROM TaskInstance WHERE TaskInstance_ID = ?",
             (task_instance_id,)
@@ -49,6 +61,7 @@ class TaskInstanceDAO:
         )
 
     def update_status(self, task_instance_id, status):
+        """Updates execution status and timestamp."""
         self.cursor.execute(
             """
             UPDATE TaskInstance
@@ -60,6 +73,7 @@ class TaskInstanceDAO:
         self.connection.commit()
 
     def update_run_folder(self, task_instance_id, run_folder):
+        """Persists the filesystem run folder path."""
         self.cursor.execute(
             """
             UPDATE TaskInstance
@@ -71,7 +85,10 @@ class TaskInstanceDAO:
         self.connection.commit()
 
     def get_all_task_instances(self):
-        self.cursor.execute("SELECT * FROM TaskInstance ORDER BY TaskInstance_ID DESC")
+        """Returns all TaskInstances (newest first)."""
+        self.cursor.execute(
+            "SELECT * FROM TaskInstance ORDER BY TaskInstance_ID DESC"
+        )
         rows = self.cursor.fetchall()
 
         return [

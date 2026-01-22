@@ -3,7 +3,6 @@
 # Created in iteration: 3
 # Author: Karl Concha
 #
-# Purpose:
 # Executes stages 1..N (after Stage 0 is done).
 # - Skips stage defs with TaskStageDef_Type == "input"
 # - Creates TaskStageInstance per stage
@@ -12,7 +11,13 @@
 # - Writes each stage output to an artifact file
 # - Returns the final output artifact path
 #
-# No DB queries happen here; DB updates are done through the passed service.
+# #ChatGPT (OpenAI, 2025) – Assisted in designing the sequential stage
+# execution engine, including stop-on-failure logic and registration
+# of input/output artifact paths for each TaskStageInstance.
+# Conversation Topic: "Designing a Multi-Stage Execution Engine"
+# Date: January 2026
+#
+# Used in agent_runtime_service.py
 # ==========================================
 
 import os
@@ -35,9 +40,6 @@ class StageExecutionEngine:
     ):
         """
         Executes stages 1..N (skipping input) and returns final artifact path.
-
-        Returns:
-            final_output_path (str) or None
         """
 
         os.makedirs(artifacts_dir, exist_ok=True)
@@ -89,7 +91,9 @@ class StageExecutionEngine:
 
                 # Write output artifact
                 safe_stage_type = stage_type_raw.replace(" ", "_").lower() or "stage"
+
                 out_filename = f"{i:02d}_stage_{safe_stage_type}_output.txt"
+                
                 out_path = os.path.join(artifacts_dir, out_filename)
 
                 with open(out_path, "w", encoding="utf-8") as f:

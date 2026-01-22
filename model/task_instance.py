@@ -1,13 +1,11 @@
 # ==========================================
 # File: task_instance.py
-# Created in iteration: 1
+# Updated in iteration: 3
 # Author: Karl Concha
 #
 # Notes:
-# This model was introduced in Iteration 1 as a placeholder for 
-# managing task instances linked to Task Definitions. 
-# It has not been actively used or referenced in DAO classes as of Iteration 1. 
-# It remains included for completeness and potential expansion in later iterations.
+# Implemented in iteration 3 with slight changes of its attributes
+# to fit the db schema
 # ==========================================
 
 

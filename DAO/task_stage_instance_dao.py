@@ -1,3 +1,17 @@
+# ==========================================
+# File: task_stage_instance_dao.py
+# Created in iteration: 3 
+# Author: Karl Concha
+#
+# Purpose:
+# Data access layer for TaskStageInstance persistence.
+#
+# Notes:
+# - One row per stage execution
+# - Stores output artifact paths and error messages
+# - Stage ordering is enforced via Stage_Order
+# ==========================================
+
 import sqlite3
 from model.task_stage_instance import TaskStageInstance
 
@@ -10,9 +24,7 @@ class TaskStageInstanceDAO:
         self.cursor = self.connection.cursor()
 
     def create_stage_instance(self, stage_instance: TaskStageInstance):
-        """
-        Creates a TaskStageInstance row and returns its ID.
-        """
+        """Creates a TaskStageInstance row and returns its ID."""
         self.cursor.execute(
             """
             INSERT INTO TaskStageInstance
@@ -32,6 +44,7 @@ class TaskStageInstanceDAO:
         return self.cursor.lastrowid
 
     def mark_completed(self, stage_instance_id, output_artifact_path):
+        """Marks a stage as completed and records its output artifact."""
         self.cursor.execute(
             """
             UPDATE TaskStageInstance
@@ -45,6 +58,7 @@ class TaskStageInstanceDAO:
         self.connection.commit()
 
     def mark_failed(self, stage_instance_id, error_message):
+        """Marks a stage as failed and stores the error message."""
         self.cursor.execute(
             """
             UPDATE TaskStageInstance
@@ -58,6 +72,7 @@ class TaskStageInstanceDAO:
         self.connection.commit()
 
     def get_stages_for_task_instance(self, task_instance_id_fk):
+        """Returns all stage executions for a TaskInstance."""
         self.cursor.execute(
             """
             SELECT * FROM TaskStageInstance
@@ -84,7 +99,10 @@ class TaskStageInstanceDAO:
         ]
 
     def get_all_stage_instances(self):
-        self.cursor.execute("SELECT * FROM TaskStageInstance ORDER BY TaskStageInstance_ID DESC")
+        """Returns all TaskStageInstances (newest first)."""
+        self.cursor.execute(
+            "SELECT * FROM TaskStageInstance ORDER BY TaskStageInstance_ID DESC"
+        )
         rows = self.cursor.fetchall()
 
         return [

@@ -1,0 +1,142 @@
+Q1 Mo del Answ ers (Norman + Memor y AND Gestalt + UX 
+Laws)
+Mo del Answ er 1: Don Norman’s Principles & Memor y in UX
+Intr o duction
+Effe ctiv e UX design r elies on understanding ho w humans p er ceiv e , interpr et, and r ememb er 
+information. Don Norman’s design principles fo cus on making system b ehaviour visible , 
+pr e dictable , and aligne d with user e xp e ctations. Cognitiv e psy chology sho ws that human 
+memor y is limite d, err or-pr one , and biase d to war d r e cognition rather than r e call. This essay 
+discusses ho w visibility , fe e dback, mapping, constraints, and conceptual mo dels conne ct 
+with memor y limitations such as short-term memor y capacity , cognitiv e load, chunking, 
+and r e cognition. Real-w orld e xamples ar e use d to demonstrate ho w aligning design with 
+human cognition r esults in intuitiv e , lo w-effort interactions.
+1. Visibility and Cognitiv e Load
+Norman argues that users must b e able to se e what actions ar e p ossible and what state the 
+system is in. When information is hidden, users r ely on short-term memor y to track system 
+b ehaviour , incr easing cognitiv e load. W orking memor y is limite d to 7±2 items, so r e ducing 
+memor y bur den is crucial.
+Examples ( Go o d)
+• Go ogle Do cs sho wing “Saving… ” → “ All changes sav e d” .
+• Ub er liv e map sho wing driv er p osition and ET A.
+Examples (Bad)
+• Printers with unclear status displays.
+• Hidden interface elements that for ce guessw ork.
+Visibility supp orts r e cognition o v er r e call and r e duces mental effort.
+2. Fe e dback and Behavioural Learning
+Fe e dback confirms whether actions w er e successful, r e ducing uncertainty and pr e v enting 
+r ep eate d attempts. Psy chologically , imme diate fe e dback r einfor ces corr e ct b ehaviour 
+( op erant conditioning). Lack of fe e dback incr eases frustration and err or likeliho o d.
+Examples ( Go o d)
+• Instagram heart animation after a “like ” .
+• “ A dde d to cart” confirmations on e-commer ce platforms.
+• Inline form validation (“ ✓  valid email”).
+Examples (Bad)
+• Submit buttons that silently fail.
+3. Mapping and Mental Mo dels
+Mapping describ es ho w contr ols r elate to their effe cts. Go o d mapping matches user mental 
+mo dels and r e duces cognitiv e translation. Schema the or y supp orts this: users r ely on pr e-
+e xisting conceptual patterns.
+Examples ( Go o d)
+• V olume buttons mapp e d to physical up/do wn dir e ction.
+• Timeline sliders mapping left → past, right → futur e .
+Examples (Bad)
+• Micr o wav e panels with identical, ambiguous buttons.
+• Interfaces that r e v erse e xp e cte d scr olling dir e ction.
+4. Constraints and Err or Pr e v ention
+Constraints limit the set of p ossible actions, pr e v enting err ors without r elying on user 
+memor y . Re ducing the numb er of p ossible wr ong actions r e duces intrinsic cognitiv e load.
+Examples
+• Gr e y e d-out “Submit” buttons until r e quir e d fields ar e fille d.
+• Passw or d r e quir ement indicators sho wn b efor e typing.
+• Radio buttons pr e v enting multiple incompatible sele ctions.
+5. Conceptual Mo dels and Re cognition O v er Re call
+Str ong conceptual mo dels r e duce the ne e d for learning and memorisation. Re cognition-
+base d interfaces ar e cognitiv ely easier to use than r e call-base d ones.
+Examples ( Go o d)
+• Online shopping flo w mirr oring the r eal-w orld che ckout pr o cess.
+• Digital folder systems r esembling physical filing.
+• Sp otify album co v ers aiding r e cognition memor y .
+Examples (Bad)
+• Univ ersity p ortals with inconsistent navigation.
+Conclusion
+Norman’s principles dir e ctly complement cognitiv e psy chology: visibility r e duces memor y 
+load, fe e dback r einfor ces learning, mapping aligns with schemas, constraints r e duce 
+de cision fatigue , and conceptual mo dels pr omote r e cognition o v er r e call. T ogether , the y 
+cr eate interfaces that ar e pr e dictable , less err or-pr one , and easier to use . Systems that align 
+with human cognition fe el intuitiv e and efficient, demonstrating why Norman’s principles 
+r emain foundational to UX practice .
+Mo del Answ er 2: Gestalt Principles & Laws of UX
+Intr o duction
+UX design dep ends on ho w users p er ceiv e structur e and make de cisions under cognitiv e 
+constraints. Gestalt psy chology e xplains ho w individuals gr oup visual elements into 
+meaningful wholes, while UX laws pr e dict interactiv e b ehaviour , de cision-making sp e e d, 
+and motor p erformance . This essay e xamines ho w Gestalt principles (pr o ximity , similarity , 
+figur e/gr ound, and Prägnanz) w ork alongside UX laws such as Hick’s Law , Fitts’s Law , the 
+Peak-End Rule , and the V on Restorff Effe ct to r e duce cognitiv e load and impr o v e interface 
+clarity .
+1. Gestalt Principles: Per ceptual Organisation
+Pr o ximity
+Elements near each other ar e p er ceiv e d as r elate d.
+Examples
+• Instagram gr oups pr ofile data (p osts, follo w ers, follo wing).
+• Amazon gr oups pr o duct pictur e , price , and rating.
+Pr o ximity r e duces scanning effort and impr o v es compr ehension.
+Similarity
+Similar colours, shap es, or sizes cr eate visual gr ouping.
+Examples
+• Go ogle Calendar colour-co de d e v ents.
+• Buttons of the same style signalling shar e d function.
+Figur e/Gr ound
+Users distinguish the fo cal content fr om its backgr ound.
+Examples
+• Sp otify’s dark backgr ound for egr ounding album co v ers.
+• High-contrast te xt in ne ws apps impr o ving r eadability .
+Prägnanz (Simplicity )
+Users pr efer the simplest p ossible interpr etation of a visual lay out.
+Examples
+• Go ogle homepage minimalism.
+• Apple ’s symmetric, simple iconography .
+2. Hick’s Law and De cision Comple xity
+Hick’s Law states that de cision time incr eases with the numb er of choices. Simplifying 
+choices impr o v es sp e e d and r e duces cognitiv e bur den.
+Examples ( Go o d)
+• TikT ok emphasising a single action: swip e .
+• Mo dern apps limiting b ottom navigation to 3–5 items.
+Examples (Bad)
+• Airline b o oking sites with o v er whelming dr op do wn menus.
+3. Fitts’s Law and Interaction Efficiency
+Fitts’s Law pr e dicts that large , nearby targets ar e easier and faster to tap . Button size and 
+placement significantly influence usability .
+Examples ( Go o d)
+• iOS large touch targets.
+• Bottom navigation bars near thumb r each.
+Examples (Bad)
+• Tiny “X” icons on p op-ups ( often delib erately — dark patterns).
+4. Peak-End Rule and Emotional Memor y
+Users judge an e xp erience by its emotional high p oint and final moment.
+Examples
+• Duolingo celebration animations cr eate a str ong p ositiv e end.
+• Slo w or confusing che ckout flo ws cr eate negativ e final impr essions.
+5. V on Restorff Effe ct and Attention Guidance
+Distinct elements attract mor e attention and ar e mor e memorable .
+Examples
+• A bright CT A button on an other wise mute d page .
+• Highlighte d err or fields in forms.
+6. Combine d Impact: Gestalt + UX Laws
+Gestalt principles influence p er ception : ho w users visually organise a scr e en. UX laws 
+influence b ehaviour : ho w users make de cisions, mo v e , and r ememb er .
+T ogether
+• Gestalt r e duces p er ceptual load.
+• Hick’s Law r e duces de cision load.
+• Fitts’s Law r e duces motor load.
+• Peak-End impr o v es emotional satisfaction.
+• V on Restorff guides attention effe ctiv ely .
+This cr eates interfaces that ar e visually coher ent and cognitiv ely efficient.
+Conclusion
+Gestalt principles enable designers to structur e information in p er ceptually meaningful 
+ways, while UX laws shap e ho w users b ehav e during interaction. When pr o ximity , 
+similarity , figur e/gr ound, and Prägnanz ar e combine d with Hick’s Law , Fitts’s Law , the 
+Peak-End Rule , and the V on Restorff Effe ct, interfaces align with human p er ception and 
+cognition. This integration r e duces cognitiv e load, accelerates de cision-making, and 
+impr o v es emotional e xp erience , demonstrating why these principles ar e central to effe ctiv e 
+UX design.
