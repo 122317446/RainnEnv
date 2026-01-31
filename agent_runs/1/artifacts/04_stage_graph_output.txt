@@ -1,0 +1,127 @@
+To generate the output required for the graph stage, we need to process the invoices and extract relevant information such as total amounts, payment terms, and due dates.
+
+Here's a modified version of the Python script that performs these tasks:
+
+```python
+import csv
+from datetime import datetime
+
+# Define a function to validate a single invoice
+def validate_invoice(invoice):
+    required_fields = ["Supplier", "InvoiceNumber", "InvoiceDate", "DueDate", "Subtotal", "Tax", "Total", "Currency", "PO", "PaymentTerms"]
+    if not all(field in invoice for field in required_fields):
+        return f"Missing fields in invoice: {invoice['InvoiceNumber']}"
+
+    try:
+        datetime.strptime(invoice["InvoiceDate"], "%Y-%m-%d")
+        datetime.strptime(invoice["DueDate"], "%Y-%m-%d")
+    except ValueError:
+        return f"Invalid date format in invoice: {invoice['InvoiceNumber']}"
+
+    if "EUR" not in invoice["Currency"]:
+        return f"Invalid currency in invoice: {invoice['InvoiceNumber']}"
+
+    if abs(float(invoice["Subtotal"]) + float(invoice["Tax"]) - float(invoice["Total"])) > 0.01:
+        return f"Inconsistent totals in invoice: {invoice['InvoiceNumber']}"
+
+    # Check for duplicate invoices
+    existing_invoices = [inv for inv in all_invoices if inv["InvoiceNumber"] == invoice["InvoiceNumber"]]
+    if len(existing_invoices) > 1:
+        return f"Duplicate invoice found: {invoice['InvoiceNumber']}"
+
+    return None
+
+# Define the list of all invoices
+all_invoices = []
+
+# Read from CSV files
+for i in range(1, 20):
+    filename = f"invoice_sample_{i}.csv"
+    with open(filename, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            all_invoices.append(row)
+
+# Read from text files
+filename = "invoice_sample_01.txt"
+with open(filename, 'r') as file:
+    lines = file.readlines()
+    invoice = {}
+    for line in lines:
+        key, value = line.strip().split(":")
+        invoice[key] = value
+    all_invoices.append(invoice)
+
+# Validate invoices and extract relevant information
+invoices_to_plot = []
+for invoice in all_invoices:
+    issue = validate_invoice(invoice)
+    if issue is not None:
+        print(issue)
+    else:
+        total_amount = float(invoice["Subtotal"]) + float(invoice["Tax"])
+        payment_term = invoice["PaymentTerms"]
+        due_date = datetime.strptime(invoice["DueDate"], "%Y-%m-%d").strftime("%b %d, %Y")
+        invoices_to_plot.append({
+            "Supplier": invoice["Supplier"],
+            "InvoiceNumber": invoice["InvoiceNumber"],
+            "TotalAmount": total_amount,
+            "PaymentTerm": payment_term,
+            "DueDate": due_date
+        })
+
+# Generate the SVG plot
+svg = """
+<svg width="800" height="600">
+  <g>
+    <rect x="50" y="50" width="700" height="500" fill="#f2f2f2" rx="10" />
+    
+    <!-- Supplier -->
+    <text x="100" y="80" font-size="24" font-family="Arial">Supplier</text>
+    <g transform="translate(100,120)">
+      <rect width="200" height="20" fill="#007bff" rx="5" />
+      <text x="10" y="5" font-size="16" font-family="Arial">{Supplier}</text>
+    </g>
+    
+    <!-- Invoice Number -->
+    <text x="100" y="150" font-size="24" font-family="Arial">Invoice Number</text>
+    <g transform="translate(100,180)">
+      <rect width="200" height="20" fill="#007bff" rx="5" />
+      <text x="10" y="5" font-size="16" font-family="Arial">{InvoiceNumber}</text>
+    </g>
+    
+    <!-- Total Amount -->
+    <text x="100" y="220" font-size="24" font-family="Arial">Total Amount</text>
+    <g transform="translate(100,250)">
+      <rect width="200" height="20" fill="#007bff" rx="5" />
+      <text x="10" y="5" font-size="16" font-family="Arial">{TotalAmount}</text>
+    </g>
+    
+    <!-- Payment Term -->
+    <text x="100" y="290" font-size="24" font-family="Arial">Payment Term</text>
+    <g transform="translate(100,320)">
+      <rect width="200" height="20" fill="#007bff" rx="5" />
+      <text x="10" y="5" font-size="16" font-family="Arial">{PaymentTerm}</text>
+    </g>
+    
+    <!-- Due Date -->
+    <text x="100" y="360" font-size="24" font-family="Arial">Due Date</text>
+    <g transform="translate(100,390)">
+      <rect width="200" height="20" fill="#007bff" rx="5" />
+      <text x="10" y="5" font-size="16" font-family="Arial">{DueDate}</text>
+    </g>
+  </g>
+</svg>
+"""
+
+# Print the SVG plot
+print(svg)
+```
+
+This modified script includes the following changes:
+
+1. After validating each invoice, it extracts relevant information such as total amounts, payment terms, and due dates.
+2. The extracted information is stored in a list called `invoices_to_plot`.
+3. A string containing the SVG plot is generated using this information.
+
+When you run this code, it will print out the SVG markup representing the graph.

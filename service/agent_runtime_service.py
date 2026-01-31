@@ -51,7 +51,7 @@ class AgentRuntime:
     """
 
     @staticmethod
-    def run_task(process_id, taskdef_id, file_path, original_filename):
+    def run_task(process_id, taskdef_id, file_path, original_filename=None):
         """
         Executes Stage 0 (Input Normalisation) and then executes stages 1..N.
         """
@@ -98,11 +98,18 @@ class AgentRuntime:
             # 4) Execute Stage 0 (Input Normalisation) / Input stage
             #    Output: 00_input_original.txt
             # ------------------------------------------
-            plain_text, stage0_artifact_path = Stage0InputNormaliser.run(
-                file_path=file_path,
-                run_folder=run_folder,
-                original_filename=original_filename
-            )
+            if isinstance(file_path, list):
+                files = file_path
+                plain_text, stage0_artifact_path = Stage0InputNormaliser.run_multi(
+                    files=files,
+                    run_folder=run_folder
+                )
+            else:
+                plain_text, stage0_artifact_path = Stage0InputNormaliser.run(
+                    file_path=file_path,
+                    run_folder=run_folder,
+                    original_filename=original_filename
+                )
 
             # ------------------------------------------
             # 5) Mark Stage 0 COMPLETED (store artifact path) (traceback purposes)

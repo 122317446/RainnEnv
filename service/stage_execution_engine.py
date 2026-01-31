@@ -151,6 +151,14 @@ Perform ONLY this stage. Output must be suitable as input to the next stage.
     def _output_rules_for_stage(stage_type, stage_description):
         stage_type_l = (stage_type or "").lower()
         stage_desc_l = (stage_description or "").lower()
+        if stage_type_l == "output":
+            return """
+[OUTPUT RULES FOR FINAL STAGE]
+- This is the final stage. Do not mention stages, pipelines, or scripts.
+- Do not ask to proceed or request confirmation.
+- Provide the final response only.
+- Do not include code, pseudocode, or implementation steps.
+""".strip()
         if "graph" in stage_type_l or "graph" in stage_desc_l or "visual" in stage_type_l or "visual" in stage_desc_l:
             return """
 [OUTPUT RULES FOR GRAPH]

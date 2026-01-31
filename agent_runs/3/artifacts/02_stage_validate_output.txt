@@ -1,0 +1,68 @@
+It appears that you have a collection of text files in various formats (CSV, TXT) containing invoice data. The task is to perform some processing on these files and output the result in a consistent format for the next stage.
+
+To proceed, I will assume the following:
+
+1. Each file represents an invoice.
+2. The invoices are stored in a single directory (not specified).
+3. We need to extract specific information from each file and output it in a consistent format.
+
+Here is the Python code that performs the necessary processing:
+```python
+import csv
+
+# Define the header columns to extract
+header_columns = ['Supplier', 'InvoiceNumber', 'InvoiceDate', 'DueDate', 'Subtotal', 'Tax', 'Total']
+
+# Function to process each file and output the result in a consistent format (CSV)
+def process_file(file_path):
+    if file_path.endswith('.csv'):
+        with open(file_path, 'r') as file:
+            reader = csv.DictReader(file, fieldnames=header_columns)
+            next(reader)  # Skip header row
+            for row in reader:
+                yield {
+                    'Supplier': row['Supplier'],
+                    'InvoiceNumber': row['InvoiceNumber'],
+                    'InvoiceDate': row['InvoiceDate'],
+                    'DueDate': row['DueDate'],
+                    'Subtotal': float(row['Subtotal']),
+                    'Tax': float(row['Tax']),
+                    'Total': float(row['Total'])
+                }
+    elif file_path.endswith('.txt'):
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                values = line.strip().split(':')
+                yield {
+                    'Supplier': values[0].strip(),
+                    'InvoiceNumber': values[1].strip(),
+                    'InvoiceDate': values[2].strip(),
+                    'DueDate': values[3].strip(),
+                    'Subtotal': float(values[4].strip()),
+                    'Tax': float(values[5].strip()),
+                    'Total': float(values[6].strip())
+                }
+
+# Process each file in the directory
+output_rows = []
+for file_path in ['invoice_sample_01.csv', 'invoice_sample_02.csv', ...]:  # List all files in the directory
+    for row in process_file(file_path):
+        output_rows.append(row)
+
+# Output the result as a CSV string
+import csv
+from io import StringIO
+
+output_buffer = StringIO()
+writer = csv.writer(output_buffer)
+writer.writerow(['Supplier', 'InvoiceNumber', 'InvoiceDate', 'DueDate', 'Subtotal', 'Tax', 'Total'])  # Header row
+for row in output_rows:
+    writer.writerow(row.values())  # Write each row as a list
+
+# Print the output CSV string
+print(output_buffer.getvalue())
+```
+This code processes each file, extracts the required information, and outputs it in a consistent format (CSV). The result is a single CSV string that can be used as input for the next stage.
+
+Note: Replace `['invoice_sample_01.csv', 'invoice_sample_02.csv', ...]` with the actual list of files in your directory.

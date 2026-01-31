@@ -424,23 +424,33 @@ def agent_runner_page(process_id):
     output_artifact_name = None
 
     if request.method == "POST":
-        uploaded = request.files.get("uploaded_file")
+        uploaded_files = request.files.getlist("uploaded_file")
 
-        if not uploaded:
+        if not uploaded_files:
             file_text = "No file uploaded"
         else:
-            ext = os.path.splitext(uploaded.filename)[1]
+            temp_files = []
+            try:
+                for uploaded in uploaded_files:
+                    if not uploaded or not uploaded.filename:
+                        continue
+                    ext = os.path.splitext(uploaded.filename)[1]
+                    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
+                    tmp.write(uploaded.read())
+                    tmp.flush()
+                    tmp.close()
+                    temp_files.append({
+                        "path": tmp.name,
+                        "name": uploaded.filename
+                    })
 
-            with tempfile.NamedTemporaryFile(delete=True, suffix=ext) as tmp:
-                tmp.write(uploaded.read())
-                tmp.flush()
-
-                try:
+                if not temp_files:
+                    file_text = "No file uploaded"
+                else:
                     result = agent_runtime.run_task(
                         process_id=process_id,
                         taskdef_id=taskdef.TaskDef_ID,
-                        file_path=tmp.name,
-                        original_filename=uploaded.filename
+                        file_path=temp_files
                     )  # Iteration 3 changes here to accommodate instances
                     if isinstance(result, dict):
                         file_text = result.get("output_text")
@@ -451,8 +461,14 @@ def agent_runner_page(process_id):
                             output_artifact_name = os.path.basename(output_artifact)
                     else:
                         file_text = result
-                except Exception as e:
-                    file_text = f"Error: {e}"
+            except Exception as e:
+                file_text = f"Error: {e}"
+            finally:
+                for f in temp_files:
+                    try:
+                        os.remove(f["path"])
+                    except Exception:
+                        pass
 
     return render_template(
         "process_viewer.html",

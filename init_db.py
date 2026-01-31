@@ -123,33 +123,43 @@ def init_db():
         INSERT INTO TaskDef (TaskDef_Name, TaskDef_Description)
         VALUES (?, ?)
     """, [
-        ("summarise", "Summarise any document or text file."),
-        ("sentiment_analysis", "Detect sentiment from text.")
+        (
+            "invoice_compliance",
+            "Check invoices for missing fields, inconsistencies, and payment risks across supplier formats."
+        ),
+        (
+            "workload_analysis",
+            "Summarise workload distribution and deadline risk across multiple documents."
+        )
     ])
 
     # Fetch IDs for seeded TaskDefs
-    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='summarise'")
-    summarise_id = cursor.fetchone()[0]
+    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='invoice_compliance'")
+    invoice_id = cursor.fetchone()[0]
 
-    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='sentiment_analysis'")
-    sentiment_id = cursor.fetchone()[0]
+    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='workload_analysis'")
+    workload_id = cursor.fetchone()[0]
 
     # Seed Stages
     cursor.executemany("""
         INSERT INTO TaskStageDef (TaskDef_ID_FK, TaskStageDef_Type, TaskStageDef_Description)
         VALUES (?, ?, ?)
     """, [
-        # Summarise pipeline
-        (summarise_id, "input", "Receive files for summarisation."),
-        (summarise_id, "extract", "Extract key information."),
-        (summarise_id, "graph", "Visualise key points as an SVG chart. Output ONLY valid <svg> markup."),
-        (summarise_id, "output", "Display summary."),
+        # Invoice compliance pipeline
+        (invoice_id, "input", "Receive invoice files for compliance checks."),
+        (invoice_id, "extract", "Extract supplier, invoice number, dates, totals, and line items."),
+        (invoice_id, "validate", "Check for missing fields, inconsistent totals, and date/payment issues."),
+        (invoice_id, "risk_flags", "List compliance risks or late-payment concerns with short reasons."),
+        (invoice_id, "graph", "Visualise key risks and totals as an SVG chart. Output ONLY valid <svg> markup."),
+        (invoice_id, "output", "Provide a concise compliance summary and next steps."),
 
-        # Sentiment pipeline
-        (sentiment_id, "input", "Receive text for sentiment analysis."),
-        (sentiment_id, "sentiment_extract", "Analyse emotional tone."),
-        (sentiment_id, "graph", "Visualise sentiment as an SVG chart. Output ONLY valid <svg> markup."),
-        (sentiment_id, "sentiment_output", "Display sentiment result."),
+        # Workload analysis pipeline
+        (workload_id, "input", "Receive workload documents or summaries."),
+        (workload_id, "extract", "Extract tasks, owners, deadlines, and effort estimates."),
+        (workload_id, "aggregate", "Group by owner and time window, highlighting bottlenecks."),
+        (workload_id, "risk_flags", "Identify deadline risks and overloaded owners."),
+        (workload_id, "graph", "Visualise workload distribution as an SVG chart. Output ONLY valid <svg> markup."),
+        (workload_id, "output", "Summarise workload balance and risks with recommendations."),
     ])
 
     # Seed Agent Processes (pre-defined configured agents)
@@ -159,24 +169,24 @@ def init_db():
     """, [
         (
             1,
-            "Quick Summariser",
-            "You are a concise summariser. Focus on key points and keep outputs short and factual.",
+            "Invoice Compliance Checker",
+            "You are a compliance analyst. Be strict, accurate, and concise.",
             "llama3.1:8b",
-            summarise_id
+            invoice_id
         ),
         (
             1,
-            "Insight Extractor + Chart",
-            "Extract 5-8 key points, then visualise them clearly.",
+            "Invoice Risk Visualiser",
+            "Surface compliance risks and make them easy to understand at a glance.",
             "gemma3:4b",
-            summarise_id
+            invoice_id
         ),
         (
             1,
-            "Sentiment Scanner",
-            "Detect sentiment and justify briefly before producing the final result.",
+            "Workload Risk Scanner",
+            "Identify workload imbalance and deadline risk with clear evidence.",
             "llama3.1:8b",
-            sentiment_id
+            workload_id
         ),
     ])
 

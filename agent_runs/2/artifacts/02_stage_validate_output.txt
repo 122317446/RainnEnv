@@ -1,0 +1,35 @@
+Here's a Python script that validates the parsed data and checks for missing fields, inconsistent totals, and date/payment issues:
+
+```python
+def validate_data(data):
+    # Check if all required fields are present in each invoice
+    for invoice in data:
+        required_fields = ['Supplier', 'InvoiceNumber', 'InvoiceDate', 'DueDate', 'Subtotal', 'Tax', 'Total', 'Currency', 'PO', 'PaymentTerms']
+        missing_fields = [field for field in required_fields if field not in invoice]
+        if missing_fields:
+            print(f"Missing fields: {missing_fields} in invoice with InvoiceNumber: {invoice['InvoiceNumber']}")
+
+    # Check if totals are consistent
+    for invoice in data:
+        total = invoice['Subtotal'] + invoice['Tax']
+        if abs(total - invoice['Total']) > 0.01:  # Allow a small margin of error due to floating point precision issues
+            print(f"Inconsistent totals: InvoiceNumber {invoice['InvoiceNumber']} has Total {invoice['Total']} but calculated total is {total}")
+
+    # Check for date/payment issues
+    for invoice in data:
+        try:
+            invoice_date = datetime.strptime(invoice['InvoiceDate'], '%Y-%m-%d')
+            due_date = datetime.strptime(invoice['DueDate'], '%Y-%m-%d')
+            if due_date < invoice_date:
+                print(f"Invalid dates: Due date is before Invoice date for invoice with InvoiceNumber: {invoice['InvoiceNumber']}")
+        except ValueError:
+            print(f"Invalid dates: Unable to parse dates for invoice with InvoiceNumber: {invoice['InvoiceNumber']}")
+
+# Execute the function to validate data
+data = parse_files()
+validate_data(data)
+```
+
+This script checks if all required fields are present in each invoice, verifies that totals are consistent (allowing a small margin of error due to floating point precision issues), and ensures that dates are valid.
+
+When you run this script with the parsed data from the previous stage, it should output any missing fields, inconsistent totals, or date/payment issues found in the input data.
