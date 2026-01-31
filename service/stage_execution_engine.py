@@ -130,6 +130,7 @@ class StageExecutionEngine:
         stage_type = (stage_type or "").strip()
         stage_description = (stage_description or "").strip()
         input_text = (input_text or "").strip()
+        output_rules = StageExecutionEngine._output_rules_for_stage(stage_type, stage_description)
 
         return f"""
 {master_prompt}
@@ -143,4 +144,18 @@ Goal: {stage_description}
 
 [INSTRUCTIONS]
 Perform ONLY this stage. Output must be suitable as input to the next stage.
+{output_rules}
 """.strip()
+
+    @staticmethod
+    def _output_rules_for_stage(stage_type, stage_description):
+        stage_type_l = (stage_type or "").lower()
+        stage_desc_l = (stage_description or "").lower()
+        if "graph" in stage_type_l or "graph" in stage_desc_l or "visual" in stage_type_l or "visual" in stage_desc_l:
+            return """
+[OUTPUT RULES FOR GRAPH]
+- Return ONLY valid standalone SVG markup.
+- Output must start with "<svg" and end with "</svg>".
+- No prose, no markdown, no code fences.
+""".strip()
+        return ""

@@ -142,12 +142,42 @@ def init_db():
         # Summarise pipeline
         (summarise_id, "input", "Receive files for summarisation."),
         (summarise_id, "extract", "Extract key information."),
+        (summarise_id, "graph", "Visualise key points as an SVG chart. Output ONLY valid <svg> markup."),
         (summarise_id, "output", "Display summary."),
 
         # Sentiment pipeline
         (sentiment_id, "input", "Receive text for sentiment analysis."),
         (sentiment_id, "sentiment_extract", "Analyse emotional tone."),
+        (sentiment_id, "graph", "Visualise sentiment as an SVG chart. Output ONLY valid <svg> markup."),
         (sentiment_id, "sentiment_output", "Display sentiment result."),
+    ])
+
+    # Seed Agent Processes (pre-defined configured agents)
+    cursor.executemany("""
+        INSERT INTO AgentProcess (User_ID, Agent_Name, Agent_Priming, AI_Model, Operation_Selected)
+        VALUES (?, ?, ?, ?, ?)
+    """, [
+        (
+            1,
+            "Quick Summariser",
+            "You are a concise summariser. Focus on key points and keep outputs short and factual.",
+            "llama3.1:8b",
+            summarise_id
+        ),
+        (
+            1,
+            "Insight Extractor + Chart",
+            "Extract 5-8 key points, then visualise them clearly.",
+            "gemma3:4b",
+            summarise_id
+        ),
+        (
+            1,
+            "Sentiment Scanner",
+            "Detect sentiment and justify briefly before producing the final result.",
+            "llama3.1:8b",
+            sentiment_id
+        ),
     ])
 
     conn.commit()

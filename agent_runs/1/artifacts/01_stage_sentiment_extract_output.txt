@@ -1,0 +1,21 @@
+**Sentiment Analysis**
+
+The sentiment analysis will focus on detecting emotions and tone in the provided text.
+
+**Identified Sentiments:**
+
+1. **Positive:** Terms like "Practice-Orientated", "Final Year Project", "User Experience Design 1", "Enterprise Data Governance and Data Modeling", "Fintech" suggest a positive sentiment, indicating enthusiasm for learning and engagement with course material.
+2. **Negative:** The presence of terms like " Penalty", "non-Graded Feedback", "Exam" implies a negative tone, suggesting stress and pressure associated with assessments.
+3. **Neutral:** Most of the text consists of factual information, such as dates, codes, and marks, which does not reveal any strong emotional tone.
+
+**Tone Detection:**
+
+The overall tone is predominantly neutral, with occasional bursts of positive enthusiasm for specific courses or topics. However, the presence of negative terms like "Penalty" and "Exam" suggests that students might experience some level of stress or anxiety related to assessments.
+
+**Output:**
+
+The output from this sentiment analysis stage will be a list of identified sentiments, tone detection, and any notable observations.
+
+**Next Stage Input:**
+
+The next stage can utilize the output from this sentiment analysis as input for visualizing the sentiment in an SVG chart.

@@ -1,0 +1,5 @@
+{
+  "task_instance_id": 1,
+  "output_type": "text",
+  "output_path": "agent_runs/1/artifacts/03_stage_sentiment_output_output.txt"
+}
