@@ -39,7 +39,7 @@ class StageExecutionEngine:
         stage0_artifact_path
     ):
         """
-        Executes stages 1..N (skipping input) and returns final artifact path.
+        Executes stages 1..N (skipping input) and returns final artifact path + type.
         """
 
         os.makedirs(artifacts_dir, exist_ok=True)
@@ -57,6 +57,7 @@ class StageExecutionEngine:
 
         current_input_path = stage0_artifact_path
         final_output_path = None
+        final_output_type = None
 
         for i, stage in enumerate(exec_stages, start=1):
             stage_type_raw = (getattr(stage, "TaskStageDef_Type", "") or "").strip()
@@ -89,11 +90,11 @@ class StageExecutionEngine:
                 if output_text is None:
                     raise Exception("Model client returned no output.")
 
-                # Write output artifact
+                # Write output artifact (infer type from model output)
+                output_type = StageExecutionEngine._infer_output_type(output_text)
                 safe_stage_type = stage_type_raw.replace(" ", "_").lower() or "stage"
-
-                out_filename = f"{i:02d}_stage_{safe_stage_type}_output.txt"
-                
+                file_ext = "svg" if output_type == "svg" else "txt"
+                out_filename = f"{i:02d}_stage_{safe_stage_type}_output.{file_ext}"
                 out_path = os.path.join(artifacts_dir, out_filename)
 
                 with open(out_path, "w", encoding="utf-8") as f:
@@ -103,6 +104,7 @@ class StageExecutionEngine:
                 task_stage_instance_service.mark_stage_completed(stage_instance_id, out_path)
                 current_input_path = out_path
                 final_output_path = out_path
+                final_output_type = output_type
 
             except Exception as e:
                 # Mark failed then re-raise so runtime can handle task failure
@@ -112,7 +114,15 @@ class StageExecutionEngine:
                     pass
                 raise
 
-        return final_output_path
+        return final_output_path, final_output_type
+
+    @staticmethod
+    def _infer_output_type(output_text):
+        text = (output_text or "").lstrip()
+        text_lower = text[:500].lower()
+        if text_lower.startswith("<svg") or ("<svg" in text_lower and text_lower.startswith("<?xml")):
+            return "svg"
+        return "text"
 
     @staticmethod
     def _build_stage_prompt(master_prompt, stage_type, stage_description, input_text):

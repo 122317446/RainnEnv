@@ -144,7 +144,7 @@ class AgentRuntime:
             # ------------------------------------------
             model_client = OllamaModelClient()
 
-            final_output_path = StageExecutionEngine.execute(
+            final_output_path, final_output_type = StageExecutionEngine.execute(
                 task_instance_id=task_instance_id,
                 run_folder=run_folder,
                 artifacts_dir=artifacts_dir,
@@ -162,12 +162,33 @@ class AgentRuntime:
             if final_output_path:
                 with open(final_output_path, "r", encoding="utf-8") as f:
                     output_text = f.read()
+                output_type = final_output_type or "text"
             else:
                 # If there are no executable stages (e.g., only input stage), return stage-0 text
                 output_text = plain_text
+                output_type = "text"
+                final_output_path = stage0_artifact_path
+
+            # ------------------------------------------
+            # 10) Write output descriptor (type + path) for UI/debugging
+            # ------------------------------------------
+            output_descriptor = {
+                "task_instance_id": task_instance_id,
+                "output_type": output_type,
+                "output_path": final_output_path
+            }
+            descriptor_path = os.path.join(run_folder, "output_descriptor.json")
+            with open(descriptor_path, "w", encoding="utf-8") as f:
+                import json
+                json.dump(output_descriptor, f, indent=2)
 
             task_instance_service.update_status(task_instance_id, "COMPLETED")
-            return output_text
+            return {
+                "task_instance_id": task_instance_id,
+                "output_text": output_text,
+                "output_type": output_type,
+                "output_artifact_path": final_output_path
+            }
 
         except Exception as e:
             # Mark Stage 0 failed if it exists (or if failure happened during stage-0 path)
@@ -184,4 +205,9 @@ class AgentRuntime:
                 except Exception:
                     pass
 
-            return f"Error: {e}"
+            return {
+                "task_instance_id": task_instance_id,
+                "output_text": f"Error: {e}",
+                "output_type": "text",
+                "output_artifact_path": None
+            }

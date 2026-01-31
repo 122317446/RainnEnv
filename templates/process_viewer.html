@@ -153,7 +153,24 @@
         <h3 class="card-title">Final Output</h3>
       </div>
       <div class="card-body">
-        <pre class="mb-0" style="white-space: pre-wrap;">{{ file_text }}</pre>
+
+        {% if output_type == "svg" and output_artifact_name and output_task_instance_id %}
+          <div class="mb-3">
+            <img class="img-fluid" alt="SVG output"
+                 src="{{ url_for('artifact_file', task_instance_id=output_task_instance_id, filename=output_artifact_name) }}">
+          </div>
+        {% else %}
+          <pre class="mb-3" style="white-space: pre-wrap;">{{ file_text }}</pre>
+        {% endif %}
+
+        {% if output_artifact_name and output_task_instance_id %}
+          <a class="btn btn-outline-secondary"
+             href="{{ url_for('artifact_file', task_instance_id=output_task_instance_id, filename=output_artifact_name) }}"
+             download>
+            <i class="ti ti-download me-2"></i>Download output
+          </a>
+        {% endif %}
+
       </div>
     </div>
   </div>

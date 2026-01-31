@@ -19,7 +19,7 @@
 # Date: January 2026
 # ==========================================
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file, abort
 import tempfile
 import os
 
@@ -265,6 +265,10 @@ def agent_runner_page(process_id):
     stages = stage_service.get_stages_for_task(taskdef.TaskDef_ID)
 
     file_text = None
+    output_type = None
+    output_artifact = None
+    output_task_instance_id = None
+    output_artifact_name = None
 
     if request.method == "POST":
         uploaded = request.files.get("uploaded_file")
@@ -279,12 +283,21 @@ def agent_runner_page(process_id):
                 tmp.flush()
 
                 try:
-                    file_text = agent_runtime.run_task(
+                    result = agent_runtime.run_task(
                         process_id=process_id,
                         taskdef_id=taskdef.TaskDef_ID,
                         file_path=tmp.name,
                         original_filename=uploaded.filename
                     )  # Iteration 3 changes here to accommodate instances
+                    if isinstance(result, dict):
+                        file_text = result.get("output_text")
+                        output_type = result.get("output_type")
+                        output_artifact = result.get("output_artifact_path")
+                        output_task_instance_id = result.get("task_instance_id")
+                        if output_artifact:
+                            output_artifact_name = os.path.basename(output_artifact)
+                    else:
+                        file_text = result
                 except Exception as e:
                     file_text = f"Error: {e}"
 
@@ -293,7 +306,11 @@ def agent_runner_page(process_id):
         process=process,
         taskdef=taskdef,
         stages=stages,
-        file_text=file_text
+        file_text=file_text,
+        output_type=output_type,
+        output_artifact=output_artifact,
+        output_task_instance_id=output_task_instance_id,
+        output_artifact_name=output_artifact_name
     )
 
 
@@ -336,3 +353,27 @@ def delete_process(process_id):
     """
     process_service.delete_process(process_id)
     return redirect(url_for("test_agent_page"))
+
+
+# ==========================================
+# ARTIFACT FILE SERVER (Iteration 4 prep)
+# ==========================================
+@app.route("/artifact/<int:task_instance_id>/<path:filename>")
+def artifact_file(task_instance_id, filename):
+    """
+    Serves artifact files from agent_runs/<id>/artifacts for inline display.
+    """
+    artifacts_dir = os.path.join("agent_runs", str(task_instance_id), "artifacts")
+    base_dir = os.path.abspath(artifacts_dir)
+    requested_path = os.path.abspath(os.path.join(artifacts_dir, filename))
+
+    if not requested_path.startswith(base_dir + os.sep):
+        abort(404)
+
+    if not os.path.exists(requested_path):
+        abort(404)
+
+    if requested_path.lower().endswith(".svg"):
+        return send_file(requested_path, mimetype="image/svg+xml")
+
+    return send_file(requested_path)
