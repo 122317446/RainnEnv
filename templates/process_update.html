@@ -81,6 +81,23 @@
       </div>
     </div>
   </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Template stages</h3>
+      </div>
+      <div class="card-body">
+        <div class="text-secondary mb-3">
+          Stage instructions are edited at the template level.
+        </div>
+        <a class="btn btn-outline-secondary w-100"
+           href="{{ url_for('update_agent', taskdef_id=process.Operation_Selected) }}">
+          <i class="ti ti-list-check me-2"></i>Edit template stages
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

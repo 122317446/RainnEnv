@@ -32,7 +32,11 @@ class TaskStageService:
 
     def get_stages_for_task(self, taskdef_id):
         """ Retrieves all stages belonging to a specific TaskDef. """
-        return self.taskstage_dao.get_TaskStageDef_by_id(taskdef_id)
+        return self.taskstage_dao.get_TaskStageDefs_for_task(taskdef_id)
+
+    def get_stage_by_id(self, stage_id):
+        """ Retrieves a single stage by TaskStageDef_ID. """
+        return self.taskstage_dao.get_TaskStageDef_by_id(stage_id)
 
     def list_all_stages(self):
         """ Returns all TaskStageDef entries in the system. """

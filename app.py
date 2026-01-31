@@ -99,9 +99,12 @@ def test_agent_page():
     """
     Shows the Agent Processes available in a page.
     """
+    taskdefs = taskdef_service.list_taskdefs()
+    taskdef_map = {t.TaskDef_ID: t for t in taskdefs}
     return render_template(
         "agent_test_list.html",
-        processes=process_service.list_processes()
+        processes=process_service.list_processes(),
+        taskdef_map=taskdef_map
     )
 
 
@@ -161,7 +164,9 @@ def update_stage(stage_id):
     """
     Updates an existing TaskStageDef.
     """
-    stage = stage_service.taskstage_dao.get_TaskStageDef_by_id(stage_id)
+    stage = stage_service.get_stage_by_id(stage_id)
+    if not stage:
+        return "Stage not found.", 404
 
     if request.method == "POST":
         updated_stage = stage.__class__(
