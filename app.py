@@ -218,11 +218,152 @@ def agent_builder_page():
 
     agent_created = False
     saved_process_id = None
+    edit_mode = False
+    edit_stages = []
+    error_message = None
+    agent_name_val = request.form.get("agent_name") if request.method == "POST" else ""
+    agent_priming_val = request.form.get("agent_priming") if request.method == "POST" else ""
+    ai_model_val = request.form.get("ai_model") if request.method == "POST" else ""
+
+    def _normalize_stages(stage_names, stage_descs):
+        normalized = []
+        for s_name, s_desc in zip(stage_names, stage_descs):
+            stage_type = (s_name or "").strip()
+            stage_desc = (s_desc or "").strip()
+            if not stage_type and not stage_desc:
+                continue
+            if stage_type.lower() == "input":
+                continue
+            normalized.append((stage_type, stage_desc))
+        if not normalized or normalized[-1][0].lower() != "output":
+            normalized.append(("output", "Present the final response for the user."))
+        return normalized
 
     if request.method == "POST":
+        action = request.form.get("action") or "save"
+        from_scratch = request.form.get("from_scratch") == "on"
+
+        if action == "next":
+            if not from_scratch and not selected_taskdef:
+                error_message = "Select a blueprint template or choose 'Start from scratch' to continue."
+                return render_template(
+                    "agent_builder.html",
+                    taskdefs=taskdefs,
+                    stages=stages,
+                    selected_taskdef=selected_taskdef,
+                    agent_saved=agent_created,
+                    saved_process_id=saved_process_id,
+                    edit_mode=False,
+                    edit_stages=[],
+                    from_scratch=from_scratch,
+                    agent_name=agent_name_val,
+                    agent_priming=agent_priming_val,
+                    ai_model=ai_model_val,
+                    error_message=error_message
+                )
+            edit_mode = True
+            if from_scratch:
+                edit_stages = [
+                    ("extract", "Extract the key points."),
+                    ("output", "Present the final response for the user.")
+                ]
+            else:
+                if selected_taskdef:
+                    edit_stages = [
+                        (s.TaskStageDef_Type, s.TaskStageDef_Description)
+                        for s in stage_service.get_stages_for_task(selected_taskdef)
+                        if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+                    ]
+                else:
+                    edit_stages = []
+
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                edit_mode=edit_mode,
+                edit_stages=edit_stages,
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
         agent_name = request.form.get("agent_name")
         agent_priming = request.form.get("agent_priming")
         ai_model = request.form.get("ai_model")
+
+        stage_names = request.form.getlist("stage_name[]")
+        stage_descs = request.form.getlist("stage_desc[]")
+        edited_stages = _normalize_stages(stage_names, stage_descs)
+
+        taskdef_id_to_use = selected_taskdef
+        from_scratch = request.form.get("from_scratch") == "on"
+
+        if from_scratch:
+            base_name = (agent_name or "Custom Agent").strip()
+            candidate_name = f"Custom - {base_name}"
+            existing_names = {t.TaskDef_Name for t in taskdefs}
+            if candidate_name in existing_names:
+                suffix = 1
+                while f"{candidate_name} ({suffix})" in existing_names:
+                    suffix += 1
+                candidate_name = f"{candidate_name} ({suffix})"
+
+            taskdef_id_to_use = taskdef_service.create_taskdef(
+                candidate_name,
+                "Custom template created by user."
+            )
+            for s_name, s_desc in edited_stages:
+                stage_service.create_stage(taskdef_id_to_use, s_name, s_desc)
+        else:
+            if not selected_taskdef:
+                error_message = "Select a blueprint template or choose 'Start from scratch' to save."
+                return render_template(
+                    "agent_builder.html",
+                    taskdefs=taskdefs,
+                    stages=stages,
+                    selected_taskdef=selected_taskdef,
+                    agent_saved=agent_created,
+                    saved_process_id=saved_process_id,
+                    edit_mode=True,
+                    edit_stages=edit_stages,
+                    from_scratch=from_scratch,
+                    agent_name=agent_name_val,
+                    agent_priming=agent_priming_val,
+                    ai_model=ai_model_val,
+                    error_message=error_message
+                )
+            blueprint = []
+            if selected_taskdef:
+                blueprint_stage_objs = [
+                    s for s in stage_service.get_stages_for_task(selected_taskdef)
+                    if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+                ]
+                blueprint = _normalize_stages(
+                    [s.TaskStageDef_Type for s in blueprint_stage_objs],
+                    [s.TaskStageDef_Description for s in blueprint_stage_objs]
+                )
+
+            if edited_stages != blueprint:
+                base_name = (agent_name or "Custom Agent").strip()
+                candidate_name = f"Custom - {base_name}"
+                existing_names = {t.TaskDef_Name for t in taskdefs}
+                if candidate_name in existing_names:
+                    suffix = 1
+                    while f"{candidate_name} ({suffix})" in existing_names:
+                        suffix += 1
+                    candidate_name = f"{candidate_name} ({suffix})"
+
+                taskdef_id_to_use = taskdef_service.create_taskdef(
+                    candidate_name,
+                    "Custom template created by user."
+                )
+                for s_name, s_desc in edited_stages:
+                    stage_service.create_stage(taskdef_id_to_use, s_name, s_desc)
 
         # IMPORTANT:
         # Keep the zip version signature (it works with your current service).
@@ -230,7 +371,7 @@ def agent_builder_page():
             user_id=1,
             agent_name=agent_name,
             agent_priming=agent_priming,
-            taskdef_id=selected_taskdef,
+            taskdef_id=taskdef_id_to_use,
             ai_model=ai_model
         )
 
@@ -243,7 +384,14 @@ def agent_builder_page():
         stages=stages,
         selected_taskdef=selected_taskdef,
         agent_saved=agent_created,
-        saved_process_id=saved_process_id
+        saved_process_id=saved_process_id,
+        edit_mode=edit_mode,
+        edit_stages=edit_stages,
+        from_scratch=False,
+        agent_name=agent_name_val if agent_created else "",
+        agent_priming=agent_priming_val if agent_created else "",
+        ai_model=ai_model_val if agent_created else "",
+        error_message=error_message
     )
 
 

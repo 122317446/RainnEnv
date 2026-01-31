@@ -35,14 +35,20 @@
       <div class="card-body">
 
         <!-- Form submits to the same route using POST -->
-        <form method="POST" class="row g-3">
+        <form method="POST" class="row g-3" id="builderForm">
+
+          {% if error_message %}
+            <div class="col-12">
+              <div class="alert alert-danger mb-0">{{ error_message }}</div>
+            </div>
+          {% endif %}
 
           <!-- ===============================
                Agent Name Input
           =============================== -->
           <div class="col-12">
             <label class="form-label">Agent name</label>
-            <input type="text" class="form-control" name="agent_name" required>
+            <input type="text" class="form-control" name="agent_name" value="{{ agent_name or '' }}" required>
           </div>
 
           <!-- ===============================
@@ -51,7 +57,7 @@
           =============================== -->
           <div class="col-12">
             <label class="form-label">Agent primer</label>
-            <textarea class="form-control" name="agent_priming" rows="3" required></textarea>
+            <textarea class="form-control" name="agent_priming" rows="3" required>{{ agent_priming or '' }}</textarea>
             <div class="form-hint">Describe the agent role, tone, constraints, and what “good output” looks like.</div>
           </div>
 
@@ -63,8 +69,8 @@
             <label class="form-label">AI model (Ollama)</label>
             <select name="ai_model" class="form-select" required>
               <option value="">-- Choose Model --</option>
-              <option value="gemma3:4b">gemma3:4b</option>
-              <option value="llama3.1:8b">llama3.1:8b</option>
+              <option value="gemma3:4b" {% if ai_model == "gemma3:4b" %}selected{% endif %}>gemma3:4b</option>
+              <option value="llama3.1:8b" {% if ai_model == "llama3.1:8b" %}selected{% endif %}>llama3.1:8b</option>
             </select>
             <div class="form-hint">Use the exact Ollama model id.</div>
           </div>
@@ -76,7 +82,7 @@
           =============================== -->
           <div class="col-12 col-md-6">
             <label class="form-label">Operation / template</label>
-            <select name="operation_selected" class="form-select" required>
+            <select name="operation_selected" class="form-select">
               <option value="">-- Choose Task --</option>
               {% for t in taskdefs %}
                 <option value="{{ t.TaskDef_ID }}" {% if selected_taskdef == t.TaskDef_ID %} selected {% endif %}>
@@ -86,14 +92,77 @@
             </select>
           </div>
 
+          <div class="col-12">
+            <label class="form-check">
+              <input class="form-check-input" type="checkbox" name="from_scratch" {% if from_scratch %}checked{% endif %}>
+              <span class="form-check-label">Start from scratch (ignore blueprint template)</span>
+            </label>
+          </div>
+
+          {% if edit_mode %}
+          <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between">
+              <h3 class="card-title mb-0">Stage instructions</h3>
+              <button type="button" class="btn btn-outline-secondary" id="addStageBtn">
+                <i class="ti ti-plus me-2"></i>Add stage
+              </button>
+            </div>
+            <div class="text-secondary">Stage 0 is automatic. If no output stage is present, one will be added.</div>
+          </div>
+
+          <div class="col-12" id="stageContainer">
+            {% if edit_stages %}
+            {% for s in edit_stages %}
+            <div class="row g-2 stage-row">
+              <div class="col-12 col-md-4">
+                <label class="form-label">Stage name</label>
+                <input type="text" name="stage_name[]" class="form-control" required value="{{ s[0] }}">
+              </div>
+              <div class="col-12 col-md-7">
+                <label class="form-label">Stage instruction</label>
+                <input type="text" name="stage_desc[]" class="form-control" required value="{{ s[1] }}">
+              </div>
+              <div class="col-12 col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-outline-danger w-100 remove-stage">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="row g-2 stage-row">
+              <div class="col-12 col-md-4">
+                <label class="form-label">Stage name</label>
+                <input type="text" name="stage_name[]" class="form-control" required>
+              </div>
+              <div class="col-12 col-md-7">
+                <label class="form-label">Stage instruction</label>
+                <input type="text" name="stage_desc[]" class="form-control" required>
+              </div>
+              <div class="col-12 col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-outline-danger w-100 remove-stage">
+                  <i class="ti ti-x"></i>
+                </button>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+
           <!-- ===============================
                Submit Button
                Triggers saving the agent process definition.
           =============================== -->
           <div class="col-12">
-            <button type="submit" name="save_agent" class="btn btn-primary">
-              <i class="ti ti-device-floppy me-2"></i>Save agent process
-            </button>
+            {% if edit_mode %}
+              <button type="submit" name="action" value="save" class="btn btn-primary">
+                <i class="ti ti-device-floppy me-2"></i>Save agent process
+              </button>
+            {% else %}
+              <button type="submit" name="action" value="next" class="btn btn-primary">
+                <i class="ti ti-arrow-right me-2"></i>Next
+              </button>
+            {% endif %}
           </div>
 
           <!-- ===============================
@@ -126,7 +195,9 @@
       <div class="card-body">
 
         <!-- Stages only render after selecting an operation -->
-        {% if stages %}
+        {% if from_scratch %}
+          <div class="text-secondary">Starting from scratch. No blueprint stages selected.</div>
+        {% elif stages %}
           <ol class="mb-0">
             {% for s in stages %}
               <li class="mb-2">
@@ -144,5 +215,49 @@
   </div>
 
 </div>
+
+{% if edit_mode %}
+<script>
+  (function () {
+    const container = document.getElementById("stageContainer");
+    const addBtn = document.getElementById("addStageBtn");
+
+    function updateRemoveButtons() {
+      const rows = container.querySelectorAll(".stage-row");
+      rows.forEach((row) => {
+        const btn = row.querySelector(".remove-stage");
+        btn.onclick = () => {
+          row.remove();
+          updateRemoveButtons();
+        };
+      });
+    }
+
+    addBtn.addEventListener("click", () => {
+      const row = container.querySelector(".stage-row").cloneNode(true);
+      row.querySelectorAll("input").forEach((i) => (i.value = ""));
+      container.appendChild(row);
+      updateRemoveButtons();
+    });
+
+    updateRemoveButtons();
+  })();
+</script>
+{% endif %}
+
+<script>
+  (function () {
+    const fromScratch = document.querySelector('input[name="from_scratch"]');
+    const templateSelect = document.querySelector('select[name="operation_selected"]');
+    if (!fromScratch || !templateSelect) return;
+
+    function toggleTemplateSelect() {
+      templateSelect.disabled = fromScratch.checked;
+    }
+
+    fromScratch.addEventListener("change", toggleTemplateSelect);
+    toggleTemplateSelect();
+  })();
+</script>
 
 {% endblock %}
