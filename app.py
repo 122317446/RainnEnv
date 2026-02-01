@@ -218,12 +218,13 @@ def agent_builder_page():
 
     agent_created = False
     saved_process_id = None
-    edit_mode = False
     edit_stages = []
     error_message = None
+    step = "details"
     agent_name_val = request.form.get("agent_name") if request.method == "POST" else ""
     agent_priming_val = request.form.get("agent_priming") if request.method == "POST" else ""
     ai_model_val = request.form.get("ai_model") if request.method == "POST" else ""
+    from_scratch_val = request.form.get("from_scratch") == "on" if request.method == "POST" else False
 
     def _normalize_stages(stage_names, stage_descs):
         normalized = []
@@ -244,39 +245,7 @@ def agent_builder_page():
         from_scratch = request.form.get("from_scratch") == "on"
 
         if action == "next":
-            if not from_scratch and not selected_taskdef:
-                error_message = "Select a blueprint template or choose 'Start from scratch' to continue."
-                return render_template(
-                    "agent_builder.html",
-                    taskdefs=taskdefs,
-                    stages=stages,
-                    selected_taskdef=selected_taskdef,
-                    agent_saved=agent_created,
-                    saved_process_id=saved_process_id,
-                    edit_mode=False,
-                    edit_stages=[],
-                    from_scratch=from_scratch,
-                    agent_name=agent_name_val,
-                    agent_priming=agent_priming_val,
-                    ai_model=ai_model_val,
-                    error_message=error_message
-                )
-            edit_mode = True
-            if from_scratch:
-                edit_stages = [
-                    ("extract", "Extract the key points."),
-                    ("output", "Present the final response for the user.")
-                ]
-            else:
-                if selected_taskdef:
-                    edit_stages = [
-                        (s.TaskStageDef_Type, s.TaskStageDef_Description)
-                        for s in stage_service.get_stages_for_task(selected_taskdef)
-                        if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
-                    ]
-                else:
-                    edit_stages = []
-
+            step = "template"
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
@@ -284,7 +253,161 @@ def agent_builder_page():
                 selected_taskdef=selected_taskdef,
                 agent_saved=agent_created,
                 saved_process_id=saved_process_id,
-                edit_mode=edit_mode,
+                step=step,
+                edit_stages=[],
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
+        if action == "back_details":
+            step = "details"
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                step=step,
+                edit_stages=[],
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
+        if action == "choose_template":
+            step = "stages"
+            if not from_scratch and not selected_taskdef:
+                error_message = "Choose a template or start from scratch."
+                return render_template(
+                    "agent_builder.html",
+                    taskdefs=taskdefs,
+                    stages=stages,
+                    selected_taskdef=selected_taskdef,
+                    agent_saved=agent_created,
+                    saved_process_id=saved_process_id,
+                    step="template",
+                    edit_stages=[],
+                    from_scratch=from_scratch,
+                    agent_name=agent_name_val,
+                    agent_priming=agent_priming_val,
+                    ai_model=ai_model_val,
+                    error_message=error_message
+                )
+            if from_scratch:
+                edit_stages = [
+                    ("extract", "Extract the key points."),
+                    ("output", "Present the final response for the user.")
+                ]
+            else:
+                edit_stages = [
+                (s.TaskStageDef_Type, s.TaskStageDef_Description)
+                for s in stage_service.get_stages_for_task(selected_taskdef)
+                if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+            ]
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                preview_stages=edit_stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                step=step,
+                edit_stages=edit_stages,
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
+        if action in ("review", "back_template", "back_stages", "save"):
+            stage_names = request.form.getlist("stage_name[]")
+            stage_descs = request.form.getlist("stage_desc[]")
+            has_custom = any(
+                (n or "").strip() or (d or "").strip()
+                for n, d in zip(stage_names, stage_descs)
+            )
+            if not from_scratch and selected_taskdef and not has_custom:
+                blueprint_stage_objs = [
+                    s for s in stage_service.get_stages_for_task(selected_taskdef)
+                    if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+                ]
+                edit_stages = _normalize_stages(
+                    [s.TaskStageDef_Type for s in blueprint_stage_objs],
+                    [s.TaskStageDef_Description for s in blueprint_stage_objs]
+                )
+            else:
+                edit_stages = _normalize_stages(stage_names, stage_descs)
+
+        if action == "back_template":
+            step = "template"
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                preview_stages=edit_stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                step=step,
+                edit_stages=edit_stages,
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
+        if action == "review":
+            if not from_scratch and not selected_taskdef:
+                error_message = "Choose a template or start from scratch to continue."
+                return render_template(
+                    "agent_builder.html",
+                    taskdefs=taskdefs,
+                    stages=stages,
+                    preview_stages=edit_stages,
+                    selected_taskdef=selected_taskdef,
+                    agent_saved=agent_created,
+                    saved_process_id=saved_process_id,
+                    step="stages",
+                    edit_stages=edit_stages,
+                    from_scratch=from_scratch,
+                    agent_name=agent_name_val,
+                    agent_priming=agent_priming_val,
+                    ai_model=ai_model_val,
+                    error_message=error_message
+                )
+            step = "review"
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                preview_stages=edit_stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                step=step,
+                edit_stages=edit_stages,
+                from_scratch=from_scratch,
+                agent_name=agent_name_val,
+                agent_priming=agent_priming_val,
+                ai_model=ai_model_val
+            )
+
+        if action == "back_stages":
+            step = "stages"
+            return render_template(
+                "agent_builder.html",
+                taskdefs=taskdefs,
+                stages=stages,
+                preview_stages=edit_stages,
+                selected_taskdef=selected_taskdef,
+                agent_saved=agent_created,
+                saved_process_id=saved_process_id,
+                step=step,
                 edit_stages=edit_stages,
                 from_scratch=from_scratch,
                 agent_name=agent_name_val,
@@ -296,9 +419,10 @@ def agent_builder_page():
         agent_priming = request.form.get("agent_priming")
         ai_model = request.form.get("ai_model")
 
-        stage_names = request.form.getlist("stage_name[]")
-        stage_descs = request.form.getlist("stage_desc[]")
-        edited_stages = _normalize_stages(stage_names, stage_descs)
+        edited_stages = edit_stages or _normalize_stages(
+            request.form.getlist("stage_name[]"),
+            request.form.getlist("stage_desc[]")
+        )
 
         taskdef_id_to_use = selected_taskdef
         from_scratch = request.form.get("from_scratch") == "on"
@@ -329,7 +453,7 @@ def agent_builder_page():
                     selected_taskdef=selected_taskdef,
                     agent_saved=agent_created,
                     saved_process_id=saved_process_id,
-                    edit_mode=True,
+                    step="stages",
                     edit_stages=edit_stages,
                     from_scratch=from_scratch,
                     agent_name=agent_name_val,
@@ -377,20 +501,32 @@ def agent_builder_page():
 
         agent_created = True
         saved_process_id = new_process.Process_ID
+        step = "review"
+
+    preview_stages = None
+    if edit_stages:
+        preview_stages = edit_stages
+    elif stages:
+        preview_stages = [
+            (s.TaskStageDef_Type, s.TaskStageDef_Description)
+            for s in stages
+            if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+        ]
 
     return render_template(
         "agent_builder.html",
         taskdefs=taskdefs,
         stages=stages,
+        preview_stages=preview_stages,
         selected_taskdef=selected_taskdef,
         agent_saved=agent_created,
         saved_process_id=saved_process_id,
-        edit_mode=edit_mode,
+        step=step,
         edit_stages=edit_stages,
-        from_scratch=False,
-        agent_name=agent_name_val if agent_created else "",
-        agent_priming=agent_priming_val if agent_created else "",
-        ai_model=ai_model_val if agent_created else "",
+        from_scratch=from_scratch_val,
+        agent_name=agent_name_val if agent_created else agent_name_val,
+        agent_priming=agent_priming_val if agent_created else agent_priming_val,
+        ai_model=ai_model_val if agent_created else ai_model_val,
         error_message=error_message
     )
 

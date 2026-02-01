@@ -17,3 +17,24 @@
   background-color: #5a35a6;
   border-color: #5a35a6;
 }
+
+.template-card {
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.template-card:hover,
+.template-card:focus {
+  border-color: rgba(111, 66, 193, 0.6);
+  box-shadow: 0 0 0 0.15rem rgba(111, 66, 193, 0.15);
+}
+
+.template-card.selected {
+  border-color: rgba(111, 66, 193, 0.9);
+  box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.2);
+}
+
+.template-card .card-body {
+  white-space: normal;
+}
