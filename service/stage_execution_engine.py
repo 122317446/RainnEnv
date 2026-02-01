@@ -96,10 +96,17 @@ class StageExecutionEngine:
                 if output_text is None:
                     raise Exception("Model client returned no output.")
 
-                # Write output artifact (infer type from model output)
-                output_type = StageExecutionEngine._infer_output_type(output_text)
+                # Write output artifact (infer type from stage intent or model output)
+                desired_type = StageExecutionEngine._desired_output_type(stage_type_raw, stage_desc)
+                output_type = desired_type or StageExecutionEngine._infer_output_type(output_text)
                 safe_stage_type = stage_type_raw.replace(" ", "_").lower() or "stage"
-                file_ext = "svg" if output_type == "svg" else "txt"
+                file_ext = "txt"
+                if output_type == "svg":
+                    file_ext = "svg"
+                elif output_type == "csv":
+                    file_ext = "csv"
+                elif output_type == "json":
+                    file_ext = "json"
                 out_filename = f"{i:02d}_stage_{safe_stage_type}_output.{file_ext}"
                 out_path = os.path.join(artifacts_dir, out_filename)
 
@@ -123,11 +130,34 @@ class StageExecutionEngine:
         return final_output_path, final_output_type
 
     @staticmethod
+    def _desired_output_type(stage_type, stage_description):
+        stage_type_l = (stage_type or "").lower()
+        stage_desc_l = (stage_description or "").lower()
+        haystack = f"{stage_type_l} {stage_desc_l}"
+        if ("graph" in haystack or "visual" in haystack or "chart" in haystack
+                or "diagram" in haystack or "visualize" in haystack or "plot" in haystack
+                or "infographic" in haystack):
+            return "svg"
+        if ("csv" in haystack or "table" in haystack or "spreadsheet" in haystack
+                or "tabular" in haystack or "rows" in haystack or "columns" in haystack
+                or "export" in haystack):
+            return "csv"
+        if ("json" in haystack or "structured" in haystack or "schema" in haystack
+                or "key-value" in haystack or "object" in haystack or "array" in haystack
+                or "fields" in haystack):
+            return "json"
+        return None
+
+    @staticmethod
     def _infer_output_type(output_text):
         text = (output_text or "").lstrip()
         text_lower = text[:500].lower()
         if text_lower.startswith("<svg") or ("<svg" in text_lower and text_lower.startswith("<?xml")):
             return "svg"
+        if text_lower.startswith("{") or text_lower.startswith("["):
+            return "json"
+        if "," in text_lower and "\n" in text_lower:
+            return "csv"
         return "text"
 
     @staticmethod
@@ -180,5 +210,17 @@ Perform ONLY this stage. Output must be suitable as input to the next stage.
 - Return ONLY valid standalone SVG markup.
 - Output must start with "<svg" and end with "</svg>".
 - No prose, no markdown, no code fences.
+""".strip()
+        if "csv" in stage_type_l or "csv" in stage_desc_l or "table" in stage_desc_l:
+            return """
+[OUTPUT RULES FOR TABLE]
+- Return ONLY CSV text (no prose, no markdown).
+- First line must be the header row.
+""".strip()
+        if "json" in stage_type_l or "json" in stage_desc_l or "structured" in stage_desc_l:
+            return """
+[OUTPUT RULES FOR STRUCTURED]
+- Return ONLY valid JSON.
+- Do not wrap in code fences or add commentary.
 """.strip()
         return ""
