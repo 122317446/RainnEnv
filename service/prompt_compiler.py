@@ -49,9 +49,6 @@ class PromptCompiler:
         agent_desc = (getattr(taskdef, "TaskDef_Description", None) or "").strip()
 
         master_prompt = f"""
-[SYSTEM / PRIMING]
-{agent_priming}
-
 [AGENT TEMPLATE]
 Name: {agent_name}
 Description: {agent_desc}

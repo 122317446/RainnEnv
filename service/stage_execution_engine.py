@@ -36,10 +36,12 @@ class StageExecutionEngine:
         model_client,
         model_name,
         task_stage_instance_service,
-        stage0_artifact_path
+        stage0_artifact_path,
+        system_prompt=None
     ):
         """
         Executes stages 1..N (skipping input) and returns final artifact path + type.
+        If system_prompt is provided, it is sent to the model client as a system-level instruction.
         """
 
         os.makedirs(artifacts_dir, exist_ok=True)
@@ -86,7 +88,11 @@ class StageExecutionEngine:
                 )
 
                 # Call model
-                output_text = model_client.generate(model_name, stage_prompt)
+                output_text = model_client.generate(
+                    model_name,
+                    stage_prompt,
+                    system_prompt=system_prompt
+                )
                 if output_text is None:
                     raise Exception("Model client returned no output.")
 
@@ -131,6 +137,12 @@ class StageExecutionEngine:
         stage_description = (stage_description or "").strip()
         input_text = (input_text or "").strip()
         output_rules = StageExecutionEngine._output_rules_for_stage(stage_type, stage_description)
+        priority_rules = """
+[PRIORITY RULES]
+- The system primer sets global rules, tone, and formatting.
+- Stage instructions define the task for this step.
+- If there is a conflict, follow the system primer.
+""".strip()
 
         return f"""
 {master_prompt}
@@ -141,6 +153,9 @@ Goal: {stage_description}
 
 [CURRENT INPUT]
 {input_text}
+
+[PRIORITY]
+{priority_rules}
 
 [INSTRUCTIONS]
 Perform ONLY this stage. Output must be suitable as input to the next stage.

@@ -160,7 +160,8 @@ class AgentRuntime:
                 model_client=model_client,
                 model_name=model_name,
                 task_stage_instance_service=task_stage_instance_service,
-                stage0_artifact_path=stage0_artifact_path
+                stage0_artifact_path=stage0_artifact_path,
+                system_prompt=agent_priming
             )
 
             # ------------------------------------------

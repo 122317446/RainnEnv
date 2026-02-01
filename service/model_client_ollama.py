@@ -30,19 +30,25 @@ class OllamaModelClient:
         self.host = host.rstrip("/")
         self.timeout_seconds = timeout_seconds
 
-    def generate(self, model_name, prompt):
+    def generate(self, model_name, prompt, system_prompt=None):
         """
         Generate a single response from Ollama (non-streaming) with needed parameters given.
+        If system_prompt is provided, it is sent as a top-level system instruction.
         """
+
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
 
         payload = {
             "model": model_name,
-            "prompt": prompt,
+            "messages": messages,
             "stream": False
         } #The packet of data to send to ollama 
 
         r = requests.post(
-            f"{self.host}/api/generate",
+            f"{self.host}/api/chat",
             json=payload, #specifying the payload to be json
             timeout=self.timeout_seconds
         )
@@ -51,7 +57,8 @@ class OllamaModelClient:
         r.raise_for_status()
 
         data = r.json() if r.content else {} #converting JSON into a readable python object
-        response_text = (data.get("response") or "").strip() #response within the object is only collected
+        message = data.get("message") or {}
+        response_text = (message.get("content") or "").strip() #response within the object is only collected
 
         if not response_text:
             # Keep this explicit: an empty response is treated as a failed stage.
