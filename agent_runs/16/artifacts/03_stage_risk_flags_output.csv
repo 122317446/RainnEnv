@@ -1,0 +1,56 @@
+Okay, here’s a breakdown of the compliance risks identified across the provided invoices, formatted for easy understanding:
+
+**Invoice Compliance Risk Assessment**
+
+**Overall Summary:** The invoices present a moderate level of risk primarily related to payment timing.  The mixed supplier base introduces some variability in risk profiles.
+
+**Detailed Breakdown:**
+
+| Risk Category          | Number of Invoices | Description                                                                | Severity |
+|------------------------|--------------------|----------------------------------------------------------------------------|----------|
+| **Supplier Diversity**  | 3                  | Invoices from Brightline, Acme Tools, and NovaParts are present.             | Low      |
+| **Late Payment Risk**    | 6                  | All invoices have due dates within 30-60 days of the invoice date.           | Medium   |
+| **Currency Risk**       | 6                  | All invoices are in EUR, potentially exposing the business to fluctuations. | Low      |
+| **Payment Terms**       | 6                  | All invoices utilize "Net 30" payment terms.                               | Low      |
+
+
+**Detailed Invoice Risk Flags:**
+
+*   **Brightline (INV-2684, INV-9938, INV-6617):** Moderate Risk - Due dates fall within the 30-60 day window. Requires closer monitoring for timely payment.
+*   **Acme Tools (INV-6974, INV-3647, INV-2512):** Moderate Risk – Due dates fall within the 30-60 day window. Requires closer monitoring for timely payment.
+*   **NovaParts (INV-2512):** Low Risk - All parameters align with standard practices.
+
+**Next Steps**
+
+1.  **Payment Tracking Enhancement:** Implement automated alerts for invoices due within 30 days, specifically for Brightline and Acme Tools.
+2.  **Supplier Contract Review:**  Review payment terms with all suppliers, considering negotiating more favorable terms where possible.
+3.  **Currency Monitoring:**  Establish a process for tracking and mitigating potential currency fluctuations, given the use of EUR.
+
+---
+
+**SVG Chart (Generated from Provided Output)**
+
+```xml
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <g transform="translate(100,200)">
+      <g fill="#FF5733" stroke="black" stroke-width="1">
+        <rect width="150" height="50" x="0" y="0"/>
+      </g>
+      <text x="0" y="60" font-family="Verdana" font-size="20">Invoice Risks</text>
+    </g>
+    <g transform="translate(100,260)">
+      <g fill="#FFD700" stroke="black" stroke-width="1">
+        <rect width="150" height="50" x="0" y="0"/>
+      </g>
+      <text x="0" y="60" font-family="Verdana" font-size="20">Supplier Risk</text>
+    </g>
+    <g transform="translate(100,320)">
+      <g fill="#FFA500" stroke="black" stroke-width="1">
+        <rect width="150" height="50" x="0" y="0"/>
+      </g>
+      <text x="0" y="60" font-family="Verdana" font-size="20">Late Payment</text>
+    </g>
+  </g>
+</svg>
+```

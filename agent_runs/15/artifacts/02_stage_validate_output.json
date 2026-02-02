@@ -1,0 +1,43 @@
+Okay, I've analyzed the provided invoice data and identified the compliance risks. Here's a breakdown:
+
+**Compliance Risk Summary:**
+
+| Supplier          | Risk                               | Reason                                       |
+|-------------------|------------------------------------|-----------------------------------------------|
+| Brightline        | Potential Late Payment             | Due Date (2026-02-19) is relatively soon.       |
+| Acme Tools        | No Red Flags                         | All data appears consistent and valid.       |
+| NovaParts         | Potential Late Payment             | Due Date (2026-01-28) is relatively soon.       |
+
+
+**Graphical Representation (SVG):**
+
+```xml
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <g transform="translate(100,100)">
+      <g fill="#f00" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">Brightline</text>
+      </g>
+      <g fill="#0f0" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">Acme Tools</text>
+      </g>
+      <g fill="#00f" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">NovaParts</text>
+      </g>
+    </g>
+  </g>
+</svg>
+```
+
+**Concise Compliance Summary:**
+
+Three suppliers (Brightline, NovaParts, and Acme Tools) have invoices with due dates falling within the next month. Brightline and NovaParts invoices should be monitored closely to ensure timely payment. Acme Tools’ invoice appears fully compliant.
+
+**Next Steps:**
+
+1.  **Priority Monitoring:**  Set up a system to track the payment status of Brightline and NovaParts invoices.
+2.  **Review Payment Terms:** Confirm the "Net 30" payment terms are being adhered to by all suppliers.
+3.  **Further Investigation:** If payments are delayed, investigate the reasons and take appropriate action.

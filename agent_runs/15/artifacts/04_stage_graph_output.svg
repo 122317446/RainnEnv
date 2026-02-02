@@ -1,0 +1,22 @@
+Okay, here’s the SVG output as requested:
+
+```xml
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <g transform="translate(100,100)">
+      <g fill="#f00" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">Brightline</text>
+      </g>
+      <g fill="#0f0" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">Acme Tools</text>
+      </g>
+      <g fill="#00f" stroke="#fff" stroke-width="2">
+        <rect width="150" height="40" x="0" y="50" />
+        <text x="50" y="80" font-size="20">NovaParts</text>
+      </g>
+    </g>
+  </g>
+</svg>
+```

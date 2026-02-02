@@ -1,0 +1,14 @@
+=== FILE 1: invoice_sample_10.pdf ===
+INVOICESupplier: BrightlineInvoiceNumber: INV-2684InvoiceDate: 2025-12-13DueDate: 2026-02-19Subtotal: 3019.48Tax: 531.09Total: 5469.19Currency: EURPO: PO-867PaymentTerms: Net 30
+
+=== FILE 2: invoice_sample_09.pdf ===
+INVOICESupplier: Acme ToolsInvoiceNumber: INV-6974InvoiceDate: 2025-12-30DueDate: 2026-03-01Subtotal: 4082.55Tax: 523.39Total: 5094.62Currency: EURPO: PO-315PaymentTerms: Net 30
+
+=== FILE 3: invoice_sample_08.pdf ===
+INVOICESupplier: BrightlineInvoiceNumber: INV-9938InvoiceDate: 2025-12-03DueDate: 2026-02-23Subtotal: 2161.47Tax: 353.89Total: 2748.93Currency: EURPO: PO-142PaymentTerms: Net 30
+
+=== FILE 4: invoice_sample_07.pdf ===
+INVOICESupplier: Acme ToolsInvoiceNumber: INV-3647InvoiceDate: 2025-12-25DueDate: 2026-01-29Subtotal: 2982.56Tax: 285.23Total: 648.35Currency: EURPO: PO-177PaymentTerms: Net 30
+
+=== FILE 5: invoice_sample_06.pdf ===
+INVOICESupplier: NovaPartsInvoiceNumber: INV-2512InvoiceDate: 2025-12-22DueDate: 2026-01-28Subtotal: 4232.07Tax: 74.25Total: 2267.78Currency: EURPO: PO-233PaymentTerms: Net 30

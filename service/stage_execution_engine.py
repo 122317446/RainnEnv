@@ -20,7 +20,10 @@
 # Used in agent_runtime_service.py
 # ==========================================
 
+import json
 import os
+
+from service.chart_renderer import render_chart_svg
 
 
 class StageExecutionEngine:
@@ -99,6 +102,16 @@ class StageExecutionEngine:
                 # Write output artifact (infer type from stage intent or model output)
                 desired_type = StageExecutionEngine._desired_output_type(stage_type_raw, stage_desc)
                 output_type = desired_type or StageExecutionEngine._infer_output_type(output_text)
+                if output_type == "svg":
+                    rendered_svg = StageExecutionEngine._render_svg_from_json(output_text)
+                    if rendered_svg:
+                        output_text = rendered_svg
+                    else:
+                        extracted_svg = StageExecutionEngine._extract_svg(output_text)
+                        if extracted_svg:
+                            output_text = extracted_svg
+                        else:
+                            output_type = "text"
                 safe_stage_type = stage_type_raw.replace(" ", "_").lower() or "stage"
                 file_ext = "txt"
                 if output_type == "svg":
@@ -161,6 +174,44 @@ class StageExecutionEngine:
         return "text"
 
     @staticmethod
+    def _render_svg_from_json(output_text):
+        payload = StageExecutionEngine._extract_json_payload(output_text)
+        if not payload:
+            return None
+        try:
+            spec = json.loads(payload)
+        except Exception:
+            return None
+        if not isinstance(spec, dict):
+            return None
+        return render_chart_svg(spec)
+
+    @staticmethod
+    def _extract_json_payload(output_text):
+        text = (output_text or "").strip()
+        if "```" in text:
+            parts = text.split("```")
+            for part in parts:
+                candidate = part.strip()
+                if candidate.startswith("{") and candidate.endswith("}"):
+                    return candidate
+        start = text.find("{")
+        end = text.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            return text[start:end + 1]
+        return None
+
+    @staticmethod
+    def _extract_svg(output_text):
+        text = output_text or ""
+        lower = text.lower()
+        start = lower.find("<svg")
+        end = lower.rfind("</svg>")
+        if start != -1 and end != -1 and end > start:
+            return text[start:end + len("</svg>")]
+        return None
+
+    @staticmethod
     def _build_stage_prompt(master_prompt, stage_type, stage_description, input_text):
         master_prompt = (master_prompt or "").strip()
         stage_type = (stage_type or "").strip()
@@ -207,9 +258,9 @@ Perform ONLY this stage. Output must be suitable as input to the next stage.
         if "graph" in stage_type_l or "graph" in stage_desc_l or "visual" in stage_type_l or "visual" in stage_desc_l:
             return """
 [OUTPUT RULES FOR GRAPH]
-- Return ONLY valid standalone SVG markup.
-- Output must start with "<svg" and end with "</svg>".
-- No prose, no markdown, no code fences.
+- Return ONLY JSON with keys: title, labels, values, x_label, y_label.
+- "labels" must be a list of strings and "values" must be a list of numbers.
+- Do not include prose, markdown, or code fences.
 """.strip()
         if "csv" in stage_type_l or "csv" in stage_desc_l or "table" in stage_desc_l:
             return """

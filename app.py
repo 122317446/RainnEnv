@@ -572,6 +572,7 @@ def agent_runner_page(process_id):
     output_artifact = None
     output_task_instance_id = None
     output_artifact_name = None
+    stage_outputs = []
 
     if request.method == "POST":
         uploaded_files = request.files.getlist("uploaded_file")
@@ -609,6 +610,42 @@ def agent_runner_page(process_id):
                         output_task_instance_id = result.get("task_instance_id")
                         if output_artifact:
                             output_artifact_name = os.path.basename(output_artifact)
+                        if output_task_instance_id:
+                            stage_instances = task_stage_instance.get_stages_for_task_instance(output_task_instance_id)
+                            for st in stage_instances:
+                                if not st.Output_Artifact_Path:
+                                    continue
+                                artifact_name = os.path.basename(st.Output_Artifact_Path)
+                                ext = os.path.splitext(artifact_name)[1].lower()
+                                out_type = "text"
+                                if ext == ".svg":
+                                    out_type = "svg"
+                                elif ext == ".csv":
+                                    out_type = "csv"
+                                elif ext == ".json":
+                                    out_type = "json"
+                                preview_text = None
+                                preview_truncated = False
+                                if out_type in ("text", "csv", "json"):
+                                    try:
+                                        max_chars = 4000
+                                        with open(st.Output_Artifact_Path, "r", encoding="utf-8") as f:
+                                            preview_text = f.read(max_chars + 1)
+                                        if preview_text and len(preview_text) > max_chars:
+                                            preview_text = preview_text[:max_chars]
+                                            preview_truncated = True
+                                    except Exception:
+                                        preview_text = None
+                                stage_outputs.append({
+                                    "order": st.Stage_Order,
+                                    "name": st.Stage_Name,
+                                    "artifact_name": artifact_name,
+                                    "output_type": out_type,
+                                    "task_instance_id": output_task_instance_id,
+                                    "preview_text": preview_text,
+                                    "preview_truncated": preview_truncated
+                                })
+                            stage_outputs.sort(key=lambda x: x["order"])
                     else:
                         file_text = result
             except Exception as e:
@@ -629,7 +666,8 @@ def agent_runner_page(process_id):
         output_type=output_type,
         output_artifact=output_artifact,
         output_task_instance_id=output_task_instance_id,
-        output_artifact_name=output_artifact_name
+        output_artifact_name=output_artifact_name,
+        stage_outputs=stage_outputs
     )
 
 

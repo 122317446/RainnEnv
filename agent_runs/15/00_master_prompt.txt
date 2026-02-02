@@ -1,0 +1,32 @@
+[AGENT TEMPLATE]
+Name: invoice_compliance
+Description: Check invoices for missing fields, inconsistencies, and payment risks across supplier formats.
+
+[WORKFLOW PLAN]
+1. input - Receive invoice files for compliance checks.
+2. extract - Extract supplier, invoice number, dates, totals, and line items.
+3. validate - Check for missing fields, inconsistent totals, and date/payment issues.
+4. risk_flags - List compliance risks or late-payment concerns with short reasons.
+5. graph - Visualise key risks and totals as an SVG chart. Output ONLY valid <svg> markup.
+6. output - Provide a concise compliance summary and next steps.
+
+[INPUT]
+=== FILE 1: invoice_sample_10.pdf ===
+INVOICESupplier: BrightlineInvoiceNumber: INV-2684InvoiceDate: 2025-12-13DueDate: 2026-02-19Subtotal: 3019.48Tax: 531.09Total: 5469.19Currency: EURPO: PO-867PaymentTerms: Net 30
+
+=== FILE 2: invoice_sample_09.pdf ===
+INVOICESupplier: Acme ToolsInvoiceNumber: INV-6974InvoiceDate: 2025-12-30DueDate: 2026-03-01Subtotal: 4082.55Tax: 523.39Total: 5094.62Currency: EURPO: PO-315PaymentTerms: Net 30
+
+=== FILE 3: invoice_sample_08.pdf ===
+INVOICESupplier: BrightlineInvoiceNumber: INV-9938InvoiceDate: 2025-12-03DueDate: 2026-02-23Subtotal: 2161.47Tax: 353.89Total: 2748.93Currency: EURPO: PO-142PaymentTerms: Net 30
+
+=== FILE 4: invoice_sample_07.pdf ===
+INVOICESupplier: Acme ToolsInvoiceNumber: INV-3647InvoiceDate: 2025-12-25DueDate: 2026-01-29Subtotal: 2982.56Tax: 285.23Total: 648.35Currency: EURPO: PO-177PaymentTerms: Net 30
+
+=== FILE 5: invoice_sample_06.pdf ===
+INVOICESupplier: NovaPartsInvoiceNumber: INV-2512InvoiceDate: 2025-12-22DueDate: 2026-01-28Subtotal: 4232.07Tax: 74.25Total: 2267.78Currency: EURPO: PO-233PaymentTerms: Net 30
+
+[OUTPUT RULES]
+- Follow the workflow plan step-by-step.
+- Keep outputs clear and structured.
+- Do not invent facts not present in the input.

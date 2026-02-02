@@ -1,0 +1,64 @@
+```json
+[
+  {
+    "Supplier": "Brightline",
+    "InvoiceNumber": "INV-1651",
+    "InvoiceDate": "2025-12-21",
+    "DueDate": "2026-01-06",
+    "Subtotal": 1431.91,
+    "Tax": 186.15,
+    "Total": 1618.06,
+    "Currency": "EUR",
+    "PO": "PO-697",
+    "PaymentTerms": "Net 30"
+  },
+  {
+    "Supplier": "Vertex Labs",
+    "InvoiceNumber": "INV-9565",
+    "InvoiceDate": "2025-12-12",
+    "DueDate": "2026-03-01",
+    "Subtotal": 1004.07,
+    "Tax": 130.53,
+    "Total": 1134.6,
+    "Currency": "EUR",
+    "PO": "PO-785",
+    "PaymentTerms": "Net 30"
+  },
+  {
+    "Supplier": "Acme Tools",
+    "InvoiceNumber": "INV-4910",
+    "InvoiceDate": "2025-12-10",
+    "DueDate": "2026-01-26",
+    "Subtotal": 653.37,
+    "Tax": 84.94,
+    "Total": 738.31,
+    "Currency": "EUR",
+    "PO": "PO-760",
+    "PaymentTerms": "Net 30"
+  },
+  {
+    "Supplier": "Acme Tools",
+    "InvoiceNumber": "INV-8491",
+    "InvoiceDate": "2025-12-12",
+    "DueDate": "2026-03-01",
+    "Subtotal": 2330.03,
+    "Tax": 302.9,
+    "Total": 2632.93,
+    "Currency": "EUR",
+    "PO": "PO-174",
+    "PaymentTerms": "Net 30"
+  },
+  {
+    "Supplier": "NovaParts",
+    "InvoiceNumber": "INV-8508",
+    "InvoiceDate": "2025-12-21",
+    "DueDate": "2026-02-06",
+    "Subtotal": 2989.46,
+    "Tax": 388.63,
+    "Total": 3378.09,
+    "Currency": "EUR",
+    "PO": "PO-175",
+    "PaymentTerms": "Net 30"
+  }
+]
+```

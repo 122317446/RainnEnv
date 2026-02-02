@@ -1,0 +1,38 @@
+```json
+{
+  "invoice_risks": [
+    {
+      "supplier": "Acme Tools",
+      "invoice_number": "INV-8491",
+      "risk_description": "DueDate (2026-03-01) is significantly past the standard Net 30 payment terms. Potential late payment risk.",
+      "risk_level": "High"
+    },
+    {
+      "supplier": "Vertex Labs",
+      "invoice_number": "INV-9565",
+      "risk_description": "DueDate (2026-03-01) is significantly past the standard Net 30 payment terms. Potential late payment risk.",
+      "risk_level": "High"
+    },
+    {
+      "supplier": "Acme Tools",
+      "invoice_number": "INV-4910",
+      "risk_description": "Total of 738.31 EUR is relatively small compared to other invoices. Investigate if this is standard or a potential anomaly.",
+      "risk_level": "Medium"
+    },
+    {
+      "supplier": "NovaParts",
+      "invoice_number": "INV-8508",
+      "risk_description": "Total of 3378.09 EUR is a significant amount. Verify the accuracy of this invoice and the supporting PO.",
+      "risk_level": "Medium"
+    },
+     {
+      "supplier": "Brightline",
+      "invoice_number": "INV-1651",
+      "risk_description": "Subtotal of 1431.91 EUR is a significant amount. Verify the accuracy of this invoice and the supporting PO.",
+      "risk_level": "Medium"
+    }
+  ],
+  "total_invoice_value": 8783.31,
+  "currency": "EUR"
+}
+```
