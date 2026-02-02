@@ -205,6 +205,10 @@ def agent_builder_page():
     Uses the working zip-style create_process signature.
     """
     taskdefs = taskdef_service.list_taskdefs()
+    template_taskdefs = [
+        t for t in taskdefs
+        if not (t.TaskDef_Name or "").startswith("Custom -")
+    ]
 
     selected_taskdef = (
         request.args.get("operation_selected") or
@@ -249,6 +253,7 @@ def agent_builder_page():
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 selected_taskdef=selected_taskdef,
                 agent_saved=agent_created,
@@ -266,6 +271,7 @@ def agent_builder_page():
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 selected_taskdef=selected_taskdef,
                 agent_saved=agent_created,
@@ -285,6 +291,7 @@ def agent_builder_page():
                 return render_template(
                     "agent_builder.html",
                     taskdefs=taskdefs,
+                    template_taskdefs=template_taskdefs,
                     stages=stages,
                     selected_taskdef=selected_taskdef,
                     agent_saved=agent_created,
@@ -304,13 +311,14 @@ def agent_builder_page():
                 ]
             else:
                 edit_stages = [
-                (s.TaskStageDef_Type, s.TaskStageDef_Description)
-                for s in stage_service.get_stages_for_task(selected_taskdef)
-                if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
-            ]
+                    (s.TaskStageDef_Type, s.TaskStageDef_Description)
+                    for s in stage_service.get_stages_for_task(selected_taskdef)
+                    if (getattr(s, "TaskStageDef_Type", "") or "").strip().lower() != "input"
+                ]
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 preview_stages=edit_stages,
                 selected_taskdef=selected_taskdef,
@@ -348,6 +356,7 @@ def agent_builder_page():
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 preview_stages=edit_stages,
                 selected_taskdef=selected_taskdef,
@@ -367,6 +376,7 @@ def agent_builder_page():
                 return render_template(
                     "agent_builder.html",
                     taskdefs=taskdefs,
+                    template_taskdefs=template_taskdefs,
                     stages=stages,
                     preview_stages=edit_stages,
                     selected_taskdef=selected_taskdef,
@@ -384,6 +394,7 @@ def agent_builder_page():
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 preview_stages=edit_stages,
                 selected_taskdef=selected_taskdef,
@@ -402,6 +413,7 @@ def agent_builder_page():
             return render_template(
                 "agent_builder.html",
                 taskdefs=taskdefs,
+                template_taskdefs=template_taskdefs,
                 stages=stages,
                 preview_stages=edit_stages,
                 selected_taskdef=selected_taskdef,
@@ -449,6 +461,7 @@ def agent_builder_page():
                 return render_template(
                     "agent_builder.html",
                     taskdefs=taskdefs,
+                    template_taskdefs=template_taskdefs,
                     stages=stages,
                     selected_taskdef=selected_taskdef,
                     agent_saved=agent_created,
@@ -516,6 +529,7 @@ def agent_builder_page():
     return render_template(
         "agent_builder.html",
         taskdefs=taskdefs,
+        template_taskdefs=template_taskdefs,
         stages=stages,
         preview_stages=preview_stages,
         selected_taskdef=selected_taskdef,

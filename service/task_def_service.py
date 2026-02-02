@@ -28,7 +28,8 @@ class TaskDefService:
     def create_taskdef(self, name, description):
         """ Creates a new TaskDef (agent type). """
         new_task = TaskDef(None, name, description)
-        return self.taskdef_dao.add_TaskDef(new_task)
+        created = self.taskdef_dao.add_TaskDef(new_task)
+        return created.TaskDef_ID
 
     def get_taskdef_by_id(self, taskdef_id):
         """ Retrieves a TaskDef by its ID. """

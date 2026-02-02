@@ -36,6 +36,8 @@ class TaskDefDAO:
             (task_def.TaskDef_Name, task_def.TaskDef_Description)
         )
         self.connection.commit()
+        task_def.TaskDef_ID = self.cursor.lastrowid
+        return task_def
 
     def get_all_TaskDefs(self):
         """ Retrieves all TaskDef records from the database.

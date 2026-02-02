@@ -22,15 +22,25 @@
 <div class="row row-cards">
   <div class="col-12">
     <div class="card">
-      <div class="card-body d-flex gap-3">
-        <span class="badge {{ 'bg-primary text-white' if step == 'details' else 'bg-light text-secondary' }}">1</span>
-        <div class="{{ 'fw-semibold' if step == 'details' else 'text-secondary' }}">Details</div>
-        <span class="badge {{ 'bg-primary text-white' if step == 'template' else 'bg-light text-secondary' }}">2</span>
-        <div class="{{ 'fw-semibold' if step == 'template' else 'text-secondary' }}">Template Selection</div>
-        <span class="badge {{ 'bg-primary text-white' if step == 'stages' else 'bg-light text-secondary' }}">3</span>
-        <div class="{{ 'fw-semibold' if step == 'stages' else 'text-secondary' }}">Define Stages</div>
-        <span class="badge {{ 'bg-primary text-white' if step == 'review' else 'bg-light text-secondary' }}">4</span>
-        <div class="{{ 'fw-semibold' if step == 'review' else 'text-secondary' }}">Review & Create</div>
+      <div class="card-body">
+        <div class="builder-steps">
+          <div class="builder-step {% if step == 'details' %}active{% endif %}">
+            <span class="builder-step-num">1</span>
+            <span class="builder-step-label">Details</span>
+          </div>
+          <div class="builder-step {% if step == 'template' %}active{% endif %}">
+            <span class="builder-step-num">2</span>
+            <span class="builder-step-label">Choose Template</span>
+          </div>
+          <div class="builder-step {% if step == 'stages' %}active{% endif %}">
+            <span class="builder-step-num">3</span>
+            <span class="builder-step-label">Define Stages</span>
+          </div>
+          <div class="builder-step {% if step == 'review' %}active{% endif %}">
+            <span class="builder-step-num">4</span>
+            <span class="builder-step-label">Review</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -47,7 +57,7 @@
    Agent Builder Form Card
    Submits to same route using POST.
   ======================================================= -->
-  <div class="col-12 {% if step == 'template' %}col-lg-12{% else %}col-lg-8{% endif %}">
+  <div class="col-12 {% if step == 'template' or step == 'details' %}col-lg-12{% else %}col-lg-8{% endif %}">
     <div class="card">
       <div class="card-body">
 
@@ -61,6 +71,10 @@
           {% endif %}
 
           {% if step == 'details' %}
+          <div class="col-12">
+            <div class="fw-semibold">Agent details</div>
+            <div class="text-secondary small">These settings apply to every stage.</div>
+          </div>
           <!-- ===============================
                Agent Name Input
           =============================== -->
@@ -104,12 +118,13 @@
 
           <div class="col-12">
             <div class="fw-semibold mb-2">Choose a template</div>
-            <div class="text-secondary mb-3">Pick a blueprint to start from, or build from scratch.</div>
+            <div class="text-secondary mb-1">Pick a blueprint to start from, or build from scratch.</div>
+            <div class="text-secondary small">Templates are starting points—you can edit stages next.</div>
           </div>
 
           <div class="col-12">
             <div class="row g-2">
-              {% for t in taskdefs %}
+              {% for t in template_taskdefs %}
               <div class="col-12 col-md-6">
                 <div class="card card-sm template-card h-100"
                      role="button"
@@ -161,22 +176,31 @@
               </button>
             </div>
             <div class="text-secondary">Stage 0 is automatic. If no output stage is present, one will be added.</div>
+            <div class="text-secondary small">Tip: use short verbs like “extract”, “validate”, “output”.</div>
           </div>
 
           <div class="col-12" id="stageContainer">
             {% if edit_stages %}
             {% for s in edit_stages %}
             <div class="row g-2 stage-row">
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <label class="form-label">Stage name</label>
-                <input type="text" name="stage_name[]" class="form-control" required value="{{ s[0] }}">
+                <input type="text" name="stage_name[]" class="form-control" required value="{{ s[0] }}" placeholder="e.g., extract, validate, output">
               </div>
-              <div class="col-12 col-md-7">
+              <div class="col-12 col-md-8">
                 <label class="form-label">Stage instruction</label>
-                <input type="text" name="stage_desc[]" class="form-control" required value="{{ s[1] }}">
+                <input type="text" name="stage_desc[]" class="form-control" required value="{{ s[1] }}" placeholder="Describe what this stage should do">
               </div>
-              <div class="col-12 col-md-1 d-flex align-items-end">
-                <button type="button" class="btn btn-outline-danger w-100 remove-stage">
+              <div class="col-12 col-md-1 d-flex align-items-end gap-2 stage-actions">
+                <div class="stage-move">
+                  <button type="button" class="stage-move-btn move-up" title="Move up">
+                    <i class="ti ti-chevron-up"></i>
+                  </button>
+                  <button type="button" class="stage-move-btn move-down" title="Move down">
+                    <i class="ti ti-chevron-down"></i>
+                  </button>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-icon remove-stage">
                   <i class="ti ti-x"></i>
                 </button>
               </div>
@@ -184,16 +208,24 @@
             {% endfor %}
             {% else %}
             <div class="row g-2 stage-row">
-              <div class="col-12 col-md-4">
+              <div class="col-12 col-md-3">
                 <label class="form-label">Stage name</label>
-                <input type="text" name="stage_name[]" class="form-control" required>
+                <input type="text" name="stage_name[]" class="form-control" required placeholder="e.g., extract, validate, output">
               </div>
-              <div class="col-12 col-md-7">
+              <div class="col-12 col-md-8">
                 <label class="form-label">Stage instruction</label>
-                <input type="text" name="stage_desc[]" class="form-control" required>
+                <input type="text" name="stage_desc[]" class="form-control" required placeholder="Describe what this stage should do">
               </div>
-              <div class="col-12 col-md-1 d-flex align-items-end">
-                <button type="button" class="btn btn-outline-danger w-100 remove-stage">
+              <div class="col-12 col-md-1 d-flex align-items-end gap-2 stage-actions">
+                <div class="stage-move">
+                  <button type="button" class="stage-move-btn move-up" title="Move up">
+                    <i class="ti ti-chevron-up"></i>
+                  </button>
+                  <button type="button" class="stage-move-btn move-down" title="Move down">
+                    <i class="ti ti-chevron-down"></i>
+                  </button>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-icon remove-stage">
                   <i class="ti ti-x"></i>
                 </button>
               </div>
@@ -223,7 +255,8 @@
               {% if from_scratch %}
                 Custom template from scratch
               {% elif selected_taskdef %}
-                Blueprint ID: {{ selected_taskdef }}
+                {% set selected = (taskdefs | selectattr("TaskDef_ID", "equalto", selected_taskdef) | list | first) %}
+                Blueprint: {{ selected.TaskDef_Name if selected else selected_taskdef }}
               {% else %}
                 No blueprint selected
               {% endif %}
@@ -288,13 +321,14 @@
    Displays stages for the selected operation/template.
    If no stages are available, shows a hint message.
   ======================================================= -->
-  {% if step != 'template' %}
+  {% if step != 'template' and step != 'details' %}
   <div class="col-12 col-lg-4">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Stages preview</h3>
       </div>
       <div class="card-body">
+        <div class="text-secondary small mb-2">Live preview of your current stages.</div>
         <div id="stagePreview">
           {% if preview_stages %}
             <ol class="mb-0">
@@ -326,14 +360,38 @@
     const addBtn = document.getElementById("addStageBtn");
     const preview = document.getElementById("stagePreview");
 
-    function updateRemoveButtons() {
+    function updateRowButtons() {
       const rows = container.querySelectorAll(".stage-row");
-      rows.forEach((row) => {
-        const btn = row.querySelector(".remove-stage");
-        btn.onclick = () => {
+      rows.forEach((row, idx) => {
+        const removeBtn = row.querySelector(".remove-stage");
+        const upBtn = row.querySelector(".move-up");
+        const downBtn = row.querySelector(".move-down");
+
+        removeBtn.onclick = () => {
           row.remove();
-          updateRemoveButtons();
+          updateRowButtons();
           renderPreview();
+        };
+
+        upBtn.disabled = idx === 0;
+        downBtn.disabled = idx === rows.length - 1;
+
+        upBtn.onclick = () => {
+          const prev = row.previousElementSibling;
+          if (prev) {
+            container.insertBefore(row, prev);
+            updateRowButtons();
+            renderPreview();
+          }
+        };
+
+        downBtn.onclick = () => {
+          const next = row.nextElementSibling;
+          if (next) {
+            container.insertBefore(next, row);
+            updateRowButtons();
+            renderPreview();
+          }
         };
       });
     }
@@ -375,11 +433,11 @@
       const row = container.querySelector(".stage-row").cloneNode(true);
       row.querySelectorAll("input").forEach((i) => (i.value = ""));
       container.appendChild(row);
-      updateRemoveButtons();
+      updateRowButtons();
       renderPreview();
     });
 
-    updateRemoveButtons();
+    updateRowButtons();
     container.addEventListener("input", renderPreview);
     renderPreview();
   })();
