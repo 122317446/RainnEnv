@@ -27,14 +27,19 @@ class TaskInstanceDAO:
         self.cursor.execute(
             """
             INSERT INTO TaskInstance
-                (Process_ID_FK, TaskDef_ID_FK, Status, Run_Folder)
-            VALUES (?, ?, ?, ?)
+                (Process_ID_FK, TaskDef_ID_FK, Status, Run_Folder,
+                 Last_Accessed_At, Expires_At, Deleted_At, Downloaded_At)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 task_instance.Process_ID_FK,
                 task_instance.TaskDef_ID_FK,
                 task_instance.Status,
-                task_instance.Run_Folder
+                task_instance.Run_Folder,
+                task_instance.Last_Accessed_At,
+                task_instance.Expires_At,
+                task_instance.Deleted_At,
+                task_instance.Downloaded_At
             )
         )
         self.connection.commit()
@@ -56,6 +61,10 @@ class TaskInstanceDAO:
             row["TaskDef_ID_FK"],
             row["Status"],
             row["Run_Folder"],
+            row["Last_Accessed_At"],
+            row["Expires_At"],
+            row["Deleted_At"],
+            row["Downloaded_At"],
             row["Created_At"],
             row["Updated_At"]
         )
@@ -84,6 +93,108 @@ class TaskInstanceDAO:
         )
         self.connection.commit()
 
+    def touch_access(self, task_instance_id, last_accessed_at, expires_at):
+        """Updates access timestamps and extends expiry."""
+        self.cursor.execute(
+            """
+            UPDATE TaskInstance
+            SET Last_Accessed_At = ?, Expires_At = ?, Updated_At = CURRENT_TIMESTAMP
+            WHERE TaskInstance_ID = ? AND Deleted_At IS NULL
+            """,
+            (last_accessed_at, expires_at, task_instance_id)
+        )
+        self.connection.commit()
+
+    def mark_downloaded(self, task_instance_id, downloaded_at, expires_at):
+        """Marks a run as downloaded and extends expiry."""
+        self.cursor.execute(
+            """
+            UPDATE TaskInstance
+            SET Downloaded_At = ?, Last_Accessed_At = ?, Expires_At = ?, Updated_At = CURRENT_TIMESTAMP
+            WHERE TaskInstance_ID = ? AND Deleted_At IS NULL
+            """,
+            (downloaded_at, downloaded_at, expires_at, task_instance_id)
+        )
+        self.connection.commit()
+
+    def mark_deleted(self, task_instance_id, deleted_at):
+        """Marks a run as deleted and clears run folder pointer."""
+        self.cursor.execute(
+            """
+            UPDATE TaskInstance
+            SET Deleted_At = ?, Run_Folder = '', Updated_At = CURRENT_TIMESTAMP
+            WHERE TaskInstance_ID = ?
+            """,
+            (deleted_at, task_instance_id)
+        )
+        self.connection.commit()
+
+    def get_expired_task_instances(self, now_str):
+        """Returns TaskInstances that have expired and are not deleted."""
+        self.cursor.execute(
+            """
+            SELECT * FROM TaskInstance
+            WHERE Deleted_At IS NULL
+              AND Expires_At IS NOT NULL
+              AND Expires_At < ?
+              AND Status != 'RUNNING'
+            """,
+            (now_str,)
+        )
+        rows = self.cursor.fetchall()
+        return [
+            TaskInstance(
+                row["TaskInstance_ID"],
+                row["Process_ID_FK"],
+                row["TaskDef_ID_FK"],
+                row["Status"],
+                row["Run_Folder"],
+                row["Last_Accessed_At"],
+                row["Expires_At"],
+                row["Deleted_At"],
+                row["Downloaded_At"],
+                row["Created_At"],
+                row["Updated_At"]
+            )
+            for row in rows
+        ]
+
+    def get_deleted_task_instances_before(self, cutoff_str):
+        """Returns TaskInstances deleted before the cutoff."""
+        self.cursor.execute(
+            """
+            SELECT * FROM TaskInstance
+            WHERE Deleted_At IS NOT NULL
+              AND Deleted_At < ?
+            """,
+            (cutoff_str,)
+        )
+        rows = self.cursor.fetchall()
+        return [
+            TaskInstance(
+                row["TaskInstance_ID"],
+                row["Process_ID_FK"],
+                row["TaskDef_ID_FK"],
+                row["Status"],
+                row["Run_Folder"],
+                row["Last_Accessed_At"],
+                row["Expires_At"],
+                row["Deleted_At"],
+                row["Downloaded_At"],
+                row["Created_At"],
+                row["Updated_At"]
+            )
+            for row in rows
+        ]
+
+    def delete_task_instance(self, task_instance_id):
+        """Hard deletes a TaskInstance row."""
+        self.cursor.execute(
+            "DELETE FROM TaskInstance WHERE TaskInstance_ID = ?",
+            (task_instance_id,)
+        )
+        self.connection.commit()
+
     def get_all_task_instances(self):
         """Returns all TaskInstances (newest first)."""
         self.cursor.execute(
@@ -98,6 +209,10 @@ class TaskInstanceDAO:
                 row["TaskDef_ID_FK"],
                 row["Status"],
                 row["Run_Folder"],
+                row["Last_Accessed_At"],
+                row["Expires_At"],
+                row["Deleted_At"],
+                row["Downloaded_At"],
                 row["Created_At"],
                 row["Updated_At"]
             )

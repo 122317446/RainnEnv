@@ -1,0 +1,14 @@
+**Extract Stage Output**
+
+* Supplier: Brightline
+* Invoice Number: INV-6617
+* Invoice Date: 2025-12-08
+* Due Date: 2026-02-13
+* Subtotal: 3354.07
+* Tax: 195.19
+* Total: 3042.66
+* Currency: EUR
+* PO Number: PO-966
+* Payment Terms: Net 30
+
+This output is extracted directly from the input and meets the requirements for this stage, providing a clear and structured set of data that can be used as input for the next stage.

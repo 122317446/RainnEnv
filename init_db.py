@@ -90,6 +90,10 @@ def init_db():
             TaskDef_ID_FK INTEGER NOT NULL,
             Status TEXT CHECK(Status IN ('RUNNING', 'COMPLETED', 'FAILED')) NOT NULL,
             Run_Folder TEXT NOT NULL DEFAULT '',
+            Last_Accessed_At DATETIME,
+            Expires_At DATETIME,
+            Deleted_At DATETIME,
+            Downloaded_At DATETIME,
             Created_At DATETIME DEFAULT CURRENT_TIMESTAMP,
             Updated_At DATETIME DEFAULT CURRENT_TIMESTAMP,
 
@@ -124,42 +128,55 @@ def init_db():
         VALUES (?, ?)
     """, [
         (
-            "invoice_compliance",
-            "Check invoices for missing fields, inconsistencies, and payment risks across supplier formats."
+            "invoice_compliance_visual_text",
+            "Invoice compliance pipeline with both visual risk chart and written summary."
         ),
         (
-            "workload_analysis",
-            "Summarise workload distribution and deadline risk across multiple documents."
+            "invoice_compliance_visual_only",
+            "Invoice compliance pipeline with visual risk chart only."
+        ),
+        (
+            "invoice_compliance_text_only",
+            "Invoice compliance pipeline with refined written summary only."
         )
     ])
 
     # Fetch IDs for seeded TaskDefs
-    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='invoice_compliance'")
-    invoice_id = cursor.fetchone()[0]
+    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='invoice_compliance_visual_text'")
+    invoice_visual_text_id = cursor.fetchone()[0]
 
-    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='workload_analysis'")
-    workload_id = cursor.fetchone()[0]
+    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='invoice_compliance_visual_only'")
+    invoice_visual_only_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT TaskDef_ID FROM TaskDef WHERE TaskDef_Name='invoice_compliance_text_only'")
+    invoice_text_only_id = cursor.fetchone()[0]
 
     # Seed Stages
     cursor.executemany("""
         INSERT INTO TaskStageDef (TaskDef_ID_FK, TaskStageDef_Type, TaskStageDef_Description)
         VALUES (?, ?, ?)
     """, [
-        # Invoice compliance pipeline
-        (invoice_id, "input", "Receive invoice files for compliance checks."),
-        (invoice_id, "extract", "Extract supplier, invoice number, dates, totals, and line items."),
-        (invoice_id, "validate", "Check for missing fields, inconsistent totals, and date/payment issues."),
-        (invoice_id, "risk_flags", "List compliance risks or late-payment concerns with short reasons."),
-        (invoice_id, "graph", "Visualise key risks and totals as an SVG chart. Output ONLY valid <svg> markup."),
-        (invoice_id, "output", "Provide a concise compliance summary and next steps."),
+        # Invoice compliance pipeline (visual + text)
+        (invoice_visual_text_id, "input", "Receive invoice files for compliance checks."),
+        (invoice_visual_text_id, "extract", "Extract supplier, invoice number, dates, totals, and line items."),
+        (invoice_visual_text_id, "validate", "Check for missing fields, inconsistent totals, and date/payment issues."),
+        (invoice_visual_text_id, "risk_flags", "List compliance risks or late-payment concerns with short reasons."),
+        (invoice_visual_text_id, "graph", "Visualise key risks and totals as a chart (JSON chart spec)."),
+        (invoice_visual_text_id, "output", "Provide a concise compliance summary and next steps."),
 
-        # Workload analysis pipeline
-        (workload_id, "input", "Receive workload documents or summaries."),
-        (workload_id, "extract", "Extract tasks, owners, deadlines, and effort estimates."),
-        (workload_id, "aggregate", "Group by owner and time window, highlighting bottlenecks."),
-        (workload_id, "risk_flags", "Identify deadline risks and overloaded owners."),
-        (workload_id, "graph", "Visualise workload distribution as an SVG chart. Output ONLY valid <svg> markup."),
-        (workload_id, "output", "Summarise workload balance and risks with recommendations."),
+        # Invoice compliance pipeline (visual only)
+        (invoice_visual_only_id, "input", "Receive invoice files for compliance checks."),
+        (invoice_visual_only_id, "extract", "Extract supplier, invoice number, dates, totals, and line items."),
+        (invoice_visual_only_id, "validate", "Check for missing fields, inconsistent totals, and date/payment issues."),
+        (invoice_visual_only_id, "risk_flags", "List compliance risks or late-payment concerns with short reasons."),
+        (invoice_visual_only_id, "graph", "Visualise key risks and totals as a chart (JSON chart spec)."),
+
+        # Invoice compliance pipeline (text only)
+        (invoice_text_only_id, "input", "Receive invoice files for compliance checks."),
+        (invoice_text_only_id, "extract", "Extract supplier, invoice number, dates, totals, and line items."),
+        (invoice_text_only_id, "validate", "Check for missing fields, inconsistent totals, and date/payment issues."),
+        (invoice_text_only_id, "risk_flags", "List compliance risks or late-payment concerns with short reasons."),
+        (invoice_text_only_id, "output", "Provide a refined compliance summary with clear next steps."),
     ])
 
     # Seed Agent Processes (pre-defined configured agents)
@@ -169,24 +186,24 @@ def init_db():
     """, [
         (
             1,
-            "Invoice Compliance Checker",
+            "Invoice Compliance (Visual + Summary)",
             "You are a compliance analyst. Be strict, accurate, and concise.",
             "llama3.1:8b",
-            invoice_id
+            invoice_visual_text_id
         ),
         (
             1,
-            "Invoice Risk Visualiser",
+            "Invoice Risk Visualiser (Visual Only)",
             "Surface compliance risks and make them easy to understand at a glance.",
             "gemma3:4b",
-            invoice_id
+            invoice_visual_only_id
         ),
         (
             1,
-            "Workload Risk Scanner",
-            "Identify workload imbalance and deadline risk with clear evidence.",
+            "Invoice Compliance Summary (Text Only)",
+            "Provide a clean, refined compliance summary with next steps.",
             "llama3.1:8b",
-            workload_id
+            invoice_text_only_id
         ),
     ])
 

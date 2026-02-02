@@ -120,5 +120,26 @@ class TaskStageInstanceDAO:
             for row in rows
         ]
 
+    def clear_outputs_for_task_instance(self, task_instance_id_fk):
+        """Clears output paths and error messages for a TaskInstance."""
+        self.cursor.execute(
+            """
+            UPDATE TaskStageInstance
+            SET Output_Artifact_Path = NULL,
+                Error_Message = NULL
+            WHERE TaskInstance_ID_FK = ?
+            """,
+            (task_instance_id_fk,)
+        )
+        self.connection.commit()
+
+    def delete_for_task_instance(self, task_instance_id_fk):
+        """Hard deletes TaskStageInstance rows for a TaskInstance."""
+        self.cursor.execute(
+            "DELETE FROM TaskStageInstance WHERE TaskInstance_ID_FK = ?",
+            (task_instance_id_fk,)
+        )
+        self.connection.commit()
+
     def close_connection(self):
         self.connection.close()

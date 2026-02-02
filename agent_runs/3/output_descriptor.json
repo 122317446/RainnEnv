@@ -1,0 +1,5 @@
+{
+  "task_instance_id": 3,
+  "output_type": "csv",
+  "output_path": "agent_runs/3/artifacts/05_stage_output_output.csv"
+}

@@ -20,8 +20,12 @@
 # ==========================================
 
 from flask import Flask, render_template, request, redirect, url_for, send_file, abort
-import tempfile
+import io
 import os
+import shutil
+import tempfile
+import time
+import zipfile
 
 # ==========================================
 # SERVICE IMPORTS
@@ -47,6 +51,51 @@ agent_runtime = AgentRuntime()
 # Iteration 3: instance tracking services (execution traceability)
 task_instance = TaskInstanceService()
 task_stage_instance = TaskStageInstanceService()
+
+RUN_TTL_SECONDS = 15 * 60
+CLEANUP_INTERVAL_SECONDS = 60
+RECEIPT_RETENTION_SECONDS = 6 * 60 * 60
+RECEIPT_RETENTION_HOURS = RECEIPT_RETENTION_SECONDS // 3600
+_last_cleanup_at = 0
+
+
+def _safe_run_folder(task_instance_id):
+    return os.path.join("agent_runs", str(task_instance_id))
+
+
+def _delete_run_folder(task_instance_id):
+    run_folder = _safe_run_folder(task_instance_id)
+    if os.path.isdir(run_folder):
+        shutil.rmtree(run_folder, ignore_errors=True)
+
+
+def _cleanup_task_instance(task_instance_id):
+    _delete_run_folder(task_instance_id)
+    task_stage_instance.clear_outputs_for_task_instance(task_instance_id)
+    task_instance.mark_deleted(task_instance_id)
+
+
+def _cleanup_expired_runs():
+    expired = task_instance.get_expired_task_instances()
+    for ti in expired:
+        _cleanup_task_instance(ti.TaskInstance_ID)
+
+def _purge_old_receipts():
+    old_receipts = task_instance.get_deleted_before(RECEIPT_RETENTION_SECONDS)
+    for ti in old_receipts:
+        task_stage_instance.delete_for_task_instance(ti.TaskInstance_ID)
+        task_instance.hard_delete(ti.TaskInstance_ID)
+
+
+@app.before_request
+def _privacy_cleanup_guard():
+    global _last_cleanup_at
+    now = time.time()
+    if now - _last_cleanup_at < CLEANUP_INTERVAL_SECONDS:
+        return
+    _last_cleanup_at = now
+    _cleanup_expired_runs()
+    _purge_old_receipts()
 
 
 # ==========================================
@@ -573,6 +622,9 @@ def agent_runner_page(process_id):
     output_task_instance_id = None
     output_artifact_name = None
     stage_outputs = []
+    run_active = False
+    receipt = None
+    receipt_message = None
 
     if request.method == "POST":
         uploaded_files = request.files.getlist("uploaded_file")
@@ -611,41 +663,51 @@ def agent_runner_page(process_id):
                         if output_artifact:
                             output_artifact_name = os.path.basename(output_artifact)
                         if output_task_instance_id:
-                            stage_instances = task_stage_instance.get_stages_for_task_instance(output_task_instance_id)
-                            for st in stage_instances:
-                                if not st.Output_Artifact_Path:
-                                    continue
-                                artifact_name = os.path.basename(st.Output_Artifact_Path)
-                                ext = os.path.splitext(artifact_name)[1].lower()
-                                out_type = "text"
-                                if ext == ".svg":
-                                    out_type = "svg"
-                                elif ext == ".csv":
-                                    out_type = "csv"
-                                elif ext == ".json":
-                                    out_type = "json"
-                                preview_text = None
-                                preview_truncated = False
-                                if out_type in ("text", "csv", "json"):
-                                    try:
-                                        max_chars = 4000
-                                        with open(st.Output_Artifact_Path, "r", encoding="utf-8") as f:
-                                            preview_text = f.read(max_chars + 1)
-                                        if preview_text and len(preview_text) > max_chars:
-                                            preview_text = preview_text[:max_chars]
-                                            preview_truncated = True
-                                    except Exception:
-                                        preview_text = None
-                                stage_outputs.append({
-                                    "order": st.Stage_Order,
-                                    "name": st.Stage_Name,
-                                    "artifact_name": artifact_name,
-                                    "output_type": out_type,
-                                    "task_instance_id": output_task_instance_id,
-                                    "preview_text": preview_text,
-                                    "preview_truncated": preview_truncated
-                                })
-                            stage_outputs.sort(key=lambda x: x["order"])
+                            task_inst = task_instance.get_task_instance(output_task_instance_id)
+                            if task_inst and task_instance.is_active(task_inst):
+                                run_active = True
+                                task_instance.touch_task_instance(output_task_instance_id, RUN_TTL_SECONDS)
+                                stage_instances = task_stage_instance.get_stages_for_task_instance(output_task_instance_id)
+                                for st in stage_instances:
+                                    if not st.Output_Artifact_Path:
+                                        continue
+                                    artifact_name = os.path.basename(st.Output_Artifact_Path)
+                                    ext = os.path.splitext(artifact_name)[1].lower()
+                                    out_type = "text"
+                                    if ext == ".svg":
+                                        out_type = "svg"
+                                    elif ext == ".csv":
+                                        out_type = "csv"
+                                    elif ext == ".json":
+                                        out_type = "json"
+                                    preview_text = None
+                                    preview_truncated = False
+                                    if out_type in ("text", "csv", "json"):
+                                        try:
+                                            max_chars = 4000
+                                            with open(st.Output_Artifact_Path, "r", encoding="utf-8") as f:
+                                                preview_text = f.read(max_chars + 1)
+                                            if preview_text and len(preview_text) > max_chars:
+                                                preview_text = preview_text[:max_chars]
+                                                preview_truncated = True
+                                        except Exception:
+                                            preview_text = None
+                                    stage_outputs.append({
+                                        "order": st.Stage_Order,
+                                        "name": st.Stage_Name,
+                                        "artifact_name": artifact_name,
+                                        "output_type": out_type,
+                                        "task_instance_id": output_task_instance_id,
+                                        "preview_text": preview_text,
+                                        "preview_truncated": preview_truncated
+                                    })
+                                stage_outputs.sort(key=lambda x: x["order"])
+                            else:
+                                if task_inst and not task_inst.Deleted_At:
+                                    _cleanup_task_instance(output_task_instance_id)
+                                    task_inst = task_instance.get_task_instance(output_task_instance_id)
+                                receipt = task_inst
+                                receipt_message = "This run was automatically deleted for privacy after inactivity."
                     else:
                         file_text = result
             except Exception as e:
@@ -667,7 +729,11 @@ def agent_runner_page(process_id):
         output_artifact=output_artifact,
         output_task_instance_id=output_task_instance_id,
         output_artifact_name=output_artifact_name,
-        stage_outputs=stage_outputs
+        stage_outputs=stage_outputs,
+        run_active=run_active,
+        receipt=receipt,
+        message=receipt_message,
+        receipt_retention_hours=RECEIPT_RETENTION_HOURS
     )
 
 
@@ -713,6 +779,81 @@ def delete_process(process_id):
 
 
 # ==========================================
+# RUN ARTIFACT ZIP DOWNLOAD
+# ==========================================
+@app.route("/download_run/<int:task_instance_id>", methods=["POST"])
+def download_run(task_instance_id):
+    task_inst = task_instance.get_task_instance(task_instance_id)
+    if not task_inst or not task_instance.is_active(task_inst):
+        if task_inst and not task_inst.Deleted_At:
+            _cleanup_task_instance(task_instance_id)
+            task_inst = task_instance.get_task_instance(task_instance_id)
+        return render_template(
+            "run_receipt.html",
+            receipt=task_inst,
+            message="This run was automatically deleted for privacy after inactivity.",
+            receipt_retention_hours=RECEIPT_RETENTION_HOURS
+        ), 410
+
+    task_instance.mark_downloaded(task_instance_id, RUN_TTL_SECONDS)
+    task_inst = task_instance.get_task_instance(task_instance_id)
+
+    run_folder = _safe_run_folder(task_instance_id)
+    if not os.path.isdir(run_folder):
+        return render_template(
+            "run_receipt.html",
+            receipt=task_inst,
+            message="This run was automatically deleted for privacy after inactivity.",
+            receipt_retention_hours=RECEIPT_RETENTION_HOURS
+        ), 410
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for root, _, files in os.walk(run_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                rel_path = os.path.relpath(file_path, run_folder)
+                zf.write(file_path, rel_path)
+        metadata = {
+            "task_instance_id": task_inst.TaskInstance_ID,
+            "process_id": task_inst.Process_ID_FK,
+            "taskdef_id": task_inst.TaskDef_ID_FK,
+            "created_at": task_inst.Created_At,
+            "last_accessed_at": task_inst.Last_Accessed_At,
+            "expires_at": task_inst.Expires_At,
+            "downloaded_at": task_inst.Downloaded_At
+        }
+        import json
+        zf.writestr("run_metadata.json", json.dumps(metadata, indent=2))
+
+    buffer.seek(0)
+    filename = f"rainn_run_{task_instance_id}.zip"
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name=filename
+    )
+
+
+# ==========================================
+# RUN MANUAL DELETE
+# ==========================================
+@app.route("/delete_run/<int:task_instance_id>", methods=["POST"])
+def delete_run(task_instance_id):
+    task_inst = task_instance.get_task_instance(task_instance_id)
+    if task_inst and not task_inst.Deleted_At:
+        _cleanup_task_instance(task_instance_id)
+        task_inst = task_instance.get_task_instance(task_instance_id)
+    return render_template(
+        "run_receipt.html",
+        receipt=task_inst,
+        message="This run was manually deleted for privacy.",
+        receipt_retention_hours=RECEIPT_RETENTION_HOURS
+    )
+
+
+# ==========================================
 # ARTIFACT FILE SERVER (Iteration 4 prep)
 # ==========================================
 @app.route("/artifact/<int:task_instance_id>/<path:filename>")
@@ -720,6 +861,20 @@ def artifact_file(task_instance_id, filename):
     """
     Serves artifact files from agent_runs/<id>/artifacts for inline display.
     """
+    task_inst = task_instance.get_task_instance(task_instance_id)
+    if not task_inst or not task_instance.is_active(task_inst):
+        if task_inst and not task_inst.Deleted_At:
+            _cleanup_task_instance(task_instance_id)
+            task_inst = task_instance.get_task_instance(task_instance_id)
+        return render_template(
+            "run_receipt.html",
+            receipt=task_inst,
+            message="This run was automatically deleted for privacy after inactivity.",
+            receipt_retention_hours=RECEIPT_RETENTION_HOURS
+        ), 410
+
+    task_instance.touch_task_instance(task_instance_id, RUN_TTL_SECONDS)
+
     artifacts_dir = os.path.join("agent_runs", str(task_instance_id), "artifacts")
     base_dir = os.path.abspath(artifacts_dir)
     requested_path = os.path.abspath(os.path.join(artifacts_dir, filename))

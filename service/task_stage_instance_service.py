@@ -54,3 +54,11 @@ class TaskStageInstanceService:
     def mark_stage_failed(self, stage_instance_id, error_message):
         """Marks a stage as failed."""
         return self.dao.mark_failed(stage_instance_id, error_message)
+
+    def clear_outputs_for_task_instance(self, task_instance_id_fk):
+        """Clears output paths and error messages for a TaskInstance."""
+        return self.dao.clear_outputs_for_task_instance(task_instance_id_fk)
+
+    def delete_for_task_instance(self, task_instance_id_fk):
+        """Hard deletes stage instances for a TaskInstance."""
+        return self.dao.delete_for_task_instance(task_instance_id_fk)

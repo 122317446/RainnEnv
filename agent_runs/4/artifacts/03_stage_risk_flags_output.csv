@@ -1,0 +1,18 @@
+Based on the provided input, I will now conduct the Risk Flags stage.
+
+**RISK FLAGS OUTPUT**
+
+The validation output indicates that all required fields are present and consistent totals have been confirmed. However, a line item review has not been conducted yet, which may reveal potential compliance risks or late-payment concerns.
+
+**LIST OF COMPLIANCE RISKS OR LATE-PAYMENT CONCERNS WITH SHORT REASONS:**
+
+1. **Line Item Review Pending**: Further analysis of the invoice's line items is necessary to identify any discrepancies or non-compliance issues.
+2. **Potential Tax Discrepancy**: Although the provided totals appear consistent, a detailed review of the line items may reveal potential tax discrepancies.
+3. **Late Payment Concern**: The Due Date (2026-01-29) is approaching, and payment terms are Net 30, which may pose late-payment risks if not addressed promptly.
+
+**RISK FLAG STATUS:**
+
+* Severity: Medium
+* Urgency: High
+
+The output from this stage will now be passed on to the next stage, Graph.

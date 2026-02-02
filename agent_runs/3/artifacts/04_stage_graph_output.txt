@@ -1,0 +1,25 @@
+Based on the current stage and input, I will proceed to create the JSON chart specification as instructed.
+
+**GRAPH**
+
+{
+  "title": "Invoice Compliance Risk Chart",
+  "labels": [
+    "Risk Type",
+    "Risk Severity"
+  ],
+  "values": [
+    {
+      "label": "Inconsistent Currency Usage",
+      "value": 1
+    },
+    {
+      "label": "Late Payment Concerns",
+      "value": 0
+    }
+  ],
+  "x_label": "Risk Type",
+  "y_label": "Severity (Scale of 0-5)"
+}
+
+Please note that I have only included the identified risk in this chart, as instructed to follow the system primer and stage instructions. The output is suitable for input to the next stage.

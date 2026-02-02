@@ -142,41 +142,45 @@
     </div>
   </div>
 
-  <!-- ======================================================
-   Output Section
-   Only displayed if file_text exists (POST run completed).
-  ======================================================= -->
-  {% if file_text %}
-  <div class="col-12">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Final Output</h3>
-      </div>
+{% if receipt %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Run Receipt</h3>
+    </div>
       <div class="card-body">
-
-        {% if output_type == "svg" and output_artifact_name and output_task_instance_id %}
-          <div class="mb-3">
-            <img class="img-fluid" alt="SVG output"
-                 src="{{ url_for('artifact_file', task_instance_id=output_task_instance_id, filename=output_artifact_name) }}">
-          </div>
-        {% else %}
-          <pre class="mb-3" style="white-space: pre-wrap;">{{ file_text }}</pre>
+        <div class="text-secondary mb-2">
+          {{ message or "This run was automatically deleted for privacy after inactivity." }}
+        </div>
+        {% if receipt_retention_hours %}
+        <div class="text-secondary small mb-3">
+          Receipts are retained for {{ receipt_retention_hours }} hours.
+        </div>
         {% endif %}
-
-        {% if output_artifact_name and output_task_instance_id %}
-          <a class="btn btn-outline-secondary"
-             href="{{ url_for('artifact_file', task_instance_id=output_task_instance_id, filename=output_artifact_name) }}"
-             download>
-            <i class="ti ti-download me-2"></i>Download output
-          </a>
-        {% endif %}
-
+        <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="text-secondary">Run ID</div>
+          <div class="fw-semibold">{{ receipt.TaskInstance_ID }}</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="text-secondary">Created</div>
+          <div class="fw-semibold">{{ receipt.Created_At }}</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="text-secondary">Deleted</div>
+          <div class="fw-semibold">{{ receipt.Deleted_At }}</div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="text-secondary">Downloaded</div>
+          <div class="fw-semibold">{{ receipt.Downloaded_At or "—" }}</div>
+        </div>
       </div>
     </div>
   </div>
-  {% endif %}
+</div>
+{% endif %}
 
-  {% if stage_outputs %}
+{% if stage_outputs and run_active %}
   <div class="col-12">
     <div class="card">
       <div class="card-header">
@@ -184,6 +188,20 @@
       </div>
       <div class="card-body">
         <div class="text-secondary mb-3">Download or preview outputs from each stage.</div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          {% if output_task_instance_id %}
+          <form method="post" action="{{ url_for('download_run', task_instance_id=output_task_instance_id) }}">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+              <i class="ti ti-download me-2"></i>Download run artifacts
+            </button>
+          </form>
+          <form method="post" action="{{ url_for('delete_run', task_instance_id=output_task_instance_id) }}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              <i class="ti ti-trash me-2"></i>Delete run now
+            </button>
+          </form>
+          {% endif %}
+        </div>
         {% for s in stage_outputs %}
           <div class="mb-4">
             <div class="d-flex align-items-center justify-content-between">

@@ -1,0 +1,2 @@
+=== FILE 1: invoice_sample_05.pdf ===
+INVOICESupplier: BrightlineInvoiceNumber: INV-6617InvoiceDate: 2025-12-08DueDate: 2026-02-13Subtotal: 3354.07Tax: 195.19Total: 3042.66Currency: EURPO: PO-966PaymentTerms: Net 30

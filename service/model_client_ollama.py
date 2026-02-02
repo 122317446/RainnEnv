@@ -26,7 +26,7 @@ class OllamaModelClient:
     Minimal Ollama HTTP client for localhost.
     """
 
-    def __init__(self, host="http://localhost:11434", timeout_seconds=120):
+    def __init__(self, host="http://localhost:11434", timeout_seconds=300):
         self.host = host.rstrip("/")
         self.timeout_seconds = timeout_seconds
 

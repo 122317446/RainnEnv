@@ -1,0 +1,2 @@
+=== FILE 1: invoice_sample_02.pdf ===
+INVOICESupplier: Acme ToolsInvoiceNumber: INV-5669InvoiceDate: 2025-12-07DueDate: 2026-01-29Subtotal: 4251.85Tax: 436.95Total: 3658.39Currency: EURPO: PO-926PaymentTerms: Net 30
