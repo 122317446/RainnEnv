@@ -1,0 +1,21 @@
+**RISK_FLAGS STAGE OUTPUT**
+
+Based on the extracted data and validation issues identified in the previous stage, I have listed compliance risks or late-payment concerns with short reasons:
+
+1. **Missing payment terms**: Although inferred as "Net 30", explicit payment terms are missing from the invoice file.
+2. **Incomplete review due to lack of line item details**: The subtotal and tax amounts appear accurate, but without line items, a comprehensive total cannot be verified.
+
+These issues will be considered in subsequent stages for further analysis and resolution.
+
+**RISK_FLAGS LIST**
+
+1. Missing payment terms
+	* Reason: Inferred as "Net 30" but explicit terms missing
+2. Incomplete review due to lack of line item details
+	* Reason: Subtotal and tax amounts accurate, but total cannot be verified
+
+Next steps:
+
+Proceed to the **graph** stage to visualize key risks and totals as a chart (JSON chart spec).
+
+Note: The above output is based on the validation issues identified in the previous stage. If any new issues are found or corrected during this stage, they will be incorporated into the risk flags list accordingly.

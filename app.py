@@ -625,6 +625,7 @@ def agent_runner_page(process_id):
     run_active = False
     receipt = None
     receipt_message = None
+    expires_in_minutes = None
 
     if request.method == "POST":
         uploaded_files = request.files.getlist("uploaded_file")
@@ -667,6 +668,9 @@ def agent_runner_page(process_id):
                             if task_inst and task_instance.is_active(task_inst):
                                 run_active = True
                                 task_instance.touch_task_instance(output_task_instance_id, RUN_TTL_SECONDS)
+                                task_inst = task_instance.get_task_instance(output_task_instance_id)
+                                if task_inst and task_inst.Expires_At:
+                                    expires_in_minutes = RUN_TTL_SECONDS // 60
                                 stage_instances = task_stage_instance.get_stages_for_task_instance(output_task_instance_id)
                                 for st in stage_instances:
                                     if not st.Output_Artifact_Path:
@@ -733,6 +737,7 @@ def agent_runner_page(process_id):
         run_active=run_active,
         receipt=receipt,
         message=receipt_message,
+        expires_in_minutes=expires_in_minutes,
         receipt_retention_hours=RECEIPT_RETENTION_HOURS
     )
 

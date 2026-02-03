@@ -1,0 +1,2 @@
+=== FILE 1: invoice_sample_01.pdf ===
+INVOICESupplier: Vertex LabsInvoiceNumber: INV-4492InvoiceDate: 2025-12-18DueDate: 2026-01-17Subtotal: 1096.05Tax: 241.95Total: 943.96Currency: EURPO: PO-350PaymentTerms: Net 30

@@ -1,0 +1,18 @@
+**Extracted Data**
+
+Based on the provided invoice file (invoice_sample_01.pdf), I extracted the following information:
+
+* **Supplier**: Vertex Labs
+* **Invoice Number**: INV-4492
+* **Dates**:
+	+ Invoice Date: 2025-12-18
+	+ Due Date: 2026-01-17
+* **Totals**:
+	+ Subtotal: 1096.05
+	+ Tax: 241.95
+	+ Total: 943.96
+* **Currency**: EUR
+
+Note that I did not extract line items as there are no additional lines of data provided in the input file.
+
+The extracted data is suitable for processing in the next stage (validate).

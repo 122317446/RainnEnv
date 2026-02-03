@@ -1,0 +1,19 @@
+**VALIDATE STAGE OUTPUT**
+
+After reviewing the extracted data, I have identified the following issues:
+
+* **Missing fields**: The payment terms are not explicitly stated in the invoice file. However, based on the provided information, it can be inferred that the payment term is "Net 30" (based on the Due Date). This will be noted as a potential issue.
+* **Inconsistent totals**: The subtotal and tax amounts appear to be accurate; however, I have not been able to verify the total amount as the invoice file does not provide line item details. This will be flagged as an incomplete review due to lack of line items.
+* **Date/payment issues**: There are no apparent date or payment issues that would prevent processing at this stage.
+
+**VALIDATION ISSUES**
+
+1. Missing field: Payment terms (Inferred as Net 30)
+2. Incomplete review: Lack of line item details
+3. No date/payment issues
+
+The extracted data is suitable for processing in the next stage, but these validation issues will be flagged and addressed in subsequent stages.
+
+**NEXT STEPS**
+
+Proceed to the **risk_flags** stage to identify compliance risks or late-payment concerns.

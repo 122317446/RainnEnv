@@ -188,6 +188,11 @@
       </div>
       <div class="card-body">
         <div class="text-secondary mb-3">Download or preview outputs from each stage.</div>
+        {% if expires_in_minutes %}
+        <div class="text-secondary small mb-3">
+          Run expires in ~{{ expires_in_minutes }} minutes of inactivity.
+        </div>
+        {% endif %}
         <div class="d-flex flex-wrap gap-2 mb-3">
           {% if output_task_instance_id %}
           <form method="post" action="{{ url_for('download_run', task_instance_id=output_task_instance_id) }}">

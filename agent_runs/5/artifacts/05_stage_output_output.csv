@@ -1,0 +1,12 @@
+**Compliance Summary and Next Steps**
+
+Based on our analysis of invoice INV-4492 from Vertex Labs, we have identified two key compliance risks:
+
+1. **Missing payment terms**: The explicit payment terms are missing from the invoice file, despite being inferred as "Net 30".
+2. **Incomplete review due to lack of line item details**: Without detailed line items, a comprehensive total cannot be verified.
+
+To address these issues, we recommend proceeding with caution and requesting clarification on the payment terms and providing additional information on the line items. This will enable us to conduct a more thorough review and ensure compliance with relevant regulations.
+
+**Final Note**
+
+This summary and next steps are based on our analysis of invoice INV-4492 from Vertex Labs. We recommend further investigation into these matters to ensure accurate and compliant financial practices.

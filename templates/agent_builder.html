@@ -60,6 +60,52 @@
   <div class="col-12 {% if step == 'template' or step == 'details' %}col-lg-12{% else %}col-lg-8{% endif %}">
     <div class="card">
       <div class="card-body">
+        <style>
+          .stage-row {
+            border: 1px solid #e6e9f2;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+          }
+          .stage-row + .stage-row {
+            margin-top: 12px;
+          }
+          .stage-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid transparent;
+          }
+          .stage-pill.text {
+            color: #2f3b4a;
+            background: #eef2f7;
+            border-color: #dbe2ea;
+          }
+          .stage-pill.graph {
+            color: #2b1e6d;
+            background: #efe9ff;
+            border-color: #d9ccff;
+          }
+          .stage-pill.csv {
+            color: #0b4a2f;
+            background: #e4f7ee;
+            border-color: #c6efd9;
+          }
+          .stage-pill.json {
+            color: #5a3a00;
+            background: #fff2d6;
+            border-color: #ffe1a6;
+          }
+          .stage-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+        </style>
 
         <!-- Form submits to the same route using POST -->
         <form method="POST" class="row g-3" id="builderForm">
@@ -188,7 +234,10 @@
             {% for s in edit_stages %}
             <div class="row g-2 stage-row">
               <div class="col-12 col-md-3">
-                <label class="form-label">Stage name</label>
+                <label class="form-label stage-label">
+                  <span>Stage name</span>
+                  <span class="stage-pill text">Text</span>
+                </label>
                 <input type="text" name="stage_name[]" class="form-control" required value="{{ s[0] }}" placeholder="e.g., extract, validate, output">
               </div>
               <div class="col-12 col-md-8">
@@ -213,7 +262,10 @@
             {% else %}
             <div class="row g-2 stage-row">
               <div class="col-12 col-md-3">
-                <label class="form-label">Stage name</label>
+                <label class="form-label stage-label">
+                  <span>Stage name</span>
+                  <span class="stage-pill text">Text</span>
+                </label>
                 <input type="text" name="stage_name[]" class="form-control" required placeholder="e.g., extract, validate, output">
               </div>
               <div class="col-12 col-md-8">
@@ -287,14 +339,14 @@
                 <i class="ti ti-arrow-right me-2"></i>Next
               </button>
             {% elif step == 'stages' %}
-              <button type="submit" name="action" value="back_template" class="btn btn-outline-secondary me-2">
+              <button type="submit" name="action" value="back_template" class="btn btn-outline-secondary me-2" formnovalidate>
                 <i class="ti ti-arrow-left me-2"></i>Back
               </button>
               <button type="submit" name="action" value="review" class="btn btn-primary">
                 <i class="ti ti-arrow-right me-2"></i>Review
               </button>
             {% elif step == 'review' %}
-              <button type="submit" name="action" value="back_stages" class="btn btn-outline-secondary me-2">
+              <button type="submit" name="action" value="back_stages" class="btn btn-outline-secondary me-2" formnovalidate>
                 <i class="ti ti-arrow-left me-2"></i>Back
               </button>
               <button type="submit" name="action" value="save" class="btn btn-primary">
@@ -407,6 +459,12 @@
       rows.forEach((row) => {
         const name = (row.querySelector('input[name="stage_name[]"]') || {}).value || "";
         const desc = (row.querySelector('input[name="stage_desc[]"]') || {}).value || "";
+        const pill = row.querySelector(".stage-pill");
+        if (pill) {
+          const type = inferOutputType(name, desc);
+          pill.textContent = type.toUpperCase();
+          pill.className = `stage-pill ${type}`;
+        }
         if (name.trim() || desc.trim()) {
           stages.push({ name: name.trim(), desc: desc.trim() });
         }
@@ -431,6 +489,20 @@
         `<div class="text-secondary">${escapeHtml(s.desc || "")}</div></li>`
       )).join("");
       preview.innerHTML = `<ol class="mb-0">${items}</ol>`;
+    }
+
+    function inferOutputType(name, desc) {
+      const haystack = `${name || ""} ${desc || ""}`.toLowerCase();
+      if (haystack.includes("graph") || haystack.includes("visual") || haystack.includes("chart") || haystack.includes("plot") || haystack.includes("svg")) {
+        return "graph";
+      }
+      if (haystack.includes("csv") || haystack.includes("table") || haystack.includes("rows") || haystack.includes("columns") || haystack.includes("spreadsheet") || haystack.includes("tabular")) {
+        return "csv";
+      }
+      if (haystack.includes("json") || haystack.includes("structured") || haystack.includes("schema") || haystack.includes("fields") || haystack.includes("object") || haystack.includes("array")) {
+        return "json";
+      }
+      return "text";
     }
 
     addBtn.addEventListener("click", () => {

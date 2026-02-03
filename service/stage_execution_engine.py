@@ -128,9 +128,15 @@ class StageExecutionEngine:
 
                 # Mark completed + chain
                 task_stage_instance_service.mark_stage_completed(stage_instance_id, out_path)
-                current_input_path = out_path
-                final_output_path = out_path
-                final_output_type = output_type
+                is_visual = output_type == "svg"
+                if not is_visual:
+                    current_input_path = out_path
+                    final_output_path = out_path
+                    final_output_type = output_type
+                elif final_output_path is None:
+                    # Visual-only flows should still return a final artifact.
+                    final_output_path = out_path
+                    final_output_type = output_type
 
             except Exception as e:
                 # Mark failed then re-raise so runtime can handle task failure
