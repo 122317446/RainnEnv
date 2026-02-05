@@ -17,14 +17,39 @@
       <div class="text-secondary">Your customized agents and runs.</div>
     </div>
 
-    <!-- Create Agent Button -->
+    <!-- Create Agent + Import Flow -->
     <div class="col-auto ms-auto d-print-none">
-      <a href="{{ url_for('agent_builder_page') }}" class="btn btn-primary">
-        <i class="ti ti-plus me-2"></i>Create new flow
-      </a>
+      <div class="btn-list">
+        <a href="{{ url_for('agent_builder_page') }}" class="btn btn-primary">
+          <i class="ti ti-plus me-2"></i>Create new flow
+        </a>
+        <form method="post"
+              action="{{ url_for('flow_import_page') }}"
+              enctype="multipart/form-data"
+              class="d-inline">
+          <input type="file"
+                 name="flow_file"
+                 accept=".json,application/json"
+                 class="d-none"
+                 id="import-flow-file">
+          <button type="button" class="btn btn-outline-secondary" id="import-flow-btn">
+            <i class="ti ti-upload me-2"></i>Import Flow
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+
+{% if import_error or import_success %}
+<div class="alert {{ 'alert-success' if import_success else 'alert-danger' }}">
+  {% if import_success %}
+    Flow imported successfully{% if imported_process_id %}. New Process ID: {{ imported_process_id }}{% endif %}.
+  {% else %}
+    {{ import_error }}
+  {% endif %}
+</div>
+{% endif %}
 
 <!-- ======================================================
  Agent Processes Card
@@ -103,6 +128,12 @@
                 <i class="ti ti-player-play me-1"></i>Run
               </a>
 
+              <!-- Export Flow -->
+              <a href="{{ url_for('export_flow', process_id=p.Process_ID) }}"
+                 class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-download me-1"></i>Export
+              </a>
+
               <!-- Edit Agent Process -->
               <a href="{{ url_for('update_process', process_id=p.Process_ID) }}"
                  class="btn btn-outline-secondary btn-sm">
@@ -130,5 +161,23 @@
     </table>
   </div>
 </div>
+
+<script>
+  (function () {
+    var importBtn = document.getElementById("import-flow-btn");
+    var importInput = document.getElementById("import-flow-file");
+    if (!importBtn || !importInput) {
+      return;
+    }
+    importBtn.addEventListener("click", function () {
+      importInput.click();
+    });
+    importInput.addEventListener("change", function () {
+      if (importInput.files && importInput.files.length > 0) {
+        importInput.form.submit();
+      }
+    });
+  })();
+</script>
 
 {% endblock %}

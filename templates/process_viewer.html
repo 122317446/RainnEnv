@@ -39,7 +39,13 @@
   <div class="col-12 col-lg-5">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Process Details</h3>
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <h3 class="card-title">Process Details</h3>
+          <a class="btn btn-outline-secondary btn-sm"
+             href="{{ url_for('export_flow', process_id=process.Process_ID) }}">
+            <i class="ti ti-download me-2"></i>Export Flow
+          </a>
+        </div>
       </div>
       <div class="card-body">
         <div class="mb-2">

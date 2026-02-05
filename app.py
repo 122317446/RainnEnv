@@ -20,6 +20,7 @@
 # ==========================================
 
 from flask import Flask, render_template, request, redirect, url_for, send_file, abort
+import json
 import io
 import os
 import shutil
@@ -36,6 +37,7 @@ from service.agent_process_service import AgentProcessService
 from service.agent_runtime_service import AgentRuntime
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
+from service.flow_exchange_service import FlowExchangeService
 
 
 # ==========================================
@@ -51,6 +53,7 @@ agent_runtime = AgentRuntime()
 # Iteration 3: instance tracking services (execution traceability)
 task_instance = TaskInstanceService()
 task_stage_instance = TaskStageInstanceService()
+flow_exchange = FlowExchangeService()
 
 RUN_TTL_SECONDS = 15 * 60
 CLEANUP_INTERVAL_SECONDS = 60
@@ -150,10 +153,83 @@ def test_agent_page():
     """
     taskdefs = taskdef_service.list_taskdefs()
     taskdef_map = {t.TaskDef_ID: t for t in taskdefs}
+    import_success = request.args.get("import_success")
+    import_error = request.args.get("import_error")
+    imported_process_id = request.args.get("process_id")
     return render_template(
         "agent_test_list.html",
         processes=process_service.list_processes(),
-        taskdef_map=taskdef_map
+        taskdef_map=taskdef_map,
+        import_success=import_success,
+        import_error=import_error,
+        imported_process_id=imported_process_id
+    )
+
+
+# ==========================================
+# FLOW IMPORT (Reusable Definitions)
+# ==========================================
+@app.route("/flow/import", methods=["GET", "POST"])
+def flow_import_page():
+    if request.method == "GET":
+        return redirect(url_for("test_agent_page"))
+
+    payload_raw = ""
+    uploaded = request.files.get("flow_file")
+    if uploaded and uploaded.filename:
+        payload_raw = uploaded.read().decode("utf-8", errors="ignore")
+    else:
+        error_message = "Please choose a JSON file to import."
+        return redirect(url_for("test_agent_page", import_error=error_message))
+
+    if not payload_raw.strip():
+        error_message = "Uploaded file is empty."
+        return redirect(url_for("test_agent_page", import_error=error_message))
+    if len(payload_raw) > 200000:
+        error_message = "Payload too large. Please keep it under 200 KB."
+        return redirect(url_for("test_agent_page", import_error=error_message))
+
+    try:
+        payload = json.loads(payload_raw)
+    except Exception:
+        payload = None
+        error_message = "Invalid JSON."
+        return redirect(url_for("test_agent_page", import_error=error_message))
+
+    ok, err = flow_exchange.validate_flow_payload(payload)
+    if not ok:
+        error_message = (err or "Invalid flow payload.")
+        error_message = error_message[:160]
+        return redirect(url_for("test_agent_page", import_error=error_message))
+
+    try:
+        process_id = flow_exchange.import_flow(payload)
+    except Exception as e:
+        error_message = f"Import failed: {e}"
+        error_message = error_message[:160]
+        return redirect(url_for("test_agent_page", import_error=error_message))
+
+    return redirect(url_for("test_agent_page", import_success=1, process_id=process_id))
+
+
+# ==========================================
+# FLOW EXPORT (Reusable Definitions)
+# ==========================================
+@app.route("/process/<int:process_id>/export")
+def export_flow(process_id):
+    flow_payload = flow_exchange.export_flow(process_id)
+    if not flow_payload:
+        return "Flow not found.", 404
+
+    agent_name = (flow_payload["flow"].get("agent_name") or "flow").strip()
+    safe_name = "".join(c if c.isalnum() or c in ("-", "_") else "_" for c in agent_name)
+    filename = f"rainn_flow_{safe_name}_{process_id}.json"
+    data = json.dumps(flow_payload, indent=2)
+    return send_file(
+        io.BytesIO(data.encode("utf-8")),
+        mimetype="application/json",
+        as_attachment=True,
+        download_name=filename
     )
 
 
@@ -289,8 +365,6 @@ def agent_builder_page():
             if stage_type.lower() == "input":
                 continue
             normalized.append((stage_type, stage_desc))
-        if not normalized or normalized[-1][0].lower() != "output":
-            normalized.append(("output", "Present the final response for the user."))
         return normalized
 
     if request.method == "POST":
