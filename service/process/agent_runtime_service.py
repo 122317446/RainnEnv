@@ -1,6 +1,6 @@
 # ==========================================
 # File: agent_runtime_service.py
-# Updated in iteration: 3
+# Updated in iteration: 4
 # Author: Karl Concha
 #
 # Central runtime orchestrator for executing an AgentProcess.
@@ -27,17 +27,17 @@
 
 import os
 
-from service.input_normaliser import Stage0InputNormaliser
-from service.stage_execution_engine import StageExecutionEngine
+from service.flow.input_normaliser import Stage0InputNormaliser
+from service.process.stage_execution_engine import StageExecutionEngine
 
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
-from service.agent_process_service import AgentProcessService
+from service.process.agent_process_service import AgentProcessService
 from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
 
-from service.prompt_compiler import PromptCompiler
-from service.model_client_ollama import OllamaModelClient
+from service.flow.prompt_compiler import PromptCompiler
+from service.integrations.model_client_ollama import OllamaModelClient
 
 
 class AgentRuntime:

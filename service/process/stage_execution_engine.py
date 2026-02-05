@@ -1,6 +1,6 @@
 # ==========================================
 # File: stage_execution_engine.py
-# Created in iteration: 3
+# Updated in iteration: 4
 # Author: Karl Concha
 #
 # Executes stages 1..N (after Stage 0 is done).
@@ -23,7 +23,7 @@
 import json
 import os
 
-from service.chart_renderer import render_chart_svg
+from service.integrations.chart_renderer import render_chart_svg
 
 
 class StageExecutionEngine:

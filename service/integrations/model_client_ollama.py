@@ -1,6 +1,6 @@
 # ==========================================
 # File: model_client_ollama.py
-# Created in iteration: 3
+# Updated in iteration: 4
 # Author: Karl Concha
 #
 # Lightweight client for calling a locally hosted Ollama instance.
@@ -61,7 +61,7 @@ class OllamaModelClient:
         response_text = (message.get("content") or "").strip() #response within the object is only collected
 
         if not response_text:
-            # Keep this explicit: an empty response is treated as a failed stage.
+            # Empty responses are treated as failed stages.
             raise Exception("Ollama returned an empty response.")
 
         return response_text

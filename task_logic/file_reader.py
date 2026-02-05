@@ -50,7 +50,7 @@ class FileReader:
         
         return plain_text
 
-    #This is a simple command for reading txt files (within your project directory)
+    # Simple helper for reading txt files from the project directory.
     @staticmethod
     def read_txt(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -65,4 +65,3 @@ class FileReader:
             for row in reader:
                 rows.append(", ".join(row))
         return "\n".join(rows)
-

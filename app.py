@@ -1,6 +1,6 @@
 # ==========================================
 # File: app.py
-# Updated in iteration: 3
+# Updated in iteration: 4
 # Author: Karl Concha
 #
 # Purpose:
@@ -10,6 +10,10 @@
 # - Runtime execution now creates TaskInstance + TaskStageInstance records
 # - Uploaded files are normalised to text (Stage 0) and written to artifacts
 # - DB view now includes TaskInstance and TaskStageInstance listings
+# 
+# Iteration 4 Notes:
+# - Added flow import/export endpoints for reusable agent definitions.
+# - Import now redirects back to My Flows with success/error messaging.
 #
 # #ChatGPT (OpenAI, 2025) – Assisted in refactoring Flask routing
 # to use modular DAO + Service layers following supervisor
@@ -33,11 +37,11 @@ import zipfile
 # ==========================================
 from service.task_def_service import TaskDefService
 from service.task_stage_def_service import TaskStageService
-from service.agent_process_service import AgentProcessService
-from service.agent_runtime_service import AgentRuntime
+from service.process.agent_process_service import AgentProcessService
+from service.process.agent_runtime_service import AgentRuntime
 from service.task_instance_service import TaskInstanceService
 from service.task_stage_instance_service import TaskStageInstanceService
-from service.flow_exchange_service import FlowExchangeService
+from service.flow.flow_exchange_service import FlowExchangeService
 
 
 # ==========================================
@@ -231,93 +235,6 @@ def export_flow(process_id):
         as_attachment=True,
         download_name=filename
     )
-
-
-# ==========================================
-# CREATE TASKDEF (Agent Template)
-# ==========================================
-@app.route("/add_agent", methods=["GET", "POST"])
-def add_agent():
-    """
-    Creates a TaskDef (agent template) plus its stage definitions.
-    """
-    if request.method == "POST":
-        name = request.form.get("agent_name")
-        desc = request.form.get("agent_description")
-
-        # Create TaskDef
-        new_taskdef_id = taskdef_service.create_taskdef(name, desc)
-
-        # Create attached stages
-        stage_names = request.form.getlist("stage_name[]")
-        stage_descs = request.form.getlist("stage_desc[]")
-
-        for s_name, s_desc in zip(stage_names, stage_descs):
-            stage_service.create_stage(new_taskdef_id, s_name, s_desc)
-
-        return redirect(url_for("home_page"))
-
-    return render_template("add_agent.html")
-
-
-# ==========================================
-# UPDATE TASKDEF
-# ==========================================
-@app.route("/update_agent/<int:taskdef_id>", methods=["GET", "POST"])
-def update_agent(taskdef_id):
-    """
-    Updates an existing TaskDef and displays its stages.
-    """
-    agent = taskdef_service.get_taskdef_by_id(taskdef_id)
-    agent_stages = stage_service.get_stages_for_task(taskdef_id)
-
-    if request.method == "POST":
-        updated_name = request.form.get("agent_name")
-        updated_desc = request.form.get("agent_description")
-
-        taskdef_service.update_taskdef(taskdef_id, updated_name, updated_desc)
-        return redirect(url_for("home_page"))
-
-    return render_template("update_agent.html", agent=agent, stages=agent_stages)
-
-
-# ==========================================
-# UPDATE A STAGE
-# ==========================================
-@app.route("/update_stage/<int:stage_id>", methods=["GET", "POST"])
-def update_stage(stage_id):
-    """
-    Updates an existing TaskStageDef.
-    """
-    stage = stage_service.get_stage_by_id(stage_id)
-    if not stage:
-        return "Stage not found.", 404
-
-    if request.method == "POST":
-        updated_stage = stage.__class__(
-            stage.TaskStageDef_ID,
-            stage.TaskDef_ID_FK,
-            request.form.get("stage_type"),
-            request.form.get("stage_desc")
-        )
-        stage_service.taskstage_dao.update_TaskStageDef(updated_stage)
-
-        return redirect(url_for("update_agent", taskdef_id=stage.TaskDef_ID_FK))
-
-    return render_template("update_stage.html", stage=stage)
-
-
-# ==========================================
-# DELETE AGENT (TaskDef + Stages)
-# ==========================================
-@app.route("/delete_agent/<int:taskdef_id>", methods=["POST"])
-def delete_agent(taskdef_id):
-    """
-    Deletes a TaskDef and all stages attached to it.
-    """
-    stage_service.delete_stages_for_task(taskdef_id)
-    taskdef_service.delete_taskdef(taskdef_id)
-    return redirect(url_for("home_page"))
 
 
 # ==========================================
@@ -626,7 +543,7 @@ def agent_builder_page():
                     stage_service.create_stage(taskdef_id_to_use, s_name, s_desc)
 
         # IMPORTANT:
-        # Keep the zip version signature (it works with your current service).
+        # Keep the zip version signature (required by the current service contract).
         new_process = process_service.create_process(
             user_id=1,
             agent_name=agent_name,

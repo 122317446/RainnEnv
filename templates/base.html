@@ -1,10 +1,10 @@
 <!-- ==========================================
 File: base.html
-Created in iteration: 3
+Updated in iteration: 4
 Author: Karl Concha
 
 #ChatGPT (OpenAI, 2026) – Assisted in refactoring the base layout to Tabler
-and aligning navigation with Iteration 3 sitemap (Home, Agents, Run, Builder).
+and aligning navigation with the Rainn sitemap (Home, Agent Flows, Builder).
 Conversation Topic: "Iteration 3 – Tabler base layout + sidebar navigation".
 Date: January 2026
 
@@ -12,6 +12,9 @@ Notes:
 - Uses Tabler (Bootstrap 5-based) for a clean, modern dashboard UI.
 - Sidebar is kept across most pages to keep the system visually contained.
 - Child templates render within the Jinja content block.
+Iteration 4 Notes:
+- Renamed navigation labels for agent flows.
+- Removed duplicate Run Agent nav entry.
 ========================================== -->
 <!doctype html>
 <html lang="en">
@@ -83,43 +86,23 @@ Notes:
               </a>
             </li>
 
-            <!-- Agents List -->
+            <!-- Agent Flows -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('test_agent_page') }}">
                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                   <i class="ti ti-box"></i>
                 </span>
-                <span class="nav-link-title">My Flows</span>
+                <span class="nav-link-title">Agent Flows</span>
               </a>
             </li>
 
-            <!-- Run Agent -->
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('test_agent_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                  <i class="ti ti-player-play"></i>
-                </span>
-                <span class="nav-link-title">Run Agent</span>
-              </a>
-            </li>
-
-            <!-- Builder Preview -->
+            <!-- Create Agent Flows -->
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('agent_builder_page') }}">
                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                   <i class="ti ti-wand"></i>
                 </span>
-                <span class="nav-link-title">Builder (Preview)</span>
-              </a>
-            </li>
-
-            <!-- Import Flow -->
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('flow_import_page') }}">
-                <span class="nav-link-icon d-md-none d-lg-inline-block">
-                  <i class="ti ti-upload"></i>
-                </span>
-                <span class="nav-link-title">Import Flow</span>
+                <span class="nav-link-title">Create Agent Flow</span>
               </a>
             </li>
 

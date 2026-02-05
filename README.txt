@@ -3,66 +3,55 @@ README.txt
 Project: Rainn – Guided AI Agent Builder
 Student: Karl Concha (122317446)
 Supervisor: Mr. Bill Emerson
-Iteration: 3 (January 2026)
+Iteration: 4 (February 2026)
 
 Purpose:
-This README documents the origin of all code used in Iteration 3 of the Rainn
+This README documents the origin of all code used in Iteration 4 of the Rainn
 project and confirms compliance with UCC Final Year Project guidelines on
 third-party code usage, licensing, and AI assistance.
 
-Iteration 3 focuses on runtime execution, multi-stage agent workflows,
-artifact traceability, and execution state management.
+Iteration 4 focuses on reusable flow exchange (import/export), updated
+flow management UX, and continued emphasis on traceable, multi-stage
+agent execution.
 
 
 ------------------------------------------------------------
 CODE ORIGIN SUMMARY
 ------------------------------------------------------------
 
-Own Code – 20%
+Own Code – 30%
 
-• Design and implementation of the Iteration 3 execution architecture:
-  - TaskInstance (per-run execution tracking)
-  - TaskStageInstance (per-stage execution tracking)
+• Design and implementation of reusable flow exchange:
+  - Flow export payload schema (rainn.flow.v1)
+  - Flow import validation and safe process creation
 
-• Implementation of multi-stage agent execution with:
-  - Sequential stage execution
-  - Per-stage artifact persistence
+• UI/UX improvements to flow management:
+  - Import flow integrated into “My Flows”
+  - Per-flow export action in the list
+  - Navigation label updates for clarity
 
-• Database schema design and implementation for execution traceability:
-  - TaskInstance table
-  - TaskStageInstance table
-  - Correct foreign-key relationships to AgentProcess and TaskDef
+• New helper services:
+  - SVG chart rendering for stage artifacts
 
-• Implementation of:
-  - Stage 0 input normalisation pipeline (file → plain text)
-  - Artifact folder structure per execution (agent_runs/<id>/)
-  - Runtime status updates (RUNNING / COMPLETED / FAILED)
+• Cleanup of legacy and unused components:
+  - Removed legacy TaskDef CRUD routes and templates
+  - Removed unused TaskDefPrimer model
+  - Retired standalone flow import template
 
-• Removal of legacy task-specific Python logic (e.g. summarise.py,
-  sentiment.py) in favour of a unified, data-driven, prompt-based execution
-  model.
-
-• Full understanding, review, and integration of all runtime logic prior
-  to submission.
+• Full understanding, review, and integration of all changes prior to submission.
 
 
 ChatGPT / AI Assistance – 60%
 
-• Architectural guidance for Iteration 3 following supervisor feedback:
-  - Separation of static configuration (AgentProcess, TaskDef)
-    from runtime execution (TaskInstance, TaskStageInstance)
-  - Validation of clean architecture boundaries (DAO / Service / Runtime)
+• Guidance on Iteration 4 flow exchange design:
+  - Import/export payload structure
+  - Validation strategy and error handling
+  - Integration with existing DAO/Service layers
 
-• Assistance with:
-  - Designing multi-stage execution flow
-  - Stop-on-failure runtime logic
-  - Artifact traceability strategy
-  - Service-layer refactoring for clarity and maintainability
-
-• Validation and correction of database schema:
-  - Foreign-key relationships
-  - Drop/create ordering
-  - Execution lifecycle fields
+• Assistance with UI integration:
+  - Placement of Import/Export controls
+  - Feedback messaging and redirect flow
+  - Consistent label updates across templates
 
 • Guidance on academic-safe AI attribution:
   - Per-file ChatGPT disclosure headers
@@ -70,22 +59,28 @@ ChatGPT / AI Assistance – 60%
   - README disclosure compliance
 
 • Prompts used (examples):
-  - “How should multi-stage agent execution be structured in relation to Rainn's current system?”
-  - “How would I go on to connect Ollama localhost to Rainn?”
-  - “Would it be more benificical to further chunk agent_runtime_service to increase traceability”
-  - “I have found a new Bootstrap UI framework called Tabler and feel this would be a benificical upgrade for Rainn's UI”
-  - “Is this file still used or should it be considered legacy?”
+  - “What’s a clean JSON schema for exporting agent flows?”
+  - “How should flow import validation be structured?”
+  - “Where should Import/Export live in the UI?”
+  - “How can flow management labels be clarified?”
+  - “Stage validation implementation”
+  - “Best way to add a chart or visualisations for Rainn”
+  - “Output format inconsistency”
+  - “Instruction conflicting with primer”
 
 All AI-assisted code was reviewed, modified where necessary, fully understood,
 and integrated by the student.
 
 
-UI Framework / External Libraries – 20%
+UI Framework / External Libraries – 10%
 
 • Tabler UI (Bootstrap-based admin dashboard framework)
   - Used for layout, styling, and UI components
   - Integrated into Flask/Jinja templates
   - No modification of Tabler source code
+
+• Matplotlib
+  - Used to render chart artifacts as SVG
 
 • Documentation:
   - Indirect reference via Tabler UI documentation
@@ -112,9 +107,7 @@ NOTES ON USAGE
 
 • Version control was maintained using Git throughout development.
 
-• Iteration 3 intentionally replaces earlier experimental approaches
-  (task-specific Python execution) with a scalable, data-driven,
-  prompt-based agent execution model.
+• Iteration 4 adds reusable flow import/export and updates flow management UI.
 
 
 ------------------------------------------------------------
@@ -127,4 +120,4 @@ I confirm that:
 • The submitted work complies with UCC Final Year Project guidelines.
 
 Signed: Karl Concha
-Date: January 2026
+Date: February 2026

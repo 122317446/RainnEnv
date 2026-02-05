@@ -1,5 +1,7 @@
 # Rainn Flow Package Schema (flow_definition_v1)
 
+_Added in iteration: 4_
+
 This document defines the portable JSON format for exporting and importing
 Rainn flows without any run data. The schema is intentionally minimal and
 privacy-first.

@@ -1,3 +1,12 @@
+# ==========================================
+# File: chart_renderer.py
+# Added in iteration: 4
+# Author: Karl Concha
+#
+# Purpose:
+# Render a simple chart spec to SVG for stage artifacts.
+# ==========================================
+
 import io
 
 

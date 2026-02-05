@@ -1,6 +1,6 @@
 <!-- ==========================================
 File: index.html
-Created in iteration: 3
+Updated in iteration: 4
 Author: Karl Concha
 
 #ChatGPT (OpenAI, 2026) – Assisted in adapting the Rainn landing page
@@ -20,9 +20,10 @@ It introduces the system’s purpose, highlights key capabilities, and
 provides navigation entry points into agent listing, execution, and
 the agent builder preview.
 
-Iteration 3 Update:
+Iteration 4 Update:
 - Migrated from splash-style landing page to a dashboard-style layout.
 - Emphasises multi-stage workflows, artifact traceability, and local-first AI execution using Ollama.
+- Updated primary action labels for agent flows.
 ========================================== -->
 
 {% extends "base.html" %}
@@ -66,10 +67,10 @@ Iteration 3 Update:
         <!-- Primary navigation actions -->
         <div class="d-flex gap-2 flex-wrap">
           <a href="{{ url_for('test_agent_page') }}" class="btn btn-primary">
-            <i class="ti ti-box me-2"></i>My Flows
+            <i class="ti ti-box me-2"></i>My agent flows
           </a>
           <a href="{{ url_for('agent_builder_page') }}" class="btn btn-outline-secondary">
-            <i class="ti ti-wand me-2"></i>New Flow
+            <i class="ti ti-wand me-2"></i>Create Agent flows
           </a>
         </div>
       </div>
